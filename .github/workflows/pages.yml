@@ -1,0 +1,88 @@
+# Configuration for GitHub Pages deployment
+# This file is used by GitHub Actions to enable Pages deployment
+
+name: Deploy static content to Pages
+
+on:
+  # Allow manual trigger from Actions tab
+  workflow_dispatch:
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  # Single deploy job since we're just deploying static content
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Create simple documentation
+        run: |
+          mkdir -p docs-static
+          cat > docs-static/index.html << 'EOF'
+          <!DOCTYPE html>
+          <html>
+          <head>
+              <title>DummyPy Documentation</title>
+              <style>
+                  body { font-family: Arial, sans-serif; margin: 40px; }
+                  .header { color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
+                  .content { margin-top: 20px; line-height: 1.6; }
+                  .notice { background: #f8f9fa; padding: 15px; border-left: 4px solid #17a2b8; margin: 20px 0; }
+              </style>
+          </head>
+          <body>
+              <h1 class="header">🏆 DummyPy</h1>
+              <div class="content">
+                  <p>A demonstration Python analytics library for educational purposes.</p>
+
+                  <div class="notice">
+                      <strong>Note:</strong> This is a proprietary library. Access is restricted to authorized personnel only.
+                  </div>
+
+                  <h2>Features</h2>
+                  <ul>
+                      <li>Advanced goal prediction algorithms</li>
+                      <li>Statistical modeling for betting analysis</li>
+                      <li>Real-time data processing</li>
+                      <li>Comprehensive testing suite</li>
+                  </ul>
+
+                  <h2>Development</h2>
+                  <p>The library uses modern Python development practices:</p>
+                  <ul>
+                      <li>uv for fast dependency management</li>
+                      <li>Ruff for linting and formatting</li>
+                      <li>pytest for comprehensive testing</li>
+                      <li>Pre-commit hooks for quality assurance</li>
+                      <li>GitHub Actions for CI/CD</li>
+                  </ul>
+              </div>
+          </body>
+          </html>
+          EOF
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './docs-static'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

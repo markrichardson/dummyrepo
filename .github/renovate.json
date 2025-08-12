@@ -1,0 +1,26 @@
+{
+  "extends": [
+    "config:recommended",
+    ":enablePreCommit",
+    ":automergeMinor",
+    ":dependencyDashboard",
+    ":semanticCommits",
+    ":pinVersions"
+  ],
+  "enabledManagers": ["pip_requirements", "pre-commit", "github-actions"],
+  "schedule": [
+      "before 10am on tuesday"
+  ],
+  "packageRules": [
+    {
+      "matchPackagePatterns": ["pytest", "black", "ruff"],
+      "groupName": "dev dependencies"
+    },
+    {
+      "matchPackagePatterns": ["numpy", "pandas"],
+      "groupName": "core dependencies"
+    }
+  ],
+  "labels": ["dependencies"],
+  "reviewers": ["@markrichardson"]
+}
