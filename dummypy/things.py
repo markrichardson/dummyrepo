@@ -17,5 +17,5 @@ class Grid:
         self.x = self.y.T
 
     def diff(self) -> pd.DataFrame:
-        """Returns the goal difference grid."""
+        """Returns a grid of differences."""
         return self.x - self.y

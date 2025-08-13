@@ -63,7 +63,7 @@ make clean         # Clean up environment
 import dummypy as dp
 
 grid = dp.Grid()
-grid.goal_total()
+grid.diff()
 ```
 
 ## Development
