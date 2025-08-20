@@ -39,7 +39,6 @@ jobs:
       - name: Create Pull Request (override token)
         uses: peter-evans/create-pull-request@v7
         with:
-          token: ${{ secrets.PAT_TOKEN }}          # Use PAT token here
           commit-message:
             "chore: sync config files from .config-templates"
           branch: sync/update-configs
