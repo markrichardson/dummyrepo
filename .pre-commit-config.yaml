@@ -1,37 +1,30 @@
+# This file is part of the tschm/.config-templates repository
+# (https://github.com/tschm/.config-templates).
+#
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v5.0.0
+    rev: v6.0.0
     hooks:
-      - id: end-of-file-fixer
-      - id: trailing-whitespace
+      - id: check-toml
       - id: check-yaml
-      - id: check-added-large-files
-      - id: check-merge-conflict
-      - id: debug-statements
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: 'v0.12.2'
+    rev: 'v0.12.9'
     hooks:
       - id: ruff
-        args: [ --fix, --exit-non-zero-on-fix ]
+        args: [ --fix, --exit-non-zero-on-fix, --unsafe-fixes ]
+
       # Run the formatter
       - id: ruff-format
-        args: [ --verbose]
 
   - repo: https://github.com/igorshubovych/markdownlint-cli
     rev: v0.45.0
     hooks:
       - id: markdownlint
-        args: ['--disable', 'MD013', 'MD033']  # Disable line length and HTML rules
-
-  - repo: https://github.com/asottile/pyupgrade
-    rev: v3.20.0
-    hooks:
-      - id: pyupgrade
-        args: [--py311-plus]
+        args: ["--disable", "MD013"]
 
   - repo: https://github.com/python-jsonschema/check-jsonschema
-    rev: 0.33.2
+    rev: 0.33.3
     hooks:
       - id: check-renovate
         args: [ "--verbose" ]
@@ -39,8 +32,13 @@ repos:
       - id: check-github-workflows
         args: ["--verbose"]
 
-  - repo: https://github.com/crate-ci/typos
-    rev: v1.34.0
+  - repo: https://github.com/rhysd/actionlint
+    rev: v1.7.7
     hooks:
-      - id: typos
-        exclude: ^\.gitignore|uv\.lock$
+      - id: actionlint
+        args: [ -ignore, SC ]
+
+  - repo: https://github.com/abravalheri/validate-pyproject
+    rev: v0.24.1
+    hooks:
+      - id: validate-pyproject
