@@ -40,9 +40,10 @@ The test suite covers:
 - Parametrized testing across different grid sizes
 """
 
-import pytest
 import numpy as np
 import pandas as pd
+import pytest
+
 from dummypy import Grid
 
 

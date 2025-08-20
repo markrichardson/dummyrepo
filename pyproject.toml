@@ -22,14 +22,8 @@ classifiers = [
 
 dependencies = [
     "numpy>=2.2",
-    "scipy>=1.15",
-    "pandas>=2.2",
+    "pandas>=2.2", 
     "attrs>=25.3",
-    "matplotlib>=3.10",
-    "seaborn>=0.13",
-    "statsmodels>=0.14.0",
-    "pyarrow>=18.0",
-    "chebfun>=0.4.4",
 ]
 
 [project.optional-dependencies]
@@ -41,8 +35,38 @@ dev = [
     "mypy>=1.0",
     "jupyter>=1.0",
     "notebook>=7.0",
-    "ipykernel>=6.0"
+    "ipykernel>=6.0",
+    "scipy>=1.15",
+    "matplotlib>=3.10",
+    "seaborn>=0.13",
+    "statsmodels>=0.14.0",
+    "pyarrow>=18.0",
+    "chebfun>=0.4.4",
 ]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/dummypy"]
+
+[tool.deptry]
+# see https://deptry.com/usage/#pep-621-dev-dependency-groups
+pep621_dev_dependency_groups = ["dev"]
+
+# Explicit module name mappings to silence verbose warnings
+[tool.deptry.package_module_name_map]
+numpy = "numpy"
+pandas = "pandas"
+attrs = "attrs"
+pytest = "pytest"
+pytest-cov = "pytest_cov"
+ruff = "ruff"
+pre-commit = "pre_commit"
+mypy = "mypy"
+jupyter = "jupyter"
+notebook = "notebook"
+ipykernel = "ipykernel"
+scipy = "scipy"
+matplotlib = "matplotlib"
+seaborn = "seaborn"
+statsmodels = "statsmodels"
+pyarrow = "pyarrow"
+chebfun = "chebfun"

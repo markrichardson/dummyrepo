@@ -676,49 +676,49 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "attrs" },
-    { name = "chebfun" },
-    { name = "matplotlib" },
     { name = "numpy", version = "2.2.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
     { name = "numpy", version = "2.3.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
     { name = "pandas" },
+]
+
+[package.optional-dependencies]
+dev = [
+    { name = "chebfun" },
+    { name = "ipykernel" },
+    { name = "jupyter" },
+    { name = "matplotlib" },
+    { name = "mypy" },
+    { name = "notebook" },
+    { name = "pre-commit" },
     { name = "pyarrow" },
+    { name = "pytest" },
+    { name = "pytest-cov" },
+    { name = "ruff" },
     { name = "scipy", version = "1.15.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
     { name = "scipy", version = "1.16.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
     { name = "seaborn" },
     { name = "statsmodels" },
 ]
 
-[package.optional-dependencies]
-dev = [
-    { name = "ipykernel" },
-    { name = "jupyter" },
-    { name = "mypy" },
-    { name = "notebook" },
-    { name = "pre-commit" },
-    { name = "pytest" },
-    { name = "pytest-cov" },
-    { name = "ruff" },
-]
-
 [package.metadata]
 requires-dist = [
     { name = "attrs", specifier = ">=25.3" },
-    { name = "chebfun", specifier = ">=0.4.4" },
+    { name = "chebfun", marker = "extra == 'dev'", specifier = ">=0.4.4" },
     { name = "ipykernel", marker = "extra == 'dev'", specifier = ">=6.0" },
     { name = "jupyter", marker = "extra == 'dev'", specifier = ">=1.0" },
-    { name = "matplotlib", specifier = ">=3.10" },
+    { name = "matplotlib", marker = "extra == 'dev'", specifier = ">=3.10" },
     { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.0" },
     { name = "notebook", marker = "extra == 'dev'", specifier = ">=7.0" },
     { name = "numpy", specifier = ">=2.2" },
     { name = "pandas", specifier = ">=2.2" },
     { name = "pre-commit", marker = "extra == 'dev'", specifier = ">=3.0" },
-    { name = "pyarrow", specifier = ">=18.0" },
+    { name = "pyarrow", marker = "extra == 'dev'", specifier = ">=18.0" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=7.0" },
     { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=4.0" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.12.0" },
-    { name = "scipy", specifier = ">=1.15" },
-    { name = "seaborn", specifier = ">=0.13" },
-    { name = "statsmodels", specifier = ">=0.14.0" },
+    { name = "scipy", marker = "extra == 'dev'", specifier = ">=1.15" },
+    { name = "seaborn", marker = "extra == 'dev'", specifier = ">=0.13" },
+    { name = "statsmodels", marker = "extra == 'dev'", specifier = ">=0.14.0" },
 ]
 provides-extras = ["dev"]
 
