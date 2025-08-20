@@ -1,29 +1,50 @@
-# .github/workflows/sync-configs.yml
-name: Sync Config Templates
+# This file is part of the tschm/.config-templates repository
+# (https://github.com/tschm/.config-templates).
+#
+# Workflow: Sync
+# Purpose: This workflow synchronizes configuration files from the template repository
+#          to other repositories, creating a pull request with the changes.
+#
+# Trigger: This workflow runs manually via workflow_dispatch
+#
+# Components:
+#   - 📥 Checkout the target repository
+#   - 🔄 Sync configuration templates
+#   - 📝 Create a pull request with the changes
+
+name: SYNC
 
 on:
+  workflow_dispatch:
   schedule:
     - cron: '0 0 * * 1'  # Weekly on Monday at midnight
-  workflow_dispatch:  # Allow manual triggering
+
+permissions:
+  contents: write  # Needed to create releases
 
 jobs:
   sync:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      
-      - name: Sync Config Templates
-        uses: tschm/config-templates@main
-        
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v5
+      - name: Checkout the target repo
+        uses: actions/checkout@v5
+
+      - name: Sync config templates
+        uses: tschm/.config-templates@main
         with:
           branch: sync/update-configs
-          title: 'chore: sync configuration templates'
-          commit-message: 'chore: sync config files from config-templates'
+          commit-message: sync config files from .config-templates
+
+      # Override the token for create-pull-request action using the PAT secret
+      - name: Create Pull Request (override token)
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.PAT_TOKEN }}          # Use PAT token here
+          commit-message:
+            "chore: sync config files from .config-templates"
+          branch: sync/update-configs
+          title:
+            "chore: sync config files from .config-templates"
           body: |
-            This PR updates configuration files from the 
-            [config-templates](https://github.com/tschm/.config-templates)
-            repository.
-            
-            - Automated PR created by GitHub Actions
+            This PR updates config files from [tschm/.config-templates](https://github.com/tschm/.config-templates).
+          delete-branch: true
