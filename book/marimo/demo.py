@@ -1,3 +1,5 @@
+"""Demo application using marimo and dummypy."""
+
 import marimo
 
 __generated_with = "0.10.9"
