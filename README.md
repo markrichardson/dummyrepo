@@ -2,7 +2,7 @@
 
 ## Overview
 
-DummyPy is a demonstration Python analytics library created for educational and testing purposes. This toolkit provides example statistical modeling, data analysis, and visualization capabilities designed to showcase modern Python development practices.
+DummyPy is a demo Python analytics library created for educational and testing purposes. This toolkit provides example statistical modeling, data analysis, and visualization capabilities designed to showcase modern Python development practices.
 
 **📚 EDUCATIONAL & DEMONSTRATION PURPOSE**
 This software is created for learning and demonstration purposes. Feel free to use, modify, and distribute.
