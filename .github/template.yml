@@ -4,6 +4,7 @@ include: |
     .devcontainer
     .github
     taskfiles
+    tests
     .editorconfig
     .pre-commit-config.yaml
     CODE_OF_CONDUCT.md
