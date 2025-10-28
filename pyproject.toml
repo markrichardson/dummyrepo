@@ -9,7 +9,7 @@ description = "A dummy Python analytics library for demonstration purposes."
 authors = [{ name = "Mark Richardson", email = "mrichardson82@gmail.com" }]
 license = { text = "MIT" }
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 keywords = ["dummypy", "analytics", "demo", "example"]
 classifiers = [
     "Programming Language :: Python :: 3",
@@ -40,7 +40,6 @@ dev = [
     "matplotlib>=3.10",
     "seaborn>=0.13",
     "statsmodels>=0.14.0",
-    "pyarrow>=18.0",
     "chebfun>=0.4.4",
     "marimo>=0.15",
 ]
