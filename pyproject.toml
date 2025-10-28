@@ -9,7 +9,7 @@ description = "A dummy Python analytics library for demonstration purposes."
 authors = [{ name = "Mark Richardson", email = "mrichardson82@gmail.com" }]
 license = { text = "MIT" }
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 keywords = ["dummypy", "analytics", "demo", "example"]
 classifiers = [
     "Programming Language :: Python :: 3",
@@ -28,21 +28,11 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-    "pytest>=7.0",
-    "pytest-cov>=4.0",
-    "ruff>=0.12.0",
-    "pre-commit>=3.0",
-    "mypy>=1.0",
-    "jupyter>=1.0",
-    "notebook>=7.0",
-    "ipykernel>=6.0",
-    "scipy>=1.15",
-    "matplotlib>=3.10",
-    "seaborn>=0.13",
-    "statsmodels>=0.14.0",
-    "pyarrow>=18.0",
-    "chebfun>=0.4.4",
-    "marimo>=0.15",
+    "pytest-cov>=6.2.1",
+    "pre-commit>=4.2.0",
+    "seaborn>=0.13.2",
+    "marimo>=0.17.2",
+    "pytest>=8.4.1"
 ]
 
 [tool.hatch.build.targets.wheel]
@@ -52,22 +42,11 @@ packages = ["src/dummypy"]
 # see https://deptry.com/usage/#pep-621-dev-dependency-groups
 pep621_dev_dependency_groups = ["dev"]
 
-# Explicit module name mappings to silence verbose warnings
 [tool.deptry.package_module_name_map]
-numpy = "numpy"
-pandas = "pandas"
-attrs = "attrs"
-pytest = "pytest"
-pytest-cov = "pytest_cov"
-ruff = "ruff"
-pre-commit = "pre_commit"
-mypy = "mypy"
-jupyter = "jupyter"
-notebook = "notebook"
-ipykernel = "ipykernel"
-scipy = "scipy"
+"pre-commit" = "pre_commit"
+"pytest-cov" = "pytest_cov"
 matplotlib = "matplotlib"
 seaborn = "seaborn"
-statsmodels = "statsmodels"
-pyarrow = "pyarrow"
-chebfun = "chebfun"
+marimo = "marimo"
+pytest = "pytest"
+numpy = "numpy"
