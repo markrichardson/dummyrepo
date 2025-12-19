@@ -1,13 +1,15 @@
-template-repository: "tschm/.config-templates"
+template-repository: "jebel-quant/rhiza"
 template-branch: "main"
-include: |
-    .devcontainer/
-    .github/
-    tests/
-    .editorconfig
-    .pre-commit-config.yaml
-    CODE_OF_CONDUCT.md
-    CONTRIBUTING.md
-    LICENSE
-    Makefile
-    ruff.toml
+include: 
+    - .devcontainer/
+    - .github/
+    - tests/
+    - .editorconfig
+    - .pre-commit-config.yaml
+    - CODE_OF_CONDUCT.md
+    - CONTRIBUTING.md
+    - LICENSE
+    - Makefile
+    - ruff.toml
+exclude:
+    - .github/workflows/docker.yml
