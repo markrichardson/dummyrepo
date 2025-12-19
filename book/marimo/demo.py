@@ -1,3 +1,15 @@
+# /// script
+# dependencies = [
+#     "marimo==0.18.4",
+#     "dummypy",
+# ]
+#
+# [tool.uv.sources]
+# dummypy = { path = "../..", editable=true }
+#
+# ///
+
+
 """Demo application using marimo and dummypy."""
 
 import marimo
