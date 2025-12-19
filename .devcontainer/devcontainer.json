@@ -1,5 +1,5 @@
 {
-    "name": "Python 3.14",
+    "name": "Python 3.14 (Rhiza)",
     "image": "mcr.microsoft.com/devcontainers/python:3.14",
     "hostRequirements": {
         "cpus": 4
@@ -12,7 +12,8 @@
         "source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh,type=bind,consistency=cached"
     ],
     "containerEnv": {
-        "SSH_AUTH_SOCK": "${localEnv:SSH_AUTH_SOCK}"
+        "SSH_AUTH_SOCK": "${localEnv:SSH_AUTH_SOCK}",
+        "UV_INSTALL_DIR": "/home/vscode/.local/bin"
     },
     "forwardPorts": [8080],
     "customizations": {
@@ -27,12 +28,23 @@
                 "marimo.marimoPath": ".venv/bin/marimo"
             },
             "extensions": [
+                // Python Development
                 "ms-python.python",
                 "ms-python.vscode-pylance",
-                "marimo-team.vscode-marimo"
+                // Marimo/Notebooks
+                "marimo-team.vscode-marimo",
+                "marimo-ai.marimo-vscode",
+                // Linting and Formatting
+                "charliermarsh.ruff",
+                "tamasfe.even-better-toml",
+                // Build Tools
+                "ms-vscode.makefile-tools",
+                // AI Assistance
+                "github.copilot-chat",
+                "github.copilot"
             ]
         }
     },
-    "onCreateCommand": ".devcontainer/startup.sh",
+    "onCreateCommand": ".devcontainer/bootstrap.sh",
     "remoteUser": "vscode"
 }

@@ -1,16 +1,17 @@
-# This file is part of the tschm/.config-templates repository
-# (https://github.com/tschm/.config-templates).
+# This file is part of the jebel-quant/rhiza repository
+# (https://github.com/jebel-quant/rhiza).
 #
 # Action: Setup Project (composite action)
 #
 # Purpose: Bootstrap a Python project in GitHub Actions by:
-#   - Installing Task, uv, and uvx into a local ./bin directory
-#   - Optionally rendering the repository from a Copier template for tests
+#   - Installing Task, uv, and uvx
 #   - Detecting presence of pyproject.toml and exposing it as an output
 #   - Creating a virtual environment with uv and syncing dependencies
 #
 # Inputs:
 #   - python-version: Python version used for the virtual environment (default: 3.12)
+#     Can be overridden by setting PYTHON_DEFAULT_VERSION repository variable
+#   - uv-extra-index-url: Extra index URL for uv (optional)
 #
 # Outputs:
 #   - pyproject_exists: "true" if pyproject.toml exists, otherwise "false"
@@ -25,8 +26,10 @@ description: 'Setup the project'
 inputs:
   python-version:
     description: 'Python version to use'
+    required: true
+  uv-extra-index-url:
+    description: 'Extra index URL for uv'
     required: false
-    default: '3.12'
 
 outputs:
   pyproject_exists:
@@ -36,43 +39,10 @@ outputs:
 runs:
   using: 'composite'
   steps:
-    - name: Set up uv, uvx and the venv
-      shell: bash
-      run: |
-        mkdir -p bin
-
-        # Add ./bin to the PATH
-        echo "Adding ./bin to PATH"
-        echo "$(pwd)/bin" >> $GITHUB_PATH
-
-        # Install uv and uvx
-        curl -fsSL https://astral.sh/uv/install.sh | UV_INSTALL_DIR="./bin" sh
-
-    - name: Check version for uv
-      shell: bash
-      run: |
-        uv --version
-
-    - name: Render the project
-      if: hashFiles('tests/resources/render.yml') != ''
-      shell: bash
-      run: |
-        pip install copier
-
-        # Render the current folder in-place
-        copier copy . . \
-          --data-file ./tests/resources/render.yml \
-          --force \
-          --overwrite \
-          --quiet
-
-        # Delete all remaining .jinja files
-        find . -type f -name "*.jinja" -exec rm -f {} +
-
-        # Delete all folders that still contain {{ ... }}
-        find . -depth -type d -name "*{{*}}*" -exec rm -rf {} +
-
-        ls -R
+    - name: Install uv
+      uses: astral-sh/setup-uv@v7
+      with:
+        version: "0.9.18"
 
     - name: Check for pyproject.toml
       id: check_pyproject
@@ -91,6 +61,10 @@ runs:
     - name: "Sync the virtual environment for ${{ github.repository }} if pyproject.toml exists"
       shell: bash
       run: |
+        if [[ -n "${{ inputs.uv-extra-index-url }}" ]]; then
+          export UV_EXTRA_INDEX_URL="${{ inputs.uv-extra-index-url }}"
+        fi
+
         if [ -f "pyproject.toml" ]; then
           uv sync --all-extras
         else

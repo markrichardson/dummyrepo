@@ -1,6 +1,5 @@
-template-repository: "jebel-quant/rhiza"
-template-branch: "main"
-include: 
+template-repository: jebel-quant/rhiza
+include:
     - .devcontainer/
     - .github/
     - tests/
