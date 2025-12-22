@@ -10,5 +10,7 @@ include:
     - LICENSE
     - Makefile
     - ruff.toml
+    - book
+    - presentation
 exclude:
     - .github/workflows/docker.yml
