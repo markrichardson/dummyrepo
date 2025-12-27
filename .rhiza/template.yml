@@ -14,4 +14,7 @@ include:
 - presentation
 - .rhiza
 exclude:
-- .github/workflows/docker.yml
+- .github/workflows/rhiza_docker.yml
+- .github/rhiza/CONFIG.md
+- .github/rhiza/TOKEN_SETUP.md
+- book/marimo/rhiza.py
