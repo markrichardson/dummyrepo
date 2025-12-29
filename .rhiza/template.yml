@@ -13,6 +13,7 @@ include:
 - book
 - presentation
 - .rhiza
+- renovate.json
 exclude:
 - .github/workflows/rhiza_docker.yml
 - .github/rhiza/CONFIG.md
