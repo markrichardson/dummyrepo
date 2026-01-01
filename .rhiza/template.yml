@@ -2,6 +2,8 @@ template-repository: jebel-quant/rhiza
 include:
 - .devcontainer/
 - .github/
+- .rhiza/
+- book/Makefile.book
 - tests/
 - .editorconfig
 - .pre-commit-config.yaml
@@ -10,12 +12,10 @@ include:
 - LICENSE
 - Makefile
 - ruff.toml
-- book
 - presentation
-- .rhiza
 - renovate.json
 exclude:
 - .github/workflows/rhiza_docker.yml
-- .github/rhiza/CONFIG.md
-- .github/rhiza/TOKEN_SETUP.md
-- book/marimo/rhiza.py
+- .rhiza/scripts/customisations/build-extras.sh
+- .rhiza/CONFIG.md
+- .rhiza/TOKEN_SETUP.md

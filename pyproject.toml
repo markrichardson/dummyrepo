@@ -35,6 +35,9 @@ dev = [
     "marimo>=0.17.2",
     "pytest>=8.4.1"
 ]
+notebook = [
+    "loman>=0.5.3",
+]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/dummypy"]
