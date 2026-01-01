@@ -1,3 +1,17 @@
+# /// script
+# dependencies = [
+#     "marimo==0.18.4",
+#     "dummypy",
+#     "loman",
+# ]
+#
+# [tool.uv.sources]
+# dummypy = { path = "../..", editable=true }
+#
+# ///
+
+"""Demo build-extras.sh with loman and graphviz."""
+
 import marimo
 
 __generated_with = "0.18.4"
@@ -17,17 +31,18 @@ def _(mo):
 @app.cell
 def _():
     import loman
+
     return (loman,)
 
 
 @app.cell
 def _(loman):
     comp = loman.Computation()
-    comp.add_node('a', value=1)                    # Input node
-    comp.add_node('b', lambda a: a + 1)            # b depends on a
-    comp.add_node('c', lambda a, b: 2 * a)         # c depends on a and b
-    comp.add_node('d', lambda b, c: b + c)         # d depends on b and c
-    comp.add_node('e', lambda c: c + 1)            # e depends on c
+    comp.add_node("a", value=1)  # Input node
+    comp.add_node("b", lambda a: a + 1)  # b depends on a
+    comp.add_node("c", lambda a, b: 2 * a)  # c depends on a and b
+    comp.add_node("d", lambda b, c: b + c)  # d depends on b and c
+    comp.add_node("e", lambda c: c + 1)  # e depends on c
     comp.compute_all()
     return (comp,)
 
@@ -41,6 +56,7 @@ def _(comp):
 @app.cell
 def _():
     import marimo as mo
+
     return (mo,)
 
 
