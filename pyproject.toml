@@ -28,7 +28,9 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-    "pytest-cov>=6.2.1",
+    "pytest-cov>=7.0",
+    "pytest-html>=4.0",
+    "python-dotenv==1.2.1",
     "pre-commit>=4.2.0",
     "marimo>=0.17.2",
     "pytest>=8.4.1"
