@@ -90,7 +90,7 @@ install: install-uv install-extras ## install
 	@if [ -f "pyproject.toml" ]; then \
 	  if [ -f "uv.lock" ]; then \
 	    printf "${BLUE}[INFO] Installing dependencies from lock file${RESET}\n"; \
-	    ${UV_BIN} sync --all-extras --frozen || { printf "${RED}[ERROR] Failed to install dependencies${RESET}\n"; exit 1; }; \
+	    ${UV_BIN} sync --all-extras --all-groups --frozen || { printf "${RED}[ERROR] Failed to install dependencies${RESET}\n"; exit 1; }; \
 	  else \
 	    printf "${YELLOW}[WARN] uv.lock not found. Generating lock file and installing dependencies...${RESET}\n"; \
 	    ${UV_BIN} sync --all-extras || { printf "${RED}[ERROR] Failed to install dependencies${RESET}\n"; exit 1; }; \
@@ -164,14 +164,14 @@ marimo: install ## fire up Marimo server
 ##@ Quality and Formatting
 deptry: install-uv ## Run deptry
 	@if [ -d ${SOURCE_FOLDER} ]; then \
-		$(UVX_BIN) deptry ${SOURCE_FOLDER} --verbose; \
+		$(UVX_BIN) deptry ${SOURCE_FOLDER}; \
 	fi
 
 	@if [ -d ${MARIMO_FOLDER} ]; then \
 		if [ -d ${SOURCE_FOLDER} ]; then \
-			$(UVX_BIN) deptry ${MARIMO_FOLDER} ${SOURCE_FOLDER} --verbose --ignore DEP004; \
+			$(UVX_BIN) deptry ${MARIMO_FOLDER} ${SOURCE_FOLDER} --ignore DEP004; \
 		else \
-		  	$(UVX_BIN) deptry ${MARIMO_FOLDER} --verbose; \
+		  	$(UVX_BIN) deptry ${MARIMO_FOLDER} --ignore DEP004; \
 		fi \
 	fi
 
