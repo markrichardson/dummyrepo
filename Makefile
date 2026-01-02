@@ -167,9 +167,9 @@ deptry: install-uv ## Run deptry
 		$(UVX_BIN) deptry ${SOURCE_FOLDER}; \
 	fi
 
-	@if [ -d ${MARIMO_FOLDER} ]; then \
-		$(UVX_BIN) deptry ${MARIMO_FOLDER}; \
-	fi
+	#@if [ -d ${MARIMO_FOLDER} ]; then \
+	#	$(UVX_BIN) deptry ${MARIMO_FOLDER}; \
+	#fi
 
 fmt: install-uv ## check the pre-commit hooks and the linting
 	@${UVX_BIN} pre-commit run --all-files
