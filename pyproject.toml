@@ -39,10 +39,6 @@ dev = [
 [tool.hatch.build.targets.wheel]
 packages = ["src/dummypy"]
 
-[tool.deptry]
-# see https://deptry.com/usage/#pep-621-dev-dependency-groups
-pep621_dev_dependency_groups = ["notebook", "dev"]
-
 [tool.deptry.package_module_name_map]
 marimo = "marimo"
 pandas = "pandas"
