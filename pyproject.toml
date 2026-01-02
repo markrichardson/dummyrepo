@@ -23,13 +23,17 @@ classifiers = [
 dependencies = [
     "numpy>=2.2",
     "attrs>=25.3",
-    "pandas>=2.2", 
+    "pandas>=2.2",
 ]
 
-# dependency only needed by the notebooks
-[project.optional-dependencies]
+# dependencies only needed by the notebooks
+[dependency-groups]
 notebook = [
     "loman>=0.5.3",
+]
+
+dev = [
+    "marimo>=0.18.4",
 ]
 
 [tool.hatch.build.targets.wheel]
@@ -37,11 +41,10 @@ packages = ["src/dummypy"]
 
 [tool.deptry]
 # see https://deptry.com/usage/#pep-621-dev-dependency-groups
-pep621_dev_dependency_groups = ["notebook"]
+pep621_dev_dependency_groups = ["notebook", "dev"]
 
 [tool.deptry.package_module_name_map]
-#matplotlib = "matplotlib"
-#marimo = "marimo"
+marimo = "marimo"
 pandas = "pandas"
 loman = "loman"
 attrs = "attrs"
