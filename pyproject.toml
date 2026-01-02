@@ -27,14 +27,14 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = [
-    "pytest-cov>=7.0",
-    "pytest-html>=4.0",
-    "python-dotenv==1.2.1",
-    "pre-commit>=4.2.0",
-    "marimo>=0.17.2",
-    "pytest>=8.4.1"
-]
+#dev = [
+#    "pytest-cov>=7.0",
+#    "pytest-html>=4.0",
+#    "python-dotenv==1.2.1",
+#    "pre-commit>=4.2.0",
+#    "marimo>=0.17.2",
+#    "pytest>=8.4.1"
+#]
 notebook = [
     "loman>=0.5.3",
 ]
@@ -48,10 +48,10 @@ pep621_dev_dependency_groups = ["dev"]
 ignore = ["DEP002"]
 
 [tool.deptry.package_module_name_map]
-"python-dotenv" = "python_dotenv"
-"pytest-html" = "pytest_html"
-"pre-commit" = "pre_commit"
-"pytest-cov" = "pytest_cov"
+#"python-dotenv" = "python_dotenv"
+#"pytest-html" = "pytest_html"
+#"pre-commit" = "pre_commit"
+#"pytest-cov" = "pytest_cov"
 matplotlib = "matplotlib"
 marimo = "marimo"
 pytest = "pytest"
