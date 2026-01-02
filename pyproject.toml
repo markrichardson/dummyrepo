@@ -35,20 +35,13 @@ notebook = [
 [tool.hatch.build.targets.wheel]
 packages = ["src/dummypy"]
 
-# that's too brutal :-)
-#[tool.deptry]
-# see https://deptry.com/usage/#pep-621-dev-dependency-groups
-#ignore = ["DEP002"]
-
 [tool.deptry]
 # see https://deptry.com/usage/#pep-621-dev-dependency-groups
 pep621_dev_dependency_groups = ["notebook"]
 
-
 [tool.deptry.package_module_name_map]
-matplotlib = "matplotlib"
-marimo = "marimo"
-pytest = "pytest"
+#matplotlib = "matplotlib"
+#marimo = "marimo"
 pandas = "pandas"
 loman = "loman"
 attrs = "attrs"
