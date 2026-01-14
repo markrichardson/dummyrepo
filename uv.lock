@@ -175,12 +175,12 @@ dependencies = [
     { name = "attrs" },
     { name = "numpy" },
     { name = "pandas" },
-    { name = "plotly" },
 ]
 
 [package.dev-dependencies]
 dev = [
     { name = "marimo" },
+    { name = "plotly" },
 ]
 notebook = [
     { name = "loman" },
@@ -191,11 +191,13 @@ requires-dist = [
     { name = "attrs", specifier = ">=25.3" },
     { name = "numpy", specifier = ">=2.2" },
     { name = "pandas", specifier = ">=2.2" },
-    { name = "plotly", specifier = ">=6.5" },
 ]
 
 [package.metadata.requires-dev]
-dev = [{ name = "marimo", specifier = ">=0.18.4" }]
+dev = [
+    { name = "marimo", specifier = ">=0.18.4" },
+    { name = "plotly", specifier = ">=6.5" },
+]
 notebook = [{ name = "loman", specifier = ">=0.5.3" }]
 
 [[package]]
