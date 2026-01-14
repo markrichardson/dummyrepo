@@ -5,7 +5,7 @@
 # ]
 #
 # [tool.uv.sources]
-# dummypy = { path = "../..", editable=true }
+# dummypy = { path = "../../..", editable=true }
 #
 # ///
 
