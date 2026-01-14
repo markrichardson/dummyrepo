@@ -24,6 +24,7 @@ dependencies = [
     "numpy>=2.2",
     "attrs>=25.3",
     "pandas>=2.2",
+    "plotly>=6.5",
 ]
 
 # dependencies only needed by the notebooks
