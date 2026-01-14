@@ -3,7 +3,6 @@ include:
 - .devcontainer/
 - .github/
 - .rhiza/
-- book/Makefile.book
 - tests/
 - .editorconfig
 - .pre-commit-config.yaml
