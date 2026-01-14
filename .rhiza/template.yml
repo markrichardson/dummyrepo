@@ -3,7 +3,6 @@ include:
 - .devcontainer/
 - .github/
 - .rhiza/
-- book/Makefile.book
 - tests/
 - .editorconfig
 - .pre-commit-config.yaml
@@ -14,6 +13,7 @@ include:
 - ruff.toml
 - presentation
 - renovate.json
+- book
 exclude:
 - .github/workflows/rhiza_docker.yml
 - .rhiza/scripts/customisations/build-extras.sh

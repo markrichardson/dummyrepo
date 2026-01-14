@@ -34,6 +34,7 @@ notebook = [
 
 dev = [
     "marimo>=0.18.4",
+    "plotly>=6.5",
 ]
 
 [tool.hatch.build.targets.wheel]
@@ -45,3 +46,5 @@ pandas = "pandas"
 loman = "loman"
 attrs = "attrs"
 numpy = "numpy"
+plotly = "plotly"
+
