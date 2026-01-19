@@ -40,6 +40,9 @@ dev = [
 [tool.hatch.build.targets.wheel]
 packages = ["src/dummypy"]
 
+[tool.mypy]
+ignore_missing_imports = true
+
 [tool.deptry.package_module_name_map]
 marimo = "marimo"
 pandas = "pandas"
