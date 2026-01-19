@@ -19,7 +19,7 @@ class Grid:
     x: pd.DataFrame = attrs.field(repr=False, init=False)
     y: pd.DataFrame = attrs.field(repr=False, init=False)
 
-    def __attrs_post_init__(self):
+    def __attrs_post_init__(self) -> None:
         """Initialize the x and y data matrices after object creation."""
         nn = np.arange(self.n + 1)
         cols = [str(n) for n in nn]
