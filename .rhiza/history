@@ -56,6 +56,10 @@ book/marimo/README.md
 book/marimo/marimo.mk
 book/marimo/notebooks/rhiza.py
 book/minibook-templates/custom.html.jinja2
+docker/Dockerfile
+docker/Dockerfile.dockerignore
+docker/README.md
+docker/docker.mk
 presentation/README.md
 presentation/presentation.mk
 renovate.json
