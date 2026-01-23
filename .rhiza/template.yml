@@ -14,6 +14,7 @@ include:
 - presentation
 - renovate.json
 - book
+- docker
 exclude:
 - .github/workflows/rhiza_docker.yml
 - .rhiza/scripts/customisations/build-extras.sh
