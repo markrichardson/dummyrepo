@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
-import os
-import subprocess
+"""Check for modifications in files managed by the Rhiza template."""
+
+import subprocess  # nosec
 import sys
 from pathlib import Path
 
 # Path to the history file relative to the project root
 HISTORY_FILE = Path(".rhiza/history")
+
 
 def load_managed_files():
     """Load the list of managed files from the history file."""
@@ -13,7 +15,7 @@ def load_managed_files():
         return set()
 
     managed_files = set()
-    with open(HISTORY_FILE, "r", encoding="utf-8") as f:
+    with open(HISTORY_FILE, encoding="utf-8") as f:
         for line in f:
             line = line.strip()
             if not line or line.startswith("#"):
@@ -21,26 +23,26 @@ def load_managed_files():
             managed_files.add(line)
     return managed_files
 
+
 def is_file_modified(file_path):
     """Check if the file is modified in git (staged or unstaged)."""
     try:
         # Check if file has any status changes (modified, added, deleted, etc.)
         result = subprocess.run(
-            ["git", "status", "--porcelain", str(file_path)],
-            capture_output=True,
-            text=True,
-            check=False
-        )
+            ["git", "status", "--porcelain", str(file_path)], capture_output=True, text=True, check=False
+        )  # nosec
         if result.returncode != 0:
-            return True # Assume modified if git fails
-            
+            return True  # Assume modified if git fails
+
         return bool(result.stdout.strip())
     except Exception:
-        return True # Assume modified on error
+        return True  # Assume modified on error
+
 
 def main():
+    """Main function to check for modifications in managed files."""
     changed_files = sys.argv[1:]
-    
+
     if not changed_files:
         return 0
 
@@ -49,10 +51,10 @@ def main():
         return 0
 
     violations = []
-    
+
     for file_path in changed_files:
         normalized_path = str(Path(file_path))
-        
+
         # Only check if the file is managed AND has actual changes
         if normalized_path in managed_files:
             if is_file_modified(file_path):
@@ -71,6 +73,7 @@ def main():
         sys.exit(1)
 
     sys.exit(0)
+
 
 if __name__ == "__main__":
     main()
