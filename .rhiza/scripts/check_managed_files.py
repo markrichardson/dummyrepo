@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-"""Check for modifications in files managed by the Rhiza template."""
+"""Check if any of the files being changed are managed by the Rhiza template."""
 
-import subprocess  # nosec
+import os
+import subprocess  # nosec B404
 import sys
 from pathlib import Path
 
@@ -24,23 +25,77 @@ def load_managed_files():
     return managed_files
 
 
-def is_file_modified(file_path):
-    """Check if the file is modified in git (staged or unstaged)."""
+def get_base_ref():
+    """Try to determine the base branch for comparison."""
+    # Common base branches
+    candidates = ["origin/main", "origin/master", "main", "master"]
+
+    # Check if we are in a GitHub Action
+    github_base = os.environ.get("GITHUB_BASE_REF")
+    if github_base:
+        # In PRs, this is the target branch (e.g. main)
+        # We might need origin/github_base
+        candidates.insert(0, f"origin/{github_base}")
+        candidates.insert(0, github_base)
+
+    for ref in candidates:
+        try:
+            subprocess.run(  # nosec B603, B607
+                ["git", "rev-parse", "--verify", ref],
+                check=True,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+            )
+        except subprocess.CalledProcessError:
+            continue
+        return ref
+
+    return None
+
+
+def is_modified(file_path, base_ref=None):
+    """Check if the file is modified.
+
+    1. In the working tree or index (staged/unstaged).
+    2. Committed but different from base_ref (if provided and in CI).
+    """
+    file_str = str(file_path)
+
+    # 1. Check working tree/index status
     try:
-        # Check if file has any status changes (modified, added, deleted, etc.)
-        result = subprocess.run(
-            ["git", "status", "--porcelain", str(file_path)], capture_output=True, text=True, check=False
-        )  # nosec
-        if result.returncode != 0:
-            return True  # Assume modified if git fails
+        status_res = subprocess.run(  # nosec B603, B607
+            ["git", "status", "--porcelain", file_str],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if status_res.returncode == 0 and status_res.stdout.strip():
+            return True
+    except Exception:  # nosec B110
+        pass
 
-        return bool(result.stdout.strip())
-    except Exception:
-        return True  # Assume modified on error
+    # 2. Check committed changes relative to base (ONLY IN CI)
+    # We avoid checking this locally to prevent "make fmt" from failing
+    # on unmerged syncs or feature branches.
+    if base_ref and os.environ.get("CI"):
+        try:
+            # git diff --name-only base...HEAD -- file
+            # verifies if file changed in the commit range
+            diff_res = subprocess.run(  # nosec B603, B607
+                ["git", "diff", "--name-only", f"{base_ref}...HEAD", "--", file_str],
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            if diff_res.returncode == 0 and diff_res.stdout.strip():
+                return True
+        except Exception:  # nosec B110
+            pass
+
+    return False
 
 
-def main():
-    """Main function to check for modifications in managed files."""
+def main():  # noqa: D103
     changed_files = sys.argv[1:]
 
     if not changed_files:
@@ -50,14 +105,16 @@ def main():
     if not managed_files:
         return 0
 
+    # Determine base ref for committed change detection
+    base_ref = get_base_ref()
+
     violations = []
 
     for file_path in changed_files:
         normalized_path = str(Path(file_path))
 
-        # Only check if the file is managed AND has actual changes
         if normalized_path in managed_files:
-            if is_file_modified(file_path):
+            if is_modified(file_path, base_ref):
                 violations.append(normalized_path)
 
     if violations:

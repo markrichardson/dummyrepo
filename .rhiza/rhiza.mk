@@ -6,7 +6,6 @@
 # and lines starting with `##@` create section headers in the help output.
 #
 # Colours for pretty output in help messages
-# force fmt error
 BLUE := \033[36m
 BOLD := \033[1m
 GREEN := \033[32m
