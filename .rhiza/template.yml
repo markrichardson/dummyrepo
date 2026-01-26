@@ -5,7 +5,8 @@ include:
 - .rhiza/
 - tests/
 - .editorconfig
-- .pre-commit-config.yaml
+# We don't want to delete the local file, we just don't want to update it
+#- .pre-commit-config.yaml
 - CODE_OF_CONDUCT.md
 - CONTRIBUTING.md
 - LICENSE
