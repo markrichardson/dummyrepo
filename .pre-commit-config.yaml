@@ -1,5 +1,4 @@
-# Thomas was here before he performed a sync
-
+# Thomas was here
 # This file is part of the jebel-quant/rhiza repository
 # (https://github.com/jebel-quant/rhiza).
 #
@@ -65,3 +64,4 @@ repos:
         language: python
         additional_dependencies: [PyYAML]
         files: ^\.github/workflows/rhiza_.*\.ya?ml$
+

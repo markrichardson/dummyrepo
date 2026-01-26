@@ -20,3 +20,5 @@ exclude:
 - .rhiza/scripts/customisations/build-extras.sh
 - .rhiza/CONFIG.md
 - .rhiza/TOKEN_SETUP.md
+- .pre-commit-config.yaml
+

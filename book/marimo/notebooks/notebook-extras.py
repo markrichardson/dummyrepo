@@ -1,13 +1,10 @@
 # /// script
-# dependencies = [
-#     "marimo==0.18.4",
-#     "dummypy",
-#     "loman",
-# ]
-#
-# [tool.uv.sources]
-# dummypy = { path = "../../..", editable=true }
-#
+# dependencies = ["marimo==0.18.4", "dummypy", "loman"]
+# requires-python = ">=3.13"
+# 
+# [tool.uv.sources.dummypy]
+# path = "../../.."
+# editable = true
 # ///
 
 """Demo build-extras.sh with loman and graphviz."""
