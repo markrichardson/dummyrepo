@@ -63,3 +63,9 @@ repos:
         language: python
         additional_dependencies: [PyYAML]
         files: ^\.github/workflows/rhiza_.*\.ya?ml$
+
+      - id: check-rhiza-managed-files
+        name: Check for changes to Rhiza-managed files
+        entry: python .rhiza/scripts/check_managed_files.py
+        language: python
+        pass_filenames: true
