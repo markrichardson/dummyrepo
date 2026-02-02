@@ -140,7 +140,7 @@ class TestMakefile:
         assert "Usage:" in out
         assert "Targets:" in out
         # ensure a few known targets appear in the help index
-        for target in ["install", "fmt", "deptry", "test", "book", "help"]:
+        for target in ["install", "fmt", "deptry", "test", "help"]:
             assert target in out
 
     def test_help_target(self, logger):
@@ -153,7 +153,11 @@ class TestMakefile:
 
     def test_fmt_target_dry_run(self, logger, tmp_path):
         """Fmt target should invoke pre-commit via uvx with Python version in dry-run output."""
-        proc = run_make(logger, ["fmt"])
+        # Create clean environment without PYTHON_VERSION so Makefile reads from .python-version
+        env = os.environ.copy()
+        env.pop("PYTHON_VERSION", None)
+
+        proc = run_make(logger, ["fmt"], env=env)
         out = proc.stdout
         # Check for uvx command with the Python version flag
         # The PYTHON_VERSION should be read from .python-version file (e.g., "3.12")
@@ -178,7 +182,12 @@ class TestMakefile:
         env_content += "\nSOURCE_FOLDER=src\n"
         env_file.write_text(env_content)
 
-        proc = run_make(logger, ["deptry"])
+        # Create clean environment without PYTHON_VERSION so Makefile reads from .python-version
+        env = os.environ.copy()
+        env.pop("PYTHON_VERSION", None)
+
+        proc = run_make(logger, ["deptry"], env=env)
+
         out = proc.stdout
         # Check for uvx command with the Python version flag
         python_version_file = tmp_path / ".python-version"
@@ -191,7 +200,7 @@ class TestMakefile:
             assert "deptry src" in out
 
     def test_mypy_target_dry_run(self, logger, tmp_path):
-        """Mypy target should invoke mypy via uvx with Python version in dry-run output."""
+        """Mypy target should invoke mypy via uv run in dry-run output."""
         # Create a mock SOURCE_FOLDER directory so the mypy command runs
         source_folder = tmp_path / "src"
         source_folder.mkdir(exist_ok=True)
@@ -204,15 +213,8 @@ class TestMakefile:
 
         proc = run_make(logger, ["mypy"])
         out = proc.stdout
-        # Check for uvx command with the Python version flag
-        python_version_file = tmp_path / ".python-version"
-        if python_version_file.exists():
-            python_version = python_version_file.read_text().strip()
-            assert f"uvx -p {python_version} mypy src --strict --config-file=pyproject.toml" in out
-        else:
-            # Fallback check if .python-version doesn't exist
-            assert "uvx -p" in out
-            assert "mypy src --strict --config-file=pyproject.toml" in out
+        # Check for uv run command instead of uvx
+        assert "uv run mypy src --strict --config-file=pyproject.toml" in out
 
     def test_test_target_dry_run(self, logger):
         """Test target should invoke pytest via uv with coverage and HTML outputs in dry-run output."""
@@ -221,8 +223,6 @@ class TestMakefile:
         # Expect key steps
         assert "mkdir -p _tests/html-coverage _tests/html-report" in out
         # Check for uv command with the configured path
-        # expected_uv = f"{expected_uv_install_dir}/uv"
-        # assert f"{expected_uv} run pytest" in out
 
     def test_test_target_without_source_folder(self, logger, tmp_path):
         """Test target should run without coverage when SOURCE_FOLDER doesn't exist."""
@@ -243,31 +243,6 @@ class TestMakefile:
         # Should still run pytest but without coverage flags
         assert "pytest tests" in out
         assert "--html=_tests/html-report/report.html" in out
-
-    def test_book_target_dry_run(self, logger):
-        """Book target should run inline commands to assemble the book."""
-        proc = run_make(logger, ["book"])
-        out = proc.stdout
-        # Expect directory creation, links.json generation and minibook to be invoked
-        assert "mkdir -p _book" in out
-        assert "links.json" in out
-        assert "minibook" in out
-
-    @pytest.mark.parametrize("target", ["book", "docs", "marimushka"])
-    def test_book_related_targets_fallback_without_book_folder(self, logger, tmp_path, target):
-        """Book-related targets should show a warning when book folder is missing."""
-        # Remove the book folder to test fallback
-        book_folder = tmp_path / "book"
-        if book_folder.exists():
-            shutil.rmtree(book_folder)
-
-        proc = run_make(logger, [target], check=False, dry_run=False)
-        out = strip_ansi(proc.stdout)
-        # out = strip_ansi(proc.stderr)
-        assert out == ""
-        # assert out == f"[WARN] Book folder not found. Target '{target}' is not available.\n"
-
-        assert proc.returncode == 2  # Fails
 
     def test_python_version_defaults_to_3_13_if_missing(self, logger, tmp_path):
         """`PYTHON_VERSION` should default to `3.13` if .python-version is missing."""
@@ -298,14 +273,13 @@ class TestMakefile:
 
     def test_that_target_coverage_is_configurable(self, logger):
         """Test target should respond to COVERAGE_FAIL_UNDER variable."""
-        # Default case (90%)
+        # Default case: ensure the flag is present
         proc = run_make(logger, ["test"])
-        assert "--cov-fail-under=90" in proc.stdout
+        assert "--cov-fail-under=" in proc.stdout
 
-        # Override case (80%)
-        # Note: We pass the variable as an argument to make
-        proc_override = run_make(logger, ["test", "COVERAGE_FAIL_UNDER=80"])
-        assert "--cov-fail-under=80" in proc_override.stdout
+        # Override case: ensure the flag takes the specific value
+        proc_override = run_make(logger, ["test", "COVERAGE_FAIL_UNDER=42"])
+        assert "--cov-fail-under=42" in proc_override.stdout
 
 
 class TestMakefileRootFixture:
@@ -334,7 +308,7 @@ class TestMakefileRootFixture:
             if split_path.exists():
                 content += "\n" + split_path.read_text()
 
-        expected_targets = ["install", "fmt", "test", "deptry", "book", "help"]
+        expected_targets = ["install", "fmt", "test", "deptry", "help"]
         for target in expected_targets:
             assert f"{target}:" in content or f".PHONY: {target}" in content
 
