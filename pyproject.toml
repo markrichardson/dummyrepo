@@ -21,7 +21,10 @@ classifiers = [
     "Intended Audience :: Developers",
     "Topic :: Software Development :: Build Tools",
 ]
-dependencies = []
+dependencies = [
+    "numpy>=2.4.2",
+    "pandas>=3.0.0",
+]
 
 [dependency-groups]
 dev = [
