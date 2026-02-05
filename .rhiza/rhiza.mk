@@ -54,7 +54,7 @@ PYTHON_VERSION ?= $(shell cat .python-version 2>/dev/null || echo "3.13")
 export PYTHON_VERSION
 
 # Read Rhiza version from .rhiza/.rhiza-version (single source of truth for rhiza-tools)
-RHIZA_VERSION ?= $(shell cat .rhiza/.rhiza-version 2>/dev/null || echo "0.10.0")
+RHIZA_VERSION ?= $(shell cat .rhiza/.rhiza-version 2>/dev/null || echo "0.10.1")
 export RHIZA_VERSION
 
 export UV_NO_MODIFY_PATH := 1
@@ -255,7 +255,7 @@ mypy: install ## run mypy analysis
 bump: pre-bump ## bump version
 	@if [ -f "pyproject.toml" ]; then \
 		$(MAKE) install; \
-		${UVX_BIN} "rhiza[tools]>=0.8.6" tools bump; \
+		${UVX_BIN} "rhiza[tools]>=0.10.1" tools bump; \
 		printf "${BLUE}[INFO] Updating uv.lock file...${RESET}\n"; \
 		${UV_BIN} lock; \
 	else \
