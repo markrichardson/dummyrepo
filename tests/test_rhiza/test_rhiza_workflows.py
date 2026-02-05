@@ -103,7 +103,7 @@ class TestRhizaVersion:
 
         proc = run_make(logger, ["print-RHIZA_VERSION"], dry_run=False)
         out = strip_ansi(proc.stdout)
-        assert "Value of RHIZA_VERSION:\n0.10.1" in out
+        assert "Value of RHIZA_VERSION:\n0.10.2" in out
 
     def test_rhiza_version_used_in_sync_target(self, logger):
         """Sync target should use RHIZA_VERSION from .rhiza-version."""
