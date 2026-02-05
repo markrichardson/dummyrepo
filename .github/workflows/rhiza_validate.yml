@@ -26,7 +26,13 @@ jobs:
         with:
           token: ${{ secrets.GH_PAT }}
 
+      - name: Get Rhiza version
+        id: rhiza-version
+        run: |
+          VERSION=$(cat .rhiza/.rhiza-version 2>/dev/null || echo "0.10.1")
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+
       - name: Validate Rhiza config
         shell: bash
         run: |
-          uvx "rhiza>=0.8.0" validate .
+          uvx "rhiza>=${{ steps.rhiza-version.outputs.version }}" validate .

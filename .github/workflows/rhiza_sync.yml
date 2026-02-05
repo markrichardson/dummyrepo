@@ -55,7 +55,7 @@ jobs:
       - name: Get Rhiza version
         id: rhiza-version
         run: |
-          VERSION=$(cat .rhiza/.rhiza-version 2>/dev/null || echo "0.9.0")
+          VERSION=$(cat .rhiza/.rhiza-version 2>/dev/null || echo "0.10.1")
           echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
 
       - name: Sync template
