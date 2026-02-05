@@ -49,8 +49,13 @@
 .rhiza/make.d/08-docs.mk
 .rhiza/make.d/10-custom-task.mk
 .rhiza/make.d/README.md
+.rhiza/requirements/README.md
+.rhiza/requirements/docs.txt
+.rhiza/requirements/marimo.txt
 .rhiza/requirements/marimo.txt
 .rhiza/requirements/tests.txt
+.rhiza/requirements/tests.txt
+.rhiza/requirements/tools.txt
 .rhiza/rhiza.mk
 .rhiza/scripts/release.sh
 .rhiza/templates/minibook/custom.html.jinja2
