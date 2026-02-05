@@ -7,6 +7,10 @@
 .devcontainer/bootstrap.sh
 .devcontainer/devcontainer.json
 .editorconfig
+.github/actions/configure-git-auth/README.md
+.github/actions/configure-git-auth/action.yml
+.github/agents/analyser.md
+.github/agents/summarise.md
 .github/copilot-instructions.md
 .github/dependabot.yml
 .github/workflows/rhiza_book.yml
@@ -25,7 +29,6 @@
 .gitignore
 .gitlab/template/marimo_job_template.yml.jinja
 .gitlab/workflows/rhiza_book.yml
-.gitlab/workflows/rhiza_ci.yml
 .pre-commit-config.yaml
 .python-version
 .rhiza/.cfg.toml
@@ -49,8 +52,6 @@ CODE_OF_CONDUCT.md
 CONTRIBUTING.md
 LICENSE
 Makefile
-PRESENTATION.md
-SECURITY.md
 docker/Dockerfile
 docker/Dockerfile.dockerignore
 docs/ARCHITECTURE.md
@@ -64,6 +65,7 @@ docs/GLOSSARY.md
 docs/MARIMO.md
 docs/QUICK_REFERENCE.md
 docs/RELEASING.md
+docs/SECURITY.md
 docs/WORKFLOWS.md
 pyproject.toml
 pytest.ini
