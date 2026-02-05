@@ -1,21 +1,22 @@
 template-repository: jebel-quant/rhiza
+template-branch: copilot/update-template-inclusion-exclusion
 include:
-- .devcontainer/
-- .github/
-- .rhiza/
-- tests/
-- .editorconfig
-- .pre-commit-config.yaml
-- CODE_OF_CONDUCT.md
-- CONTRIBUTING.md
-- LICENSE
-- Makefile
-- ruff.toml
-- presentation
-- renovate.json
-- book
-- docker
+  - .devcontainer/
+  - .github/
+  - .rhiza/
+  - tests/
+  - .editorconfig
+  - .pre-commit-config.yaml
+  - CODE_OF_CONDUCT.md
+  - CONTRIBUTING.md
+  - LICENSE
+  - Makefile
+  - ruff.toml
+  - presentation
+  - renovate.json
+  - book
+  - docker
 exclude:
-- .rhiza/scripts/customisations/build-extras.sh
-- .rhiza/CONFIG.md
-- .rhiza/TOKEN_SETUP.md
+  - .rhiza/scripts/customisations/build-extras.sh
+  - .rhiza/CONFIG.md
+  - .rhiza/TOKEN_SETUP.md
