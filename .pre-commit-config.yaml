@@ -63,5 +63,6 @@ repos:
       - id: check-rhiza-config
       - id: check-makefile-targets
       - id: check-python-version-consistency
-      - id: check-template-bundles
+      # Disabled due to bug in v0.1.5 - looks for file in wrong location
+      # - id: check-template-bundles
   
