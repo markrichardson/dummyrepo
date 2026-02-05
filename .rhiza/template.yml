@@ -2,6 +2,7 @@ template-repository: jebel-quant/rhiza
 template-branch: copilot/update-template-inclusion-exclusion
 
 templates:
+  - core
   - devcontainer
   - marimo
   - book
