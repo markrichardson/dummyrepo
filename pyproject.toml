@@ -1,53 +1,43 @@
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
-
 [project]
-name = "dummypy"
-version = "0.1.0"
-description = "A dummy Python analytics library for demonstration purposes."
-authors = [{ name = "Mark Richardson", email = "mrichardson82@gmail.com" }]
-license = { text = "MIT" }
+name = "rhiza"
+version = "0.6.2"
+description = "Reusable configuration templates for modern Python projects"
 readme = "README.md"
 requires-python = ">=3.11"
-keywords = ["dummypy", "analytics", "demo", "example"]
+license = { text = "MIT" }
+authors = [
+  { name = "Thomas Schmelzer" }
+]
+keywords = ["templates", "configuration", "ci", "ruff"]
 classifiers = [
+    "Private :: Do Not Upload",
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "License :: OSI Approved :: MIT License",
-    "Operating System :: OS Independent",
-    "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
-    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Software Development :: Build Tools",
 ]
+dependencies = []
 
-dependencies = [
-    "numpy>=2.2",
-    "attrs>=25.3",
-    "pandas>=2.2",
-]
-
-# dependencies only needed by the notebooks
 [dependency-groups]
-notebook = [
-    "loman>=0.5.3",
-]
-
 dev = [
-    "marimo>=0.18.4",
-    "plotly>=6.5",
+    "marimo>=0.18.0,<1.0",   # Reactive notebook runtime for book/ examples
+    "numpy>=2.4.0,<3.0",     # Numerical computing for notebook data analysis
+    "plotly>=6.5.0,<7.0",    # Interactive visualization in notebooks
+    "pandas>=3,<3.1",    # Data manipulation for notebook examples
 ]
 
-[tool.hatch.build.targets.wheel]
-packages = ["src/dummypy"]
-
-[tool.mypy]
-ignore_missing_imports = true
+[project.urls]
+Homepage = "https://github.com/jebel-quant/rhiza"
+Repository = "https://github.com/jebel-quant/rhiza"
+Issues = "https://github.com/jebel-quant/rhiza/issues"
 
 [tool.deptry.package_module_name_map]
 marimo = "marimo"
-pandas = "pandas"
-loman = "loman"
-attrs = "attrs"
 numpy = "numpy"
 plotly = "plotly"
-
+pandas = "pandas"
