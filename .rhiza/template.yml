@@ -1,22 +1,43 @@
 template-repository: jebel-quant/rhiza
 template-branch: copilot/update-template-inclusion-exclusion
-include:
-  - .devcontainer/
-  - .github/
-  - .rhiza/
-  - tests/
-  - .editorconfig
-  - .pre-commit-config.yaml
-  - CODE_OF_CONDUCT.md
-  - CONTRIBUTING.md
-  - LICENSE
-  - Makefile
-  - ruff.toml
-  - presentation
-  - renovate.json
+
+templates:
+  - devcontainer
+  - marimo
   - book
+  - tests
   - docker
-exclude:
-  - .rhiza/scripts/customisations/build-extras.sh
-  - .rhiza/CONFIG.md
-  - .rhiza/TOKEN_SETUP.md
+  - legal
+  - presentation
+  
+#include:
+  #- .devcontainer/
+  #- .github/
+  #- .rhiza/
+  #- tests/
+  #- .editorconfig
+  #- .pre-commit-config.yaml
+  #- CODE_OF_CONDUCT.md
+  #- CONTRIBUTING.md
+  #- LICENSE
+  #- Makefile
+  #- ruff.toml
+  #- presentation
+  #- renovate.json
+  #- book
+  #- docker
+#exclude:
+#  - .rhiza/scripts/customisations/build-extras.sh
+#  - .rhiza/CONFIG.md
+#  - .rhiza/TOKEN_SETUP.md
+
+#legal - LICENSE, CONTRIBUTING.md, CODE_OF_CONDUCT.md
+#tests - pytest, coverage reports, type checking, CI/CD for testing
+#benchmarks - Performance benchmarking with pytest-benchmark
+#docker - Dockerfile, build/run targets, Docker workflow
+#marimo - Interactive notebooks for data exploration
+#book - Documentation book with API docs, coverage, test reports
+#devcontainer - VS Code DevContainer for consistent environments
+#gitlab - GitLab CI/CD pipelines (alternative to GitHub Actions)
+#presentation - Reveal.js presentations
+
