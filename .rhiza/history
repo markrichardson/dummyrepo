@@ -27,8 +27,6 @@
 .github/workflows/rhiza_sync.yml
 .github/workflows/rhiza_validate.yml
 .gitignore
-.gitlab/template/marimo_job_template.yml.jinja
-.gitlab/workflows/rhiza_book.yml
 .pre-commit-config.yaml
 .python-version
 .rhiza/.cfg.toml
@@ -49,11 +47,8 @@
 .rhiza/make.d/08-docs.mk
 .rhiza/make.d/10-custom-task.mk
 .rhiza/make.d/README.md
-.rhiza/requirements/README.md
 .rhiza/requirements/docs.txt
 .rhiza/requirements/marimo.txt
-.rhiza/requirements/marimo.txt
-.rhiza/requirements/tests.txt
 .rhiza/requirements/tests.txt
 .rhiza/requirements/tools.txt
 .rhiza/rhiza.mk

@@ -3,6 +3,7 @@ template-branch: copilot/update-template-inclusion-exclusion
 
 templates:
   - core
+  - github
   - devcontainer
   - marimo
   - book
