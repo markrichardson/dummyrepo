@@ -35,6 +35,10 @@
 .rhiza/.env
 .rhiza/.gitignore
 .rhiza/.rhiza-version
+.rhiza/assets/rhiza-logo.svg
+.rhiza/docs/CONFIG.md
+.rhiza/docs/PRIVATE_PACKAGES.md
+.rhiza/docs/TOKEN_SETUP.md
 .rhiza/make.d/00-custom-env.mk
 .rhiza/make.d/01-test.mk
 .rhiza/make.d/02-book.mk
@@ -48,10 +52,14 @@
 .rhiza/requirements/marimo.txt
 .rhiza/requirements/tests.txt
 .rhiza/rhiza.mk
+.rhiza/scripts/release.sh
+.rhiza/templates/minibook/custom.html.jinja2
+.rhiza/utils/version_matrix.py
 CODE_OF_CONDUCT.md
 CONTRIBUTING.md
 LICENSE
 Makefile
+book/marimo/notebooks/rhiza.py
 docker/Dockerfile
 docker/Dockerfile.dockerignore
 docs/ARCHITECTURE.md

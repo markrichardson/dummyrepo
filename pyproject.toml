@@ -21,17 +21,14 @@ classifiers = [
     "Intended Audience :: Developers",
     "Topic :: Software Development :: Build Tools",
 ]
-dependencies = [
-    "attrs>=25.4.0",
-    "numpy>=2.4.2",
-    "pandas>=3.0.0",
-]
+dependencies = []
 
 [dependency-groups]
 dev = [
-    "loman>=0.5.3",
     "marimo>=0.18.0,<1.0",   # Reactive notebook runtime for book/ examples
+    "numpy>=2.4.0,<3.0",     # Numerical computing for notebook data analysis
     "plotly>=6.5.0,<7.0",    # Interactive visualization in notebooks
+    "pandas>=3,<3.1",    # Data manipulation for notebook examples
 ]
 
 [project.urls]
@@ -44,6 +41,3 @@ marimo = "marimo"
 numpy = "numpy"
 plotly = "plotly"
 pandas = "pandas"
-attrs = "attrs"
-loman = "loman"
-
