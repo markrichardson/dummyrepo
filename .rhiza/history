@@ -91,7 +91,6 @@ tests/test_rhiza/test_marimushka_target.py
 tests/test_rhiza/test_notebooks.py
 tests/test_rhiza/test_readme.py
 tests/test_rhiza/test_release_script.py
-tests/test_rhiza/test_requirements_folder.py
 tests/test_rhiza/test_rhiza_workflows.py
 tests/test_rhiza/test_structure.py
 tests/test_rhiza/test_version_matrix.py
