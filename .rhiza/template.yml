@@ -1,5 +1,5 @@
 template-repository: jebel-quant/rhiza
-template-branch: copilot/update-template-inclusion-exclusion
+template-branch: main
 
 templates:
   - core
