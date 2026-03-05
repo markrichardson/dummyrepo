@@ -24,7 +24,7 @@ class Grid:
         nn = np.arange(self.n + 1)
         cols = [str(n) for n in nn]
         data = np.tile(nn, (self.n + 1, 1))
-        self.y = pd.DataFrame(data, index=cols, columns=cols)
+        self.y = pd.DataFrame(data, index=pd.Index(cols), columns=pd.Index(cols))
         self.x = self.y.T
 
     def diff(self) -> pd.DataFrame:
