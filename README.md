@@ -14,6 +14,7 @@ This software is created for learning and demonstration purposes. Feel free to u
 Get started immediately with a fully configured cloud development environment:
 
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/markrichardson/dummypy?quickstart=1)
+[![Coverage](https://markrichardson.github.io/dummyrepo/coverage-badge.svg)](https://markrichardson.github.io/dummyrepo/coverage-badge.svg)
 
 **Benefits:**
 - 🚀 **Zero Setup** - Ready in 2-3 minutes
