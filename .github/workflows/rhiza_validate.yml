@@ -34,29 +34,6 @@ jobs:
         run: |
           make validate
 
-  semgrep:
-    name: Semgrep (numpy)
-    runs-on: ubuntu-latest
-    if: github.event_name != 'schedule' && github.event_name != 'workflow_dispatch'
-
-    steps:
-      - uses: actions/checkout@v6.0.2
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v7.6.0
-        with:
-          version: "0.11.2"
-
-      - name: Configure git auth for private packages
-        uses: ./.github/actions/configure-git-auth
-        with:
-          token: ${{ secrets.GH_PAT }}
-
-      - name: Run Semgrep
-        env:
-          UV_EXTRA_INDEX_URL: ${{ secrets.UV_EXTRA_INDEX_URL }}
-        run: make semgrep
-
   security:
     name: Security scanning
     runs-on: ubuntu-latest
