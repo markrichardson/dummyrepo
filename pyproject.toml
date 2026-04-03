@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "dummypy"
-version = "0.1.0"
+version = "0.1.1"
 description = "A dummy Python analytics library for demonstration purposes."
 authors = [{ name = "Mark Richardson", email = "mrichardson82@gmail.com" }]
 license = { text = "MIT" }
