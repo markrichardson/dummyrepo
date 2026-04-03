@@ -1,7 +1,7 @@
-sha: 6dd977e1dfdaf076c4a28e0703261d59af7ffb1d
+sha: fafcaffb9e9f2dfdb6c1d7062986eb70dfb83646
 repo: jebel-quant/rhiza
 host: github
-ref: v0.8.19
+ref: v0.8.21
 include: []
 exclude: []
 templates:
@@ -30,18 +30,14 @@ files:
 - .github/hooks/session-start.sh
 - .github/secret_scanning.yml
 - .github/workflows/copilot-setup-steps.yml
-- .github/workflows/renovate_rhiza_sync.yml
-- .github/workflows/rhiza_book.yml
 - .github/workflows/rhiza_ci.yml
 - .github/workflows/rhiza_codeql.yml
-- .github/workflows/rhiza_dep_compat_test.yml
 - .github/workflows/rhiza_devcontainer.yml
 - .github/workflows/rhiza_docker.yml
 - .github/workflows/rhiza_marimo.yml
-- .github/workflows/rhiza_quality.yml
 - .github/workflows/rhiza_release.yml
 - .github/workflows/rhiza_sync.yml
-- .github/workflows/rhiza_validate.yml
+- .github/workflows/rhiza_weekly.yml
 - .gitignore
 - .pre-commit-config.yaml
 - .python-version
@@ -49,6 +45,8 @@ files:
 - .rhiza/.env
 - .rhiza/.gitignore
 - .rhiza/.rhiza-version
+- .rhiza/CODE_OF_CONDUCT.md
+- .rhiza/CONTRIBUTING.md
 - .rhiza/assets/rhiza-logo.svg
 - .rhiza/docs/ASSETS.md
 - .rhiza/docs/CONFIG.md
@@ -59,7 +57,6 @@ files:
 - .rhiza/docs/WORKFLOWS.md
 - .rhiza/make.d/README.md
 - .rhiza/make.d/agentic.mk
-- .rhiza/make.d/book.mk
 - .rhiza/make.d/bootstrap.mk
 - .rhiza/make.d/custom-env.mk
 - .rhiza/make.d/custom-task.mk
@@ -78,7 +75,6 @@ files:
 - .rhiza/requirements/tools.txt
 - .rhiza/rhiza.mk
 - .rhiza/semgrep.yml
-- .rhiza/templates/minibook/custom.html.jinja2
 - .rhiza/tests/README.md
 - .rhiza/tests/api/conftest.py
 - .rhiza/tests/api/test_gh_aw_targets.py
@@ -109,16 +105,13 @@ files:
 - .rhiza/tests/sync/test_rhiza_version.py
 - .rhiza/tests/test_utils.py
 - .rhiza/tests/utils/test_git_repo_fixture.py
-- CODE_OF_CONDUCT.md
-- CONTRIBUTING.md
 - LICENSE
 - Makefile
 - SECURITY.md
-- book/marimo/notebooks/rhiza.py
+- book/marimo/notebooks/.gitkeep
 - docker/Dockerfile
 - docker/Dockerfile.dockerignore
 - docs/ARCHITECTURE.md
-- docs/BOOK.md
 - docs/CUSTOMIZATION.md
 - docs/DEMO.md
 - docs/DEVCONTAINER.md
@@ -130,5 +123,5 @@ files:
 - docs/TESTS.md
 - pytest.ini
 - ruff.toml
-synced_at: '2026-04-01T08:11:22Z'
+synced_at: '2026-04-03T09:42:51Z'
 strategy: merge
