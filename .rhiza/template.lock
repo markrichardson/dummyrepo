@@ -1,7 +1,7 @@
-sha: fafcaffb9e9f2dfdb6c1d7062986eb70dfb83646
+sha: 71be501a48fe53b188b8c9d779c002a1b3f3cd25
 repo: jebel-quant/rhiza
 host: github
-ref: v0.8.21
+ref: v0.9.1
 include: []
 exclude: []
 templates:
@@ -84,6 +84,7 @@ files:
 - .rhiza/tests/conftest.py
 - .rhiza/tests/deps/test_dependency_health.py
 - .rhiza/tests/integration/test_book_targets.py
+- .rhiza/tests/integration/test_docs_targets.py
 - .rhiza/tests/integration/test_lfs.py
 - .rhiza/tests/integration/test_sbom.py
 - .rhiza/tests/integration/test_test_mk.py
@@ -108,7 +109,6 @@ files:
 - LICENSE
 - Makefile
 - SECURITY.md
-- book/marimo/notebooks/.gitkeep
 - docker/Dockerfile
 - docker/Dockerfile.dockerignore
 - docs/ARCHITECTURE.md
@@ -123,5 +123,5 @@ files:
 - docs/TESTS.md
 - pytest.ini
 - ruff.toml
-synced_at: '2026-04-06T00:55:14Z'
+synced_at: '2026-04-12T07:56:56Z'
 strategy: merge
