@@ -16,11 +16,7 @@ include .rhiza/rhiza.mk
 post-validate::
 	@$(MAKE) typecheck
 
-<<<<<<< ours
 ##@ Quality
-=======
-## Custom targets
->>>>>>> upstream
 
 .PHONY: adr
 adr: install-gh-aw ## Create a new Architecture Decision Record (ADR) using AI assistance
