@@ -1,0 +1,29 @@
+INHERIT: docs/mkdocs-base.yml
+
+site_name: dummyrepo
+site_url: https://markrichardson.github.io/dummyrepo/
+repo_url: https://github.com/markrichardson/dummyrepo
+repo_name: markrichardson/dummyrepo
+
+docs_dir: docs   # always set explicitly — base uses docs_dir: . relative to docs/mkdocs-base.yml
+
+nav:
+  - Home: index.md
+  - Development:
+      - Devcontainer: development/DEVCONTAINER.md
+      - Docker: development/DOCKER.md
+      - Marimo: development/MARIMO.md
+      - Tests: development/TESTS.md
+  - Guides:
+      - Quick Reference: guides/QUICK_REFERENCE.md
+      - Extending Rhiza: guides/EXTENDING_RHIZA.md
+  - Reference:
+      - Architecture: reference/ARCHITECTURE.md
+      - Dependencies: reference/DEPENDENCIES.md
+      - Glossary: reference/GLOSSARY.md
+      - Shell Scripts: reference/SHELL_SCRIPTS.md
+      - Tools Reference: reference/TOOLS_REFERENCE.md
+  - Notebooks: notebooks.md
+  - Reports: reports.md
+  - ADR:
+      - Template: adr/0000-adr-template.md
