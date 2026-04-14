@@ -1,7 +1,7 @@
-sha: 00f9ef216ce496e46c80fb025bdd14129100ba5a
+sha: dccf929ce3bcbaf01ddf1240ac16354e0cf76bb1
 repo: jebel-quant/rhiza
 host: github
-ref: v0.9.3
+ref: v0.9.5
 include: []
 exclude: []
 templates:
@@ -29,7 +29,9 @@ files:
 - .github/hooks/session-end.sh
 - .github/hooks/session-start.sh
 - .github/secret_scanning.yml
+- .github/semgrep.yml
 - .github/workflows/copilot-setup-steps.yml
+- .github/workflows/rhiza_book.yml
 - .github/workflows/rhiza_ci.yml
 - .github/workflows/rhiza_codeql.yml
 - .github/workflows/rhiza_devcontainer.yml
@@ -57,6 +59,7 @@ files:
 - .rhiza/docs/WORKFLOWS.md
 - .rhiza/make.d/README.md
 - .rhiza/make.d/agentic.mk
+- .rhiza/make.d/book.mk
 - .rhiza/make.d/bootstrap.mk
 - .rhiza/make.d/custom-env.mk
 - .rhiza/make.d/custom-task.mk
@@ -73,7 +76,6 @@ files:
 - .rhiza/requirements/tests.txt
 - .rhiza/requirements/tools.txt
 - .rhiza/rhiza.mk
-- .rhiza/semgrep.yml
 - .rhiza/tests/README.md
 - .rhiza/tests/api/conftest.py
 - .rhiza/tests/api/test_gh_aw_targets.py
@@ -116,16 +118,9 @@ files:
 - docs/development/DOCKER.md
 - docs/development/MARIMO.md
 - docs/development/TESTS.md
-- docs/guides/EXTENDING_RHIZA.md
-- docs/guides/QUICK_REFERENCE.md
 - docs/index.md
 - docs/mkdocs-base.yml
-- docs/reference/ARCHITECTURE.md
-- docs/reference/DEPENDENCIES.md
-- docs/reference/GLOSSARY.md
-- docs/reference/SHELL_SCRIPTS.md
-- docs/reference/TOOLS_REFERENCE.md
 - pytest.ini
 - ruff.toml
-synced_at: '2026-04-13T09:24:51Z'
+synced_at: '2026-04-14T04:25:11Z'
 strategy: merge
