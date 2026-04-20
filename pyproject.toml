@@ -30,12 +30,12 @@ dependencies = [
 # dependencies only needed by the notebooks
 [dependency-groups]
 notebook = [
-    "loman>=0.5.3",
+    "loman>=0.5.5",
 ]
 
 dev = [
-    "marimo>=0.18.4",
-    "plotly>=6.5",
+    "marimo>=0.23.1",
+    "plotly>=6.7.0",
 ]
 
 [tool.hatch.build.targets.wheel]
