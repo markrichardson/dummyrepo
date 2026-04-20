@@ -28,5 +28,9 @@ class Grid:
         self.x = self.y.T
 
     def diff(self) -> pd.DataFrame:
-        """Returns a grid of differences."""
+        """Returns a grid of differences.
+
+        Returns:
+            DataFrame of element-wise differences (x - y).
+        """
         return self.x - self.y
