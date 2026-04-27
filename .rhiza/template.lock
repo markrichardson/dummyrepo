@@ -107,5 +107,5 @@ files:
 - docs/mkdocs-base.yml
 - pytest.ini
 - ruff.toml
-synced_at: '2026-04-25T03:33:02Z'
+synced_at: '2026-04-27T01:02:20Z'
 strategy: merge
