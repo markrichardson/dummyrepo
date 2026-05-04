@@ -30,11 +30,11 @@ dependencies = [
 # dependencies only needed by the notebooks
 [dependency-groups]
 notebook = [
-    "loman>=0.5.5",
+    "loman>=0.6.0",
 ]
 
 dev = [
-    "marimo>=0.23.2",
+    "marimo>=0.23.3",
     "plotly>=6.7.0",
 ]
 
