@@ -17,6 +17,9 @@ nav:
       - Docker: development/DOCKER.md
       - Devcontainer: development/DEVCONTAINER.md
       - Marimo: development/MARIMO.md
+  - Reports:
+      - Test Report: reports/html-report/report.html
+      - Coverage Report: reports/html-coverage/index.html
 
 plugins:
   - mkdocstrings:
