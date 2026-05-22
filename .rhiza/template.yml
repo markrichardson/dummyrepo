@@ -4,7 +4,7 @@ ref: "v0.10.9"
 templates:
   - github
   - devcontainer
-  - marimo
-  - tests
+  - github-marimo
+  - github-tests
   - docker
   - legal
