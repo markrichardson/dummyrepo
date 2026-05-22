@@ -22,7 +22,7 @@ classifiers = [
 ]
 
 dependencies = [
-    "numpy>=2.2",
+    "numpy>=2.4.6",
     "attrs>=25.3",
     "pandas>=2.2",
 ]
@@ -34,7 +34,7 @@ notebook = [
 ]
 
 dev = [
-    "marimo>=0.23.5",
+    "marimo>=0.23.6",
     "plotly>=6.7.0",
 ]
 
