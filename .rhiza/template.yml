@@ -1,10 +1,11 @@
 repository: "jebel-quant/rhiza"
 ref: "v0.10.9"
 
+profiles:
+  - github-project
+  
 templates:
-  - github
   - devcontainer
-  - github-marimo
-  - github-tests
+  - github-marimo   # should be soon be part of the github-project?
   - docker
   - legal
