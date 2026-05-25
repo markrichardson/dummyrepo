@@ -5,6 +5,6 @@ profiles:
   - github-project
   
 templates:
-  - devcontainer
-  - docker
+  - github-devcontainer
+  - github-docker
   - legal
