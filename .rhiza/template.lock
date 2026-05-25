@@ -1,7 +1,7 @@
-sha: c014bd182373b36b46d3863365e4509b5c4e3816
+sha: 694094edcb7315ba6555cd5f970d315a22dc907b
 repo: jebel-quant/rhiza
 host: github
-ref: v0.13.1
+ref: v0.13.2
 include: []
 exclude: []
 templates:
@@ -107,5 +107,5 @@ files:
 - ruff.toml
 profiles:
 - github-project
-synced_at: '2026-05-25T07:38:20Z'
+synced_at: '2026-05-25T08:18:48Z'
 strategy: merge
