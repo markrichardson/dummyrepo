@@ -1,7 +1,7 @@
-sha: 6cb576e8d28ea404c28696e5683b0c8c7f5268d9
+sha: c014bd182373b36b46d3863365e4509b5c4e3816
 repo: jebel-quant/rhiza
 host: github
-ref: v0.13.0
+ref: v0.13.1
 include: []
 exclude: []
 templates:
@@ -14,10 +14,20 @@ files:
 - .devcontainer/bootstrap.sh
 - .devcontainer/devcontainer.json
 - .editorconfig
+- .github/DISCUSSION_TEMPLATE/q-and-a.yml
+- .github/ISSUE_TEMPLATE/bug_report.yml
+- .github/ISSUE_TEMPLATE/feature_request.yml
+- .github/actions/configure-git-auth/README.md
+- .github/actions/configure-git-auth/action.yml
+- .github/dependabot.yml
+- .github/secret_scanning.yml
 - .github/workflows/rhiza_book.yml
 - .github/workflows/rhiza_ci.yml
 - .github/workflows/rhiza_codeql.yml
 - .github/workflows/rhiza_marimo.yml
+- .github/workflows/rhiza_release.yml
+- .github/workflows/rhiza_sync.yml
+- .github/workflows/rhiza_weekly.yml
 - .gitignore
 - .pre-commit-config.yaml
 - .python-version
@@ -97,5 +107,5 @@ files:
 - ruff.toml
 profiles:
 - github-project
-synced_at: '2026-05-25T06:54:59Z'
+synced_at: '2026-05-25T07:38:20Z'
 strategy: merge
