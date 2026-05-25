@@ -1,12 +1,11 @@
-sha: d20dd62adfdd9bfcd918fac200f5d37ed237c604
+sha: 694094edcb7315ba6555cd5f970d315a22dc907b
 repo: jebel-quant/rhiza
 host: github
-ref: v0.10.9
+ref: v0.13.2
 include: []
 exclude: []
 templates:
 - devcontainer
-- github-marimo
 - docker
 - legal
 files:
@@ -87,6 +86,7 @@ files:
 - .rhiza/tests/sync/test_docstrings.py
 - .rhiza/tests/sync/test_readme_validation.py
 - .rhiza/tests/sync/test_rhiza_version.py
+- .rhiza/tests/sync/test_sync_schedule.py
 - .rhiza/tests/test_utils.py
 - .rhiza/tests/utils/test_git_repo_fixture.py
 - .rhiza/utils/pip_audit_policy.py
@@ -107,5 +107,5 @@ files:
 - ruff.toml
 profiles:
 - github-project
-synced_at: '2026-05-24T10:00:54Z'
+synced_at: '2026-05-25T08:18:48Z'
 strategy: merge
