@@ -6,6 +6,5 @@ profiles:
   
 templates:
   - devcontainer
-  - github-marimo   # should be soon be part of the github-project?
   - docker
   - legal
