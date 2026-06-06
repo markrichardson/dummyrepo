@@ -50,6 +50,38 @@ class TestMakefile:
         assert "Targets:" in out
         assert "Bootstrap" in out or "Meta" in out  # section headers
 
+    def test_doctor_target_appears_in_help(self, logger):
+        """Doctor target should appear in help under the Dev section."""
+        proc = run_make(logger, ["help"])
+        out = proc.stdout
+        assert "Dev" in out
+        assert "doctor" in out
+
+    def test_doctor_fails_when_minimum_version_is_not_met(self, logger, tmp_path):
+        """Doctor should exit non-zero when a prerequisite version is below the minimum."""
+        fake_bin = tmp_path / "fake-bin"
+        fake_bin.mkdir(exist_ok=True)
+
+        for name, content in {
+            "uv": "#!/usr/bin/env sh\necho 'uv 0.3.0'\n",
+            "python": "#!/usr/bin/env sh\necho 'Python 3.12.2'\n",
+            "make": "#!/usr/bin/env sh\necho 'GNU Make 4.4.1'\n",
+            "git": "#!/usr/bin/env sh\necho 'git version 2.44.0'\n",
+        }.items():
+            script = fake_bin / name
+            script.write_text(content)
+            script.chmod(0o755)
+
+        env = os.environ.copy()
+        env["PATH"] = f"{fake_bin}:{env.get('PATH', '')}"
+
+        proc = run_make(logger, ["doctor"], dry_run=False, check=False, env=env)
+        out = strip_ansi(proc.stdout)
+        assert proc.returncode != 0
+        assert "[❌] uv" in out
+        assert "0.3.0" in out
+        assert "0.4.0" in out
+
     def test_fmt_target_dry_run(self, logger, tmp_path):
         """Fmt target should invoke pre-commit via uvx with Python version in dry-run output."""
         # Create clean environment without PYTHON_VERSION so Makefile reads from .python-version
@@ -181,6 +213,12 @@ class TestMakefile:
         out = proc.stdout
         assert '--fail-on="MIT;Apache"' in out
 
+    def test_serve_target_uses_uv_run_python_http_server(self, logger):
+        """Serve target should use uv run instead of directly calling python3."""
+        proc = run_make(logger, ["serve"])
+        out = proc.stdout
+        assert "uv run python -m http.server 8000" in out
+
 
 class TestMakefileRootFixture:
     """Tests for root fixture usage in Makefile tests."""
@@ -265,7 +303,7 @@ from pathlib import Path
 args = sys.argv[1:]
 print(f"[MOCK] uvx {' '.join(args)}")
 
-# Check if this is the bump command: "rhiza-tools>=0.3.3" bump
+# Check if this is the bump command: "rhiza-tools>=0.5.1" bump
 if "bump" in args:
     # Simulate bumping version in pyproject.toml
     pyproject = Path("pyproject.toml")
@@ -295,7 +333,7 @@ if "bump" in args:
         result = run_make(logger, ["bump", f"UV_BIN={uv_bin}", f"UVX_BIN={uvx_bin}"], dry_run=False)
 
         # Verify that the mock tools were called
-        assert "[MOCK] uvx rhiza-tools>=0.3.3 bump" in result.stdout
+        assert "[MOCK] uvx rhiza-tools>=0.5.1 bump" in result.stdout
         assert "[MOCK] uv lock" in result.stdout
 
         # Verify that 'make install' was called (which calls uv sync)

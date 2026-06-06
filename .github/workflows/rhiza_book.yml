@@ -10,7 +10,7 @@
 #
 # Components:
 #   - 📓 Process Marimo notebooks
-#   - 📖 Generate API documentation with pdoc
+#   - 📖 Build documentation site via zensical
 #   - 🧪 Run tests and generate coverage reports
 #   - 🚀 Deploy combined documentation to GitHub Pages
 
@@ -24,7 +24,7 @@ on:
 
 jobs:
   book:
-    uses: jebel-quant/rhiza/.github/workflows/rhiza_book.yml@v0.18.5
+    uses: jebel-quant/rhiza/.github/workflows/rhiza_book.yml@v0.18.4
     secrets: inherit
     permissions:
       contents: read
