@@ -265,8 +265,8 @@ requires-dist = [
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "marimo", specifier = ">=0.23.6" },
-    { name = "plotly", specifier = ">=6.7.0" },
+    { name = "marimo", specifier = ">=0.23.8" },
+    { name = "plotly", specifier = ">=6.8.0" },
 ]
 notebook = [{ name = "loman", specifier = ">=0.6.0" }]
 
@@ -559,7 +559,7 @@ wheels = [
 
 [[package]]
 name = "marimo"
-version = "0.23.6"
+version = "0.23.8"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "click" },
@@ -574,6 +574,7 @@ dependencies = [
     { name = "psutil" },
     { name = "pygments" },
     { name = "pymdown-extensions" },
+    { name = "python-multipart" },
     { name = "pyyaml" },
     { name = "pyzmq", marker = "python_full_version < '3.15'" },
     { name = "starlette" },
@@ -581,9 +582,9 @@ dependencies = [
     { name = "uvicorn" },
     { name = "websockets" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/db/96/7f03859bfc88b9ee25f1562ad1e7e0284c442f2956eaf0f9c849836d378f/marimo-0.23.6.tar.gz", hash = "sha256:d63aeeee1e9ea7cac79bf2530daba915199153dce4d156fade7546474679d3ca", size = 38426356, upload-time = "2026-05-11T21:39:57.588Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/f2/fe/a1dec6111a660ee3bd26521c24788e7aef519a31c60cf37f767f29313454/marimo-0.23.8.tar.gz", hash = "sha256:8049df4ad263e7126e959d7d910b014e6181dffe49f540a89c3174e61a446a99", size = 38505767, upload-time = "2026-05-22T16:24:19.881Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/44/a7/c19a6481dfe7762eb07a5bd0a7d7ae560a2ab5505a519bce159d0fd08beb/marimo-0.23.6-py3-none-any.whl", hash = "sha256:e8d19d875b0212600faa80eaaed0fd3f34dfb7b5241e630cf2b1cedd8dd14509", size = 38849553, upload-time = "2026-05-11T21:39:53.996Z" },
+    { url = "https://files.pythonhosted.org/packages/2d/76/51b57a2e521b9110f25ec935f2774412e2f3d678b3fdea7841987244fb2c/marimo-0.23.8-py3-none-any.whl", hash = "sha256:99a4035d035fb320c8f2dcefc2213e0d64e9de13e989bc3f2a973b19dc40542a", size = 38938839, upload-time = "2026-05-22T16:24:16.102Z" },
 ]
 
 [[package]]
@@ -965,15 +966,15 @@ wheels = [
 
 [[package]]
 name = "plotly"
-version = "6.7.0"
+version = "6.8.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "narwhals" },
     { name = "packaging" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/3a/7f/0f100df1172aadf88a929a9dbb902656b0880ba4b960fe5224867159d8f4/plotly-6.7.0.tar.gz", hash = "sha256:45eea0ff27e2a23ccd62776f77eb43aa1ca03df4192b76036e380bb479b892c6", size = 6911286, upload-time = "2026-04-09T20:36:45.738Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/94/fd/d72c292d78aadb93d1a9bcd76bf3c678271040c7cf10abe5788b33040a39/plotly-6.8.0.tar.gz", hash = "sha256:e088e7ddc68d4f70e3d66659224727a45296d71d2b8284181862d3d8f1f0d88f", size = 6915161, upload-time = "2026-06-03T18:33:40.226Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/90/ad/cba91b3bcf04073e4d1655a5c1710ef3f457f56f7d1b79dcc3d72f4dd912/plotly-6.7.0-py3-none-any.whl", hash = "sha256:ac8aca1c25c663a59b5b9140a549264a5badde2e057d79b8c772ae2920e32ff0", size = 9898444, upload-time = "2026-04-09T20:36:39.812Z" },
+    { url = "https://files.pythonhosted.org/packages/f9/14/abe5ce876ab5b66ee3c691bf537fcd43d037aea55d447aacf74630a8f31e/plotly-6.8.0-py3-none-any.whl", hash = "sha256:13c5c4a0f70b74cab1913eda0de49b826df5931708eb6f9c3010040614700ec8", size = 9902055, upload-time = "2026-06-03T18:33:34.26Z" },
 ]
 
 [[package]]
@@ -1063,6 +1064,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/66/c0/0c8b6ad9f17a802ee498c46e004a0eb49bc148f2fd230864601a86dcf6db/python-dateutil-2.9.0.post0.tar.gz", hash = "sha256:37dd54208da7e1cd875388217d5e00ebd4179249f90fb72437e91a35459a0ad3", size = 342432, upload-time = "2024-03-01T18:36:20.211Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/ec/57/56b9bcc3c9c6a792fcbaf139543cee77261f3651ca9da0c93f5c1221264b/python_dateutil-2.9.0.post0-py2.py3-none-any.whl", hash = "sha256:a8b2bc7bffae282281c8140a97d3aa9c14da0b136dfe83f850eea9a5f7470427", size = 229892, upload-time = "2024-03-01T18:36:18.57Z" },
+]
+
+[[package]]
+name = "python-multipart"
+version = "0.0.30"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/4b/82/c8cd43a6e0719bf5a3b034f6726dd701f75829c08944c83d4b95d02ed0e8/python_multipart-0.0.30.tar.gz", hash = "sha256:0edfe0475c1f46ddd3ff7785a626f6118af32bdcf359bb21260367313bb32118", size = 46316, upload-time = "2026-05-31T19:24:55.198Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/1c/fd/0318007beb234790993d3ec5afd051d1dbceb733e81e3afe2b981ece3f37/python_multipart-0.0.30-py3-none-any.whl", hash = "sha256:830964def8c90607ac5daa00514e3987815865713ade8d20febc9177ac0c3c5b", size = 29730, upload-time = "2026-05-31T19:24:53.814Z" },
 ]
 
 [[package]]
