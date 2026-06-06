@@ -1,3 +1,29 @@
+## [0.1.3] - 2026-06-06
+
+### 🐛 Bug Fixes
+
+- Remove tests that assert unexpanded reusable workflow jobs
+- Add missing pyproject.toml fields to pass rhiza structure tests
+
+### 💼 Other
+
+- Bump version 0.1.2 → 0.1.3
+
+### ⚙️ Miscellaneous Tasks
+
+- Update CHANGELOG.md for v0.1.2 [skip ci]
+- Sync rhiza templates
+- Remove github-marimo from template.yml
+- Update Rhiza version to v0.13.0
+- Sync rhiza templates to v0.13.0
+- Restore workflow files via rhiza v0.15.0 dest remapping
+- Update Rhiza version to v0.13.1
+- Sync rhiza templates to v0.13.1
+- Update Rhiza version to v0.13.2
+- Sync rhiza templates to v0.13.2
+- Update template names to github-prefixed variants
+- Add devcontainer and docker CI workflows from rhiza template
+- Bump rhiza to v0.18.7
 ## [0.1.2] - 2026-05-22
 
 ### 🐛 Bug Fixes
