@@ -39,7 +39,7 @@ notebook = [
 ]
 
 dev = [
-    "marimo>=0.23.8",
+    "marimo>=0.23.9",
     "plotly>=6.8.0",
 ]
 
