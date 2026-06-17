@@ -41,7 +41,7 @@ def _(loman):
     comp = loman.Computation()
     comp.add_node("a", value=1)  # Input node
     comp.add_node("b", lambda a: a + 1)  # b depends on a
-    comp.add_node("c", lambda a, b: 2 * a)  # c depends on a and b
+    comp.add_node("c", lambda a, b: 2 * a + b)  # c depends on a and b
     comp.add_node("d", lambda b, c: b + c)  # d depends on b and c
     comp.add_node("e", lambda c: c + 1)  # e depends on c
     comp.compute_all()

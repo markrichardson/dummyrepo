@@ -12,7 +12,6 @@ name: (RHIZA) DEVCONTAINER
 
 permissions:
   contents: read
-  packages: write
 
 on:
   push:
@@ -30,8 +29,8 @@ on:
 
 jobs:
   devcontainer:
-    uses: jebel-quant/rhiza/.github/workflows/rhiza_devcontainer.yml@v0.18.8
+    uses: jebel-quant/rhiza/.github/workflows/rhiza_devcontainer.yml@v0.19.3
     secrets: inherit
     permissions:
       contents: read
-      packages: write
+      packages: read   # Read-only: image is built with `push: never`, login only pulls cache

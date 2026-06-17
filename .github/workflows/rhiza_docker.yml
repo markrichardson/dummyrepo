@@ -12,7 +12,6 @@ name: "(RHIZA) DOCKER"
 
 permissions:
   contents: read
-  security-events: write
 
 on:
   push:
@@ -22,7 +21,7 @@ on:
 
 jobs:
   docker:
-    uses: jebel-quant/rhiza/.github/workflows/rhiza_docker.yml@v0.18.8
+    uses: jebel-quant/rhiza/.github/workflows/rhiza_docker.yml@v0.19.3
     secrets: inherit
     permissions:
       contents: read

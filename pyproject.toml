@@ -54,6 +54,13 @@ lint = [
 [tool.hatch.build.targets.wheel]
 packages = ["src/dummypy"]
 
+# pandas ships no type stubs (PEP 561); the optional pandas-stubs package is
+# third-party and lags the runtime. Silence mypy --strict's missing-import error
+# for pandas without pulling in stubs that would churn under strict mode.
+[[tool.mypy.overrides]]
+module = ["pandas", "pandas.*"]
+ignore_missing_imports = true
+
 [tool.deptry.package_module_name_map]
 marimo = "marimo"
 pandas = "pandas"
