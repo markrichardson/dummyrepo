@@ -1,7 +1,7 @@
-sha: 838220ba06c4f7042b821d3e5337c691a672efd5
+sha: 99827da43cc32c135388641897fede359dfce4a4
 repo: jebel-quant/rhiza
 host: github
-ref: v0.18.7
+ref: v0.19.3
 include: []
 exclude: []
 templates:
@@ -10,10 +10,16 @@ templates:
 - legal
 files:
 - .bandit
+- .claude/commands/rhiza_book.md
+- .claude/commands/rhiza_quality.md
+- .claude/commands/rhiza_update.md
 - .devcontainer/README.md
 - .devcontainer/bootstrap.sh
 - .devcontainer/devcontainer.json
 - .editorconfig
+- .github/CONFIG.md
+- .github/DISCUSSION_TEMPLATE/help-wanted.yml
+- .github/DISCUSSION_TEMPLATE/ideas.yml
 - .github/DISCUSSION_TEMPLATE/q-and-a.yml
 - .github/ISSUE_TEMPLATE/bug_report.yml
 - .github/ISSUE_TEMPLATE/feature_request.yml
@@ -27,8 +33,11 @@ files:
 - .github/workflows/rhiza_codeql.yml
 - .github/workflows/rhiza_devcontainer.yml
 - .github/workflows/rhiza_docker.yml
+- .github/workflows/rhiza_fuzzing.yml
 - .github/workflows/rhiza_marimo.yml
+- .github/workflows/rhiza_mutation.yml
 - .github/workflows/rhiza_release.yml
+- .github/workflows/rhiza_scorecard.yml
 - .github/workflows/rhiza_sync.yml
 - .github/workflows/rhiza_weekly.yml
 - .gitignore
@@ -84,6 +93,8 @@ files:
 - .rhiza/tests/sync/test_readme_validation.py
 - .rhiza/tests/test_utils.py
 - .rhiza/tests/utils/test_git_repo_fixture.py
+- .rhiza/tests/utils/test_pip_audit_policy.py
+- .rhiza/tests/utils/test_suppression_audit.py
 - .rhiza/utils/pip_audit_policy.py
 - .rhiza/utils/suppression_audit.py
 - Dockerfile
@@ -91,6 +102,7 @@ files:
 - LICENSE
 - Makefile
 - SECURITY.md
+- cliff.toml
 - docs/assets/rhiza-logo.svg
 - docs/development/DEVCONTAINER.md
 - docs/development/DOCKER.md
@@ -103,5 +115,5 @@ files:
 - ruff.toml
 profiles:
 - github-project
-synced_at: '2026-06-06T04:10:56Z'
+synced_at: '2026-06-17T10:30:29Z'
 strategy: merge
