@@ -36,8 +36,8 @@ Get started immediately with a fully configured cloud development environment:
 
 ```bash
 # Clone the repository
-git clone git@github.com:[USERNAME]/dummypy.git
-cd dummypy
+git clone git@github.com:markrichardson/dummyrepo.git
+cd dummyrepo
 
 # Run the automated setup
 make setup
@@ -63,8 +63,13 @@ make clean         # Clean up environment
 ```python
 import dummypy as dp
 
+# Build a grid and compute element-wise differences
 grid = dp.Grid()
 grid.diff()
+
+# Vanilla European option payoffs at expiry
+dp.call_payoff([80.0, 100.0, 130.0], strike=100.0)  # -> [ 0.,  0., 30.]
+dp.put_payoff([70.0, 100.0, 130.0], strike=100.0)   # -> [30.,  0.,  0.]
 ```
 
 ## Development
@@ -80,18 +85,17 @@ This documentation covers:
 
 ## Architecture
 
-- **Core Models** (`dummypy.models`): Example statistical models
-- **Core Payoffs** (`dummypy.payoffs`): Demonstration payoff functions
-- **Analytics** (`dummypy.analytics`): Sample performance tracking and reporting
+- **Grid** (`dummypy.things`): Example grid data structure built on pandas DataFrames
+- **Payoffs** (`dummypy.payoffs`): Vanilla European option payoff functions
 
 ## License
 
-© 2025 Mark Richardson. Released under MIT License.
+© 2026 Mark Richardson. Released under MIT License.
 
 This software is provided for educational and demonstration purposes. Feel free to use, modify, and distribute according to the MIT License terms.
 
 ---
 
-**Version**: 0.1.0
-**Last Updated**: August 2025
-**Classification**: CONFIDENTIAL
+**Version**: 0.1.4
+**Last Updated**: June 2026
+**Classification**: Public (MIT License)
