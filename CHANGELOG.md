@@ -5,6 +5,27 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com),
 and entries are generated from [Conventional Commits](https://www.conventionalcommits.org).
 
+## [0.1.5] - 2026-06-24
+
+### New Features
+- Add ClusterFuzzLite fuzzing scaffold for dummypy
+
+### Bug Fixes
+- *(fuzz)* Collect numpy/pandas so the frozen fuzzer imports at runtime
+
+### Maintenance
+- Chore(deps-dev)(deps-dev): bump the python-dependencies group with 3 updates
+
+### Other Changes
+- Bump rhiza template ref v0.19.3 → v0.19.4
+- Sync rhiza template to v0.19.4
+- Merge pull request #135 from markrichardson/sync/rhiza-v0.19.4
+- Merge pull request #136 from markrichardson/dependabot/uv/python-dependencies-ccd46fe50a
+- Merge branch 'main' into feat/clusterfuzzlite-scaffold
+- Merge pull request #137 from markrichardson/feat/clusterfuzzlite-scaffold
+- Implement payoffs module and correct README inaccuracies
+- Merge pull request #140 from markrichardson/fix/quality-issues-138-139
+
 ## [0.1.4] - 2026-06-17
 
 ### Maintenance
@@ -21,6 +42,7 @@ and entries are generated from [Conventional Commits](https://www.conventionalco
 - Make notebook 'c' node use both inputs (ruff ARG005)
 - Ignore missing pandas stubs under mypy --strict
 - Merge pull request #134 from markrichardson/sync/rhiza-v0.19.3
+- Bump version 0.1.3 → 0.1.4
 
 ## [0.1.3] - 2026-06-06
 
