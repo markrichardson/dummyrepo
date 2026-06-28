@@ -108,6 +108,6 @@ This software is provided for educational and demonstration purposes. Feel free 
 
 ---
 
-**Version**: 0.1.4
+**Version**: 0.1.5
 **Last Updated**: June 2026
 **Classification**: Public (MIT License)
