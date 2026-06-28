@@ -13,7 +13,7 @@ This software is created for learning and demonstration purposes. Feel free to u
 
 Get started immediately with a fully configured cloud development environment:
 
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/markrichardson/dummypy?quickstart=1)
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/markrichardson/dummyrepo?quickstart=1)
 [![Coverage](https://markrichardson.github.io/dummyrepo/coverage-badge.svg)](https://markrichardson.github.io/dummyrepo/reports/html-coverage/)
 
 **Benefits:**
@@ -23,6 +23,19 @@ Get started immediately with a fully configured cloud development environment:
 - 🛡️ **Quality Tools** - Ruff, pre-commit, and testing ready to use
 
 ### 💻 Local Development
+
+```bash
+# Clone and enter the repository
+git clone git@github.com:markrichardson/dummyrepo.git
+cd dummyrepo
+
+# Install the development environment
+make install
+
+# Run the test suite and quality checks
+make test
+make fmt
+```
 
 ## Core Features
 
@@ -40,7 +53,7 @@ git clone git@github.com:markrichardson/dummyrepo.git
 cd dummyrepo
 
 # Run the automated setup
-make setup
+make install
 ```
 
 #### Windows Users
@@ -51,10 +64,9 @@ For detailed Windows setup instructions using WSL and VS Code, see **[INSTALL_WI
 
 ```bash
 make help          # Show all available commands
-make setup         # Create development environment
+make install       # Create development environment
 make test          # Run test suite
-make lint          # Run code quality checks
-make format        # Format code
+make fmt           # Run pre-commit hooks and linting
 make clean         # Clean up environment
 ```
 
@@ -96,6 +108,6 @@ This software is provided for educational and demonstration purposes. Feel free 
 
 ---
 
-**Version**: 0.1.4
+**Version**: 0.1.5
 **Last Updated**: June 2026
 **Classification**: Public (MIT License)
