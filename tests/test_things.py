@@ -226,6 +226,30 @@ class TestGrid:
         assert diff.iloc[0, n] == -n  # 0 - n
 
 
+class TestGridValidation:
+    """Tests for Grid input validation on n."""
+
+    def test_negative_n_raises_value_error(self):
+        """Grid(n=-1) should raise a clear ValueError, not build a degenerate grid."""
+        with pytest.raises(ValueError, match="non-negative"):
+            Grid(n=-1)
+
+    def test_float_n_raises_type_error(self):
+        """Grid(n=2.5) should raise a clear TypeError, not a deep numpy error."""
+        with pytest.raises(TypeError, match="must be an integer"):
+            Grid(n=2.5)
+
+    def test_bool_n_raises_type_error(self):
+        """Bool is a subclass of int; Grid(n=True) should still be rejected."""
+        with pytest.raises(TypeError, match="must be an integer"):
+            Grid(n=True)
+
+    def test_zero_n_is_valid(self):
+        """Grid(n=0) remains valid (boundary case)."""
+        grid = Grid(n=0)
+        assert grid.n == 0
+
+
 # Integration tests
 class TestGridIntegration:
     """Integration tests for Grid with other components."""
