@@ -1,7 +1,7 @@
 # /// script
 # requires-python = ">=3.13"
 # dependencies = [
-#     "marimo>=0.23.10",
+#     "marimo>=0.23.11",
 #     "dummypy",
 # ]
 #
@@ -15,7 +15,7 @@
 
 import marimo
 
-__generated_with = "0.23.10"
+__generated_with = "0.23.11"
 app = marimo.App()
 
 
