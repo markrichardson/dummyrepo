@@ -24,6 +24,19 @@ Get started immediately with a fully configured cloud development environment:
 
 ### 💻 Local Development
 
+```bash
+# Clone and enter the repository
+git clone git@github.com:markrichardson/dummyrepo.git
+cd dummyrepo
+
+# Install the development environment
+make install
+
+# Run the test suite and quality checks
+make test
+make fmt
+```
+
 ## Core Features
 
 - **Example Statistical Models**: Sample algorithms & statistics for data analysis
@@ -40,7 +53,7 @@ git clone git@github.com:markrichardson/dummyrepo.git
 cd dummyrepo
 
 # Run the automated setup
-make setup
+make install
 ```
 
 #### Windows Users
@@ -51,10 +64,9 @@ For detailed Windows setup instructions using WSL and VS Code, see **[INSTALL_WI
 
 ```bash
 make help          # Show all available commands
-make setup         # Create development environment
+make install       # Create development environment
 make test          # Run test suite
-make lint          # Run code quality checks
-make format        # Format code
+make fmt           # Run pre-commit hooks and linting
 make clean         # Clean up environment
 ```
 
