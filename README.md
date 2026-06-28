@@ -13,7 +13,7 @@ This software is created for learning and demonstration purposes. Feel free to u
 
 Get started immediately with a fully configured cloud development environment:
 
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/markrichardson/dummypy?quickstart=1)
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/markrichardson/dummyrepo?quickstart=1)
 [![Coverage](https://markrichardson.github.io/dummyrepo/coverage-badge.svg)](https://markrichardson.github.io/dummyrepo/reports/html-coverage/)
 
 **Benefits:**
@@ -108,6 +108,6 @@ This software is provided for educational and demonstration purposes. Feel free 
 
 ---
 
-**Version**: 0.1.4
+**Version**: 0.1.5
 **Last Updated**: June 2026
 **Classification**: Public (MIT License)
