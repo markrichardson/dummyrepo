@@ -2,7 +2,7 @@
 
 ## Overview
 
-DummyPy is a Python analytics library created for educational and testing purposes. This toolkit provides example statistical modeling, data analysis, and visualization capabilities designed to showcase modern Python development practices.
+DummyPy is a small Python analytics library created for educational and testing purposes. It provides a pandas-backed `Grid` data structure and a set of vanilla European option payoff functions, designed to showcase modern Python development practices.
 
 **📚 EDUCATIONAL & DEMONSTRATION PURPOSE**
 This software is created for learning and demonstration purposes. Feel free to use, modify, and distribute.
@@ -39,9 +39,8 @@ make fmt
 
 ## Core Features
 
-- **Example Statistical Models**: Sample algorithms & statistics for data analysis
-- **Data Processing**: Demonstration of data manipulation and analysis techniques
-- **Visualization Tools**: Example plotting and data visualization capabilities
+- **Grid** (`dummypy.Grid`): A pandas-backed grid data structure with validated sizing and an element-wise `diff()` method.
+- **Option payoffs** (`dummypy.call_payoff`, `dummypy.put_payoff`): Vanilla European call and put payoff functions at expiry, working on scalars or array-likes.
 
 ## Installation & Setup
 
