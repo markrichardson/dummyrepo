@@ -43,6 +43,8 @@ The test suite covers:
 import numpy as np
 import pandas as pd
 import pytest
+from hypothesis import given
+from hypothesis import strategies as st
 
 from dummypy import Grid
 
@@ -248,6 +250,41 @@ class TestGridValidation:
         """Grid(n=0) remains valid (boundary case)."""
         grid = Grid(n=0)
         assert grid.n == 0
+
+
+class TestGridProperties:
+    """Property-based tests asserting Grid invariants across a range of ``n``.
+
+    Where the fixture-based tests above pin behaviour at a handful of fixed
+    sizes, these use hypothesis to generate many ``n`` and assert the
+    invariants that must hold for every valid grid.
+    """
+
+    @given(n=st.integers(min_value=0, max_value=30))
+    def test_shape_is_n_plus_one_square(self, n):
+        """Both x and y are square with side n+1 for any non-negative n."""
+        grid = Grid(n=n)
+        assert grid.x.shape == (n + 1, n + 1)
+        assert grid.y.shape == (n + 1, n + 1)
+
+    @given(n=st.integers(min_value=0, max_value=30))
+    def test_x_is_transpose_of_y(self, n):
+        """X is always the transpose of y."""
+        grid = Grid(n=n)
+        pd.testing.assert_frame_equal(grid.x, grid.y.T)
+
+    @given(n=st.integers(min_value=0, max_value=30))
+    def test_diff_equals_x_minus_y(self, n):
+        """diff() equals the element-wise x - y for any n."""
+        grid = Grid(n=n)
+        pd.testing.assert_frame_equal(grid.diff(), grid.x - grid.y)
+
+    @given(n=st.integers(min_value=0, max_value=30))
+    def test_diff_is_antisymmetric(self, n):
+        """diff() is antisymmetric: diff == -diff.T for any n."""
+        grid = Grid(n=n)
+        diff = grid.diff()
+        pd.testing.assert_frame_equal(diff, -diff.T)
 
 
 # Integration tests
