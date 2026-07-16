@@ -11,7 +11,7 @@ nav:
   - Home: index.md
   - API Reference:
       - Payoffs: api/payoffs.md
-      - Things: api/things.md
+      - Grid: api/grid.md
   - Development:
       - Tests: development/TESTS.md
       - Docker: development/DOCKER.md
