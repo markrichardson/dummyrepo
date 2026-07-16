@@ -2,8 +2,8 @@
 
 from importlib.metadata import PackageNotFoundError, version
 
+from .grid import Grid
 from .payoffs import call_payoff, put_payoff
-from .things import Grid
 
 try:
     __version__ = version("dummypy")

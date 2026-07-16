@@ -2,7 +2,7 @@
 
 Test Structure:
 ---------------
-``things`` exposes a single ``Grid`` class, so all ``Grid`` tests live in one
+``grid`` exposes a single ``Grid`` class, so all ``Grid`` tests live in one
 ``TestGrid`` class (keeping the test layout mirroring the source 1:1). Within
 it the tests are grouped by concern:
 
@@ -18,7 +18,7 @@ The test suite uses several module-level fixtures to provide reusable test data:
 - default_grid: Grid() with default parameters (n=10)
 - small_grid: Grid(n=2) for detailed testing with minimal data
 - tiny_grid: Grid(n=3) for structure verification
-- medium_grid: Grid(n=5) for performance and integration testing
+- medium_grid: Grid(n=5) for integration testing
 - edge_case_grid: Grid(n=0) for boundary condition testing
 - parametrized_grid: Parametrized fixture testing multiple sizes [1, 5, 10, 20]
 """
@@ -53,7 +53,7 @@ def tiny_grid():
 
 @pytest.fixture
 def medium_grid():
-    """Fixture for medium Grid (n=5) for performance testing."""
+    """Fixture for medium Grid (n=5) for integration testing."""
     return Grid(n=5)
 
 
@@ -74,7 +74,7 @@ class TestGrid:
 
     # --- Core functionality --------------------------------------------------
 
-    def test_goal_grid_initialization_default(self, default_grid):
+    def test_grid_initialization_default(self, default_grid):
         """Test Grid initialization with default parameters."""
         grid = default_grid
 
@@ -89,7 +89,7 @@ class TestGrid:
         assert grid.x.shape == (11, 11)  # n+1 for 0 to n inclusive
         assert grid.y.shape == (11, 11)
 
-    def test_goal_grid_initialization_custom(self):
+    def test_grid_initialization_custom(self):
         """Test Grid initialization with custom n value."""
         n = 5
         grid = Grid(n=n)
@@ -140,7 +140,7 @@ class TestGrid:
         expected = grid.x - grid.y
         pd.testing.assert_frame_equal(result, expected)
 
-    def test_goal_grid_symmetry_properties(self, medium_grid):
+    def test_grid_symmetry_properties(self, medium_grid):
         """Test mathematical properties of the grids."""
         grid = medium_grid  # n=5
 
@@ -151,7 +151,7 @@ class TestGrid:
         diff = grid.diff()
         pd.testing.assert_frame_equal(diff, -diff.T)
 
-    def test_goal_grid_edge_cases(self, edge_case_grid):
+    def test_grid_edge_cases(self, edge_case_grid):
         """Test edge cases for Grid."""
         grid = edge_case_grid  # n=0
         assert grid.n == 0
@@ -160,11 +160,11 @@ class TestGrid:
         assert grid.x.loc["0", "0"] == 0
         assert grid.y.loc["0", "0"] == 0
 
-    def test_goal_grid_data_types(self, default_grid):
+    def test_grid_data_types(self, default_grid):
         """Test that the grids contain correct data types."""
         grid = default_grid
 
-        # Check that home and away are pandas DataFrames
+        # Check that x and y are pandas DataFrames
         assert isinstance(grid.x, pd.DataFrame)
         assert isinstance(grid.y, pd.DataFrame)
 
@@ -172,21 +172,21 @@ class TestGrid:
         assert pd.api.types.is_numeric_dtype(grid.x.dtypes.iloc[0])
         assert pd.api.types.is_numeric_dtype(grid.y.dtypes.iloc[0])
 
-    def test_goal_grid_index_and_columns(self, tiny_grid):
+    def test_grid_index_and_columns(self, tiny_grid):
         """Test that indexes and columns are properly set."""
         grid = tiny_grid  # n=3
 
         expected_labels = ["0", "1", "2", "3"]
 
-        # Check home grid
+        # Check x grid
         assert list(grid.x.index) == expected_labels
         assert list(grid.x.columns) == expected_labels
 
-        # Check away grid
+        # Check y grid
         assert list(grid.y.index) == expected_labels
         assert list(grid.y.columns) == expected_labels
 
-    def test_goal_grid_repr(self, medium_grid):
+    def test_grid_repr(self, medium_grid):
         """Test the string representation of Grid."""
         grid = medium_grid  # n=5
         repr_str = repr(grid)
@@ -194,7 +194,7 @@ class TestGrid:
         assert "Grid" in repr_str
         assert "n=5" in repr_str
 
-    def test_goal_grid_different_sizes(self, parametrized_grid):
+    def test_grid_different_sizes(self, parametrized_grid):
         """Test Grid with different n values using parametrized fixture."""
         grid = parametrized_grid
         n = grid.n
@@ -264,7 +264,7 @@ class TestGrid:
 
     # --- Integration with numpy/pandas ---------------------------------------
 
-    def test_goal_grid_with_numpy_operations(self, tiny_grid):
+    def test_grid_with_numpy_operations(self, tiny_grid):
         """Test that Grid works well with numpy operations."""
         grid = tiny_grid  # n=3
 
@@ -280,14 +280,22 @@ class TestGrid:
 
         np.testing.assert_array_equal(diff_array, grid.diff().values)
 
-    def test_goal_grid_persistence(self, medium_grid):
-        """Test that Grid maintains state correctly."""
+    def test_grid_is_deterministic_for_given_n(self, medium_grid):
+        """Grid is a pure function of n: same n yields equal, independent grids.
+
+        Asserts Grid's determinism contract rather than pandas comparison
+        internals — two grids built with the same ``n`` compare equal via
+        DataFrame.equals(), and they are distinct objects.
+        """
         grid1 = medium_grid  # n=5
         grid2 = Grid(n=5)
 
-        # Should be equal but not the same object
-        pd.testing.assert_frame_equal(grid1.x, grid2.x)
-        pd.testing.assert_frame_equal(grid1.y, grid2.y)
+        # Same n produces equal coordinate data...
+        assert grid1.x.equals(grid2.x)
+        assert grid1.y.equals(grid2.y)
+        assert grid1.diff().equals(grid2.diff())
+
+        # ...on genuinely independent objects.
         assert grid1 is not grid2
 
     # --- Method behaviour with fixtures --------------------------------------
@@ -309,14 +317,15 @@ class TestGrid:
         # Methods should return the same result when called multiple times
         pd.testing.assert_frame_equal(data["diff"], grid.diff())
 
-    def test_method_independence(self, grid_with_results):
-        """Test that method results are independent of each other."""
-        data = grid_with_results
-        diff = data["diff"]
+    def test_diff_returns_fresh_frame_each_call(self, small_grid):
+        """diff() returns a fresh frame each call (a documented Grid guarantee).
 
-        # Modifying one result shouldn't affect the grid
-        diff_copy = diff.copy()
-        diff_copy.iloc[0, 0] = 999
+        Mutating a frame returned by diff() must not affect the result of a
+        subsequent call — this asserts Grid's fresh-copy-per-call contract,
+        not pandas copy semantics.
+        """
+        first = small_grid.diff()
+        first.iloc[0, 0] = 999
 
-        # Original diff should be unchanged
-        assert diff.iloc[0, 0] == 0
+        # A later diff() is computed anew and is unaffected by the mutation.
+        assert small_grid.diff().iloc[0, 0] == 0

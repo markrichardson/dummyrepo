@@ -1,3 +1,0 @@
-# Things
-
-::: dummypy.things
