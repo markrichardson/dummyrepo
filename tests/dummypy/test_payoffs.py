@@ -4,10 +4,17 @@
 ``test_*`` functions to keep the test layout mirroring the source 1:1.
 """
 
+import math
+
 import numpy as np
 import pytest
+from hypothesis import given
+from hypothesis import strategies as st
 
 from dummypy import call_payoff, put_payoff
+
+# Finite, non-negative strikes/spots for property-based tests.
+_prices = st.floats(min_value=0.0, max_value=1e6, allow_nan=False, allow_infinity=False)
 
 
 def test_call_in_the_money():
@@ -64,3 +71,57 @@ def test_put_call_parity_at_expiry():
     strike = 100.0
     parity = call_payoff(spots, strike) - put_payoff(spots, strike)
     np.testing.assert_allclose(parity, np.asarray(spots) - strike)
+
+
+# --- Strike validation -------------------------------------------------------
+
+
+def test_call_negative_strike_raises():
+    """A negative strike is rejected with a clear ValueError."""
+    with pytest.raises(ValueError, match="non-negative"):
+        call_payoff(100.0, -1.0)
+
+
+def test_put_negative_strike_raises():
+    """A negative strike is rejected with a clear ValueError."""
+    with pytest.raises(ValueError, match="non-negative"):
+        put_payoff(100.0, -1.0)
+
+
+def test_call_nan_strike_raises():
+    """A NaN strike is rejected with a clear ValueError."""
+    with pytest.raises(ValueError, match="NaN"):
+        call_payoff(100.0, math.nan)
+
+
+def test_put_nan_strike_raises():
+    """A NaN strike is rejected with a clear ValueError."""
+    with pytest.raises(ValueError, match="NaN"):
+        put_payoff(100.0, math.nan)
+
+
+# --- Property-based invariants -----------------------------------------------
+
+
+@given(spot=_prices, strike=_prices)
+def test_call_payoff_is_non_negative(spot, strike):
+    """A call payoff is never negative for any valid spot/strike."""
+    assert call_payoff(spot, strike) >= 0.0
+
+
+@given(spot=_prices, strike=_prices)
+def test_put_payoff_is_non_negative(spot, strike):
+    """A put payoff is never negative for any valid spot/strike."""
+    assert put_payoff(spot, strike) >= 0.0
+
+
+@given(spot_low=_prices, delta=_prices, strike=_prices)
+def test_call_payoff_non_decreasing_in_spot(spot_low, delta, strike):
+    """Raising the spot never lowers the call payoff (monotone non-decreasing)."""
+    assert call_payoff(spot_low + delta, strike) >= call_payoff(spot_low, strike)
+
+
+@given(spot_low=_prices, delta=_prices, strike=_prices)
+def test_put_payoff_non_increasing_in_spot(spot_low, delta, strike):
+    """Raising the spot never raises the put payoff (monotone non-increasing)."""
+    assert put_payoff(spot_low + delta, strike) <= put_payoff(spot_low, strike)

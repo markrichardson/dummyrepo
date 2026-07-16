@@ -71,16 +71,37 @@ make clean         # Clean up environment
 
 ## Usage
 
+### `Grid`
+
+A pandas-backed grid of coordinate frames. `x` is the transpose of `y`, and
+`diff()` returns their element-wise difference as a fresh frame on each call.
+
 ```python
-import dummypy as dp
+from dummypy import Grid
 
-# Build a grid and compute element-wise differences
-grid = dp.Grid()
-grid.diff()
+grid = Grid(n=3)           # (n + 1) x (n + 1) coordinate frames
+grid.x.shape               # -> (4, 4)
+grid.diff().loc["2", "1"]  # -> 1   (x - y at those coordinates)
 
-# Vanilla European option payoffs at expiry
-dp.call_payoff([80.0, 100.0, 130.0], strike=100.0)  # -> [ 0.,  0., 30.]
-dp.put_payoff([70.0, 100.0, 130.0], strike=100.0)   # -> [30.,  0.,  0.]
+# Grid(n=-1) raises ValueError: Grid size n must be non-negative
+```
+
+### `call_payoff` / `put_payoff`
+
+Vanilla European option payoffs at expiry. Both accept a scalar or an
+array-like of spots and return a `float64` NumPy array; an invalid `strike`
+(negative or NaN) raises a `ValueError`.
+
+```python
+from dummypy import call_payoff, put_payoff
+
+call_payoff(120.0, strike=100.0)                  # -> array([20.])
+put_payoff(80.0, strike=100.0)                    # -> array([20.])
+
+call_payoff([80.0, 100.0, 130.0], strike=100.0)   # -> array([ 0.,  0., 30.])
+put_payoff([70.0, 100.0, 130.0], strike=100.0)    # -> array([30.,  0.,  0.])
+
+# call_payoff(100.0, strike=-1.0) raises ValueError: strike must be non-negative
 ```
 
 ## Development
@@ -96,7 +117,7 @@ This documentation covers:
 
 ## Architecture
 
-- **Grid** (`dummypy.things`): Example grid data structure built on pandas DataFrames
+- **Grid** (`dummypy.grid`): Example grid data structure built on pandas DataFrames
 - **Payoffs** (`dummypy.payoffs`): Vanilla European option payoff functions
 
 ## License
