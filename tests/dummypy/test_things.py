@@ -2,16 +2,18 @@
 
 Test Structure:
 ---------------
-This test suite uses pytest fixtures for efficient test data management and is organized
-into three main test classes for logical separation:
+``things`` exposes a single ``Grid`` class, so all ``Grid`` tests live in one
+``TestGrid`` class (keeping the test layout mirroring the source 1:1). Within
+it the tests are grouped by concern:
 
-1. TestGrid - Core functionality tests (initialization, basic methods, properties)
-2. TestGridIntegration - Integration tests with external libraries (numpy, persistence)
-3. TestGridMethods - Advanced method behavior tests with custom fixtures
+- core initialization, structure, and methods
+- input validation on ``n``
+- property-based invariants (hypothesis) across a range of ``n``
+- integration with numpy/pandas and method behaviour
 
 Fixture Organization:
 --------------------
-The test suite uses several fixtures to provide reusable test data:
+The test suite uses several module-level fixtures to provide reusable test data:
 
 - default_grid: Grid() with default parameters (n=10)
 - small_grid: Grid(n=2) for detailed testing with minimal data
@@ -19,25 +21,6 @@ The test suite uses several fixtures to provide reusable test data:
 - medium_grid: Grid(n=5) for performance and integration testing
 - edge_case_grid: Grid(n=0) for boundary condition testing
 - parametrized_grid: Parametrized fixture testing multiple sizes [1, 5, 10, 20]
-
-Fixture Benefits:
------------------
-- Eliminates repetitive Grid() instantiation across tests
-- Provides consistent test data for related test cases
-- Enables parametrized testing for multiple scenarios
-- Improves test performance through reusable objects
-- Makes test dependencies and requirements explicit
-
-Test Coverage:
---------------
-The test suite covers:
-- Grid initialization and attributes
-- DataFrame creation and structure (x and y properties)
-- Difference calculation method (diff)
-- Data types and numerical accuracy
-- Edge cases and boundary conditions
-- Integration with numpy and pandas
-- Parametrized testing across different grid sizes
 """
 
 import numpy as np
@@ -88,6 +71,8 @@ def parametrized_grid(request):
 
 class TestGrid:
     """Test cases for the Grid class."""
+
+    # --- Core functionality --------------------------------------------------
 
     def test_goal_grid_initialization_default(self, default_grid):
         """Test Grid initialization with default parameters."""
@@ -227,9 +212,7 @@ class TestGrid:
         assert diff.iloc[n, 0] == n  # n - 0
         assert diff.iloc[0, n] == -n  # 0 - n
 
-
-class TestGridValidation:
-    """Tests for Grid input validation on n."""
+    # --- Input validation ----------------------------------------------------
 
     def test_negative_n_raises_value_error(self):
         """Grid(n=-1) should raise a clear ValueError, not build a degenerate grid."""
@@ -251,14 +234,7 @@ class TestGridValidation:
         grid = Grid(n=0)
         assert grid.n == 0
 
-
-class TestGridProperties:
-    """Property-based tests asserting Grid invariants across a range of ``n``.
-
-    Where the fixture-based tests above pin behaviour at a handful of fixed
-    sizes, these use hypothesis to generate many ``n`` and assert the
-    invariants that must hold for every valid grid.
-    """
+    # --- Property-based invariants -------------------------------------------
 
     @given(n=st.integers(min_value=0, max_value=30))
     def test_shape_is_n_plus_one_square(self, n):
@@ -286,10 +262,7 @@ class TestGridProperties:
         diff = grid.diff()
         pd.testing.assert_frame_equal(diff, -diff.T)
 
-
-# Integration tests
-class TestGridIntegration:
-    """Integration tests for Grid with other components."""
+    # --- Integration with numpy/pandas ---------------------------------------
 
     def test_goal_grid_with_numpy_operations(self, tiny_grid):
         """Test that Grid works well with numpy operations."""
@@ -317,10 +290,7 @@ class TestGridIntegration:
         pd.testing.assert_frame_equal(grid1.y, grid2.y)
         assert grid1 is not grid2
 
-
-# Additional fixture-based tests
-class TestGridMethods:
-    """Test class focusing on method behavior with fixtures."""
+    # --- Method behaviour with fixtures --------------------------------------
 
     @pytest.fixture
     def grid_with_results(self, small_grid):
