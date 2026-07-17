@@ -1,7 +1,7 @@
-sha: 7a906d2cf8c33d1d870ca7c7f5af3127f070c3ed
+sha: e0fe02300840e39fe75d19db2741e9a790f87794
 repo: jebel-quant/rhiza
 host: github
-ref: v1.2.0
+ref: v1.2.1
 include: []
 exclude: []
 templates:
@@ -87,5 +87,5 @@ files:
 - docs/mkdocs-base.yml
 - pytest.ini
 - ruff.toml
-synced_at: '2026-07-16T14:21:19Z'
+synced_at: '2026-07-17T12:36:50Z'
 strategy: merge
