@@ -56,6 +56,24 @@ lint = [
 [tool.hatch.build.targets.wheel]
 packages = ["src/dummypy"]
 
+# bump-my-version auto-discovers only .bumpversion.toml, .bumpversion.cfg,
+# setup.cfg and pyproject.toml. Without a table in one of them it does not fail —
+# it falls back to `git describe` and reports the last reachable tag as the current
+# version, so a release can be cut at a version already published.
+#
+# No `current_version` and no [[tool.bumpversion.files]] entry for the version:
+# bump-my-version reads and rewrites PEP 621 [project].version natively, and a
+# second copy of the number only drifts. Add a [[files]] entry per *additional*
+# location, never for [project].version itself.
+#
+# commit/tag stay false because /rhiza:release makes the commit and the tag itself,
+# so the changelog lands in the bump commit; a bare `bump-my-version bump` would
+# otherwise add a second commit and a duplicate tag.
+[tool.bumpversion]
+allow_dirty = false
+commit = false
+tag = false
+
 # pandas ships no type stubs (PEP 561); the optional pandas-stubs package is
 # third-party and lags the runtime. Silence mypy --strict's missing-import error
 # for pandas without pulling in stubs that would churn under strict mode.
