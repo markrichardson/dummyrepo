@@ -5,6 +5,123 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com),
 and entries are generated from [Conventional Commits](https://www.conventionalcommits.org).
 
+## [0.2.0] - 2026-08-04
+
+### New Features
+- *(grid)* Validate Grid(n) and reject negative/non-integer sizes (#151)
+- Expose importable __version__ on dummypy package (#159)
+
+### Bug Fixes
+- *(types)* Replace @n.validator decorator with validator= callable
+- Align demo notebook marimo pin with pyproject.toml (>=0.23.11)
+- Address open quality issues (#164, #165, #166, #171, #173, #183, #184, #185)
+- Add a discoverable [tool.bumpversion] config to pyproject.toml
+- Make Grid immutable so n, x and y cannot desynchronise
+- [**breaking**] Grid is immutable — n, x and y can no longer be reassigned
+
+### Documentation
+- *(readme)* Fix make targets to match make help (#147)
+- *(api)* Add missing API Reference pages for payoffs and things (#150)
+- *(readme)* Fix Codespaces badge slug dummypy -> dummyrepo (#148)
+- *(readme)* Update stale version 0.1.4 -> 0.1.5 (#149)
+- Describe actual API in README instead of non-existent features
+- Point api reference at dummypy.grid after module rename (#165)
+- Document Grid immutability in the README usage section
+
+### Maintenance
+- Chore(deps-dev)(deps-dev): bump the python-dependencies group with 2 updates
+- Chore(deps)(deps): bump the github-actions group with 3 updates
+- *(notebook)* Align demo marimo pin with pyproject (#152)
+- Bump rhiza to v1.0.0
+- Apply rhiza sync v1.0.0
+- Bump rhiza to v1.0.1
+- Apply rhiza sync v1.0.1
+- Chore(deps-dev)(deps-dev): bump marimo in the python-dependencies group
+- Chore(deps)(deps): bump the github-actions group with 14 updates
+- Bump rhiza to v1.1.2
+- Apply rhiza sync v1.1.2
+- Lock coverage at 100% and add Grid property-based tests
+- Apply rhiza sync v1.1.3
+- Chore(deps-dev)(deps-dev): bump the python-dependencies group with 4 updates
+- Bump rhiza to v1.2.0
+- Apply rhiza sync v1.2.0
+- Bump rhiza workflow pins to v1.2.0
+- Mirror test layout to src/ package structure
+- Bump rhiza to v1.2.1
+- Apply rhiza sync v1.2.1
+- Chore(deps-dev)(deps-dev): bump the python-dependencies group with 2 updates
+- *(pyproject)* Declare explicit Python version classifiers
+- *(pyproject)* Drop License classifiers in favour of SPDX (PEP 639)
+- Chore(deps)(deps): bump the github-actions group with 15 updates
+- Bump rhiza to v1.2.5
+- Apply rhiza sync v1.2.5
+- Drop releasing.mk (removed from template in v1.2.5)
+- Chore(deps-dev)(deps-dev): bump the python-dependencies group with 3 updates
+- Chore(deps)(deps): bump docker/login-action in the github-actions group
+- Chore(deps)(deps): bump the github-actions group with 3 updates
+- Chore(deps-dev)(deps-dev): bump the python-dependencies group with 3 updates
+- Bump rhiza to v1.3.2
+- Apply rhiza sync v1.3.2
+- Remove the obsolete .rhiza/.cfg.toml
+
+### Other Changes
+- Bump rhiza template ref v0.19.4 → v0.19.6
+- Sync Rhiza template v0.19.6 (3-way merge, clean)
+- Merge pull request #141 from markrichardson/sync/rhiza-v0.19.6
+- Bump rhiza template ref v0.19.6 → v0.19.9
+- Sync Rhiza template artifacts to v0.19.9
+- Merge pull request #146 from markrichardson/sync/rhiza-v0.19.9
+- Merge pull request #153 from markrichardson/fix/147-readme-make-targets
+- Merge branch 'main' into dependabot/uv/python-dependencies-9cdc7840e2
+- Merge branch 'main' into fix/148-codespaces-badge
+- Merge pull request #154 from markrichardson/fix/148-codespaces-badge
+- Merge branch 'main' into fix/149-readme-version
+- Merge pull request #155 from markrichardson/fix/149-readme-version
+- Merge branch 'main' into fix/150-docs-api-pages
+- Merge pull request #156 from markrichardson/fix/150-docs-api-pages
+- Merge branch 'main' into dependabot/uv/python-dependencies-9cdc7840e2
+- Merge pull request #142 from markrichardson/dependabot/uv/python-dependencies-9cdc7840e2
+- Merge branch 'main' into fix/151-grid-validation
+- Merge branch 'main' into dependabot/github_actions/github-actions-c6ce69ffa1
+- Merge branch 'main' into dependabot/github_actions/github-actions-c6ce69ffa1
+- Merge pull request #143 from markrichardson/dependabot/github_actions/github-actions-c6ce69ffa1
+- Merge branch 'main' into fix/151-grid-validation
+- Merge pull request #157 from markrichardson/fix/151-grid-validation
+- Initial plan
+- Merge pull request #158 from markrichardson/copilot/align-demo-notebook-marimo-pin
+- Merge pull request #160 from markrichardson/fix/159-package-version
+- Merge pull request #161 from markrichardson/rhiza_v1.0.0
+- Merge pull request #162 from markrichardson/rhiza_v1.0.1
+- Merge pull request #167 from markrichardson/fix/readme-feature-mismatch
+- Merge pull request #168 from markrichardson/dependabot/uv/python-dependencies-2c121c46b4
+- Merge pull request #169 from markrichardson/dependabot/github_actions/github-actions-e4b6d88ea2
+- Merge pull request #178 from markrichardson/quality/lock-coverage-and-grid-property-tests
+- Merge branch 'main' into rhiza_v1.1.2
+- Merge pull request #175 from markrichardson/rhiza_v1.1.2
+- Bump rhiza template ref v1.1.2 → v1.1.3
+- Merge pull request #179 from markrichardson/sync/rhiza-v1.1.3
+- Merge pull request #180 from markrichardson/dependabot/uv/python-dependencies-40af449f63
+- Merge pull request #181 from markrichardson/rhiza_v1.2.0
+- Merge branch 'main' into fix/open-issues
+- Merge pull request #186 from markrichardson/fix/open-issues
+- Merge pull request #187 from markrichardson/rhiza_v1.2.1
+- Merge pull request #192 from markrichardson/chore/python-version-classifiers
+- Merge branch 'main' into dependabot/uv/python-dependencies-6968219f7c
+- Merge pull request #191 from markrichardson/dependabot/uv/python-dependencies-6968219f7c
+- Merge branch 'main' into dependabot/github_actions/github-actions-66cafe361f
+- Merge pull request #190 from markrichardson/dependabot/github_actions/github-actions-66cafe361f
+- Merge pull request #193 from markrichardson/dependabot/github_actions/github-actions-dee7dd5463
+- Merge branch 'main' into dependabot/uv/python-dependencies-a889a3e28d
+- Merge pull request #194 from markrichardson/dependabot/uv/python-dependencies-a889a3e28d
+- Merge branch 'main' into rhiza_v1.2.5_20260730
+- Merge pull request #195 from markrichardson/rhiza_v1.2.5_20260730
+- Merge pull request #196 from markrichardson/dependabot/github_actions/github-actions-908328dd72
+- Merge pull request #197 from markrichardson/dependabot/uv/python-dependencies-2701600eb5
+- Merge pull request #198 from markrichardson/rhiza_v1.3.2_20260804
+- Merge branch 'main' into fix_bumpversion_and_frozen_grid
+- Merge pull request #202 from markrichardson/fix_bumpversion_and_frozen_grid
+- Merge pull request #205 from markrichardson/fix_breaking_marker_and_readme_immutability
+
 ## [0.1.5] - 2026-06-24
 
 ### New Features
@@ -25,6 +142,7 @@ and entries are generated from [Conventional Commits](https://www.conventionalco
 - Merge pull request #137 from markrichardson/feat/clusterfuzzlite-scaffold
 - Implement payoffs module and correct README inaccuracies
 - Merge pull request #140 from markrichardson/fix/quality-issues-138-139
+- Bump version 0.1.4 → 0.1.5
 
 ## [0.1.4] - 2026-06-17
 
@@ -64,6 +182,7 @@ and entries are generated from [Conventional Commits](https://www.conventionalco
 - Add devcontainer and docker CI workflows from rhiza template
 - Chore(deps)(deps): bump the github-actions group with 9 updates
 - Chore(deps-dev)(deps-dev): bump the python-dependencies group with 2 updates
+- Bump rhiza to v0.18.7
 
 ### Other Changes
 - Update Rhiza version to 0.14.1

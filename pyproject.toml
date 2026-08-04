@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "dummypy"
-version = "0.1.5"
+version = "0.2.0"
 description = "A dummy Python analytics library for demonstration purposes."
 authors = [{ name = "Mark Richardson", email = "mrichardson82@gmail.com" }]
 license = "MIT"
@@ -73,6 +73,14 @@ packages = ["src/dummypy"]
 allow_dirty = false
 commit = false
 tag = false
+
+# The README footer restates the version for readers who never open pyproject.toml.
+# It drifted silently before (0.1.4 -> 0.1.5 was a hand-written fix), so declare it
+# here instead. The `**Version**: ` prefix anchors the match to that one line.
+[[tool.bumpversion.files]]
+filename = "README.md"
+search = "**Version**: {current_version}"
+replace = "**Version**: {new_version}"
 
 # pandas ships no type stubs (PEP 561); the optional pandas-stubs package is
 # third-party and lags the runtime. Silence mypy --strict's missing-import error
