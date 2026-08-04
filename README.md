@@ -76,6 +76,10 @@ make clean         # Clean up environment
 A pandas-backed grid of coordinate frames. `x` is the transpose of `y`, and
 `diff()` returns their element-wise difference as a fresh frame on each call.
 
+Instances are **immutable**. `x` and `y` are derived from `n`, so allowing any of
+the three to be reassigned would break the invariants set at construction — build a
+new `Grid` instead of mutating one.
+
 ```python
 from dummypy import Grid
 
@@ -84,6 +88,7 @@ grid.x.shape               # -> (4, 4)
 grid.diff().loc["2", "1"]  # -> 1   (x - y at those coordinates)
 
 # Grid(n=-1) raises ValueError: Grid size n must be non-negative
+# grid.n = 5 raises FrozenInstanceError: Grid is immutable, build a new one
 ```
 
 ### `call_payoff` / `put_payoff`
