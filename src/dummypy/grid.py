@@ -57,12 +57,18 @@ def _build_grids(n: int) -> tuple[pd.DataFrame, pd.DataFrame]:
     return y.T, y
 
 
-@attrs.define
+@attrs.frozen
 class Grid:
     """A grid representing data points for analytics calculations.
 
     Holds two coordinate DataFrames, ``x`` and ``y`` (with ``x == y.T``),
     generated from the grid size ``n`` by :func:`_build_grids`.
+
+    Instances are **immutable**. ``x`` and ``y`` are derived from ``n``, so
+    letting any of the three be reassigned would break the invariants the
+    validator and :func:`_build_grids` establish at construction: a new ``x``
+    need not be ``y.T``, and a new ``n`` would not rebuild the frames it is
+    supposed to describe. Build a new :class:`Grid` instead.
 
     Args:
         n: Maximum size for the grid (default: 10). Must be a non-negative
@@ -78,8 +84,16 @@ class Grid:
     y: pd.DataFrame = attrs.field(repr=False, init=False)
 
     def __attrs_post_init__(self) -> None:
-        """Populate the x and y coordinate frames from ``n``."""
-        self.x, self.y = _build_grids(self.n)
+        """Populate the x and y coordinate frames from ``n``.
+
+        Uses :func:`object.__setattr__` because the class is frozen — the
+        standard attrs idiom for a derived attribute on an immutable class.
+        Keeping the single :func:`_build_grids` call here preserves the
+        generation-vs-model split described in the module docstring.
+        """
+        x, y = _build_grids(self.n)
+        object.__setattr__(self, "x", x)
+        object.__setattr__(self, "y", y)
 
     def diff(self) -> pd.DataFrame:
         """Returns a grid of differences.
