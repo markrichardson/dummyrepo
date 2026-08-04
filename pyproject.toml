@@ -40,17 +40,17 @@ notebook = [
 ]
 
 dev = [
-    "marimo>=0.23.15",
+    "marimo>=0.23.16",
     "plotly>=6.9.0",
 ]
 
 test = [
     "pytest>=9.1.1",
-    "hypothesis>=6.161.8",
+    "hypothesis>=6.164.0",
 ]
 
 lint = [
-    "ruff>=0.16.0",
+    "ruff>=0.16.1",
 ]
 
 [tool.hatch.build.targets.wheel]
