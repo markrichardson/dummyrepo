@@ -8,6 +8,7 @@ it the tests are grouped by concern:
 
 - core initialization, structure, and methods
 - input validation on ``n``
+- immutability of the frozen value type
 - property-based invariants (hypothesis) across a range of ``n``
 - integration with numpy/pandas and method behaviour
 
@@ -23,6 +24,7 @@ The test suite uses several module-level fixtures to provide reusable test data:
 - parametrized_grid: Parametrized fixture testing multiple sizes [1, 5, 10, 20]
 """
 
+import attrs
 import numpy as np
 import pandas as pd
 import pytest
@@ -233,6 +235,27 @@ class TestGrid:
         """Grid(n=0) remains valid (boundary case)."""
         grid = Grid(n=0)
         assert grid.n == 0
+
+    # --- Immutability --------------------------------------------------------
+
+    @pytest.mark.parametrize("attribute", ["n", "x", "y"])
+    def test_attribute_assignment_is_rejected(self, small_grid, attribute):
+        """Grid is frozen: none of n, x or y may be reassigned.
+
+        x and y are derived from n, so any reassignment would break an invariant
+        established at construction — either x == y.T, or n describing the frames
+        it generated.
+        """
+        with pytest.raises(attrs.exceptions.FrozenInstanceError):
+            setattr(small_grid, attribute, pd.DataFrame())
+
+    def test_rejected_assignment_leaves_the_grid_intact(self, small_grid):
+        """A refused assignment must not leave the grid partially updated."""
+        with pytest.raises(attrs.exceptions.FrozenInstanceError):
+            small_grid.x = pd.DataFrame()
+
+        assert small_grid.n == 2
+        pd.testing.assert_frame_equal(small_grid.x, small_grid.y.T)
 
     # --- Property-based invariants -------------------------------------------
 
