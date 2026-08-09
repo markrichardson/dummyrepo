@@ -95,7 +95,7 @@ grid.diff().loc["2", "1"]  # -> 1   (x - y at those coordinates)
 
 Vanilla European option payoffs at expiry. Both accept a scalar or an
 array-like of spots and return a `float64` NumPy array; an invalid `strike`
-(negative or NaN) raises a `ValueError`.
+(negative, NaN or infinite) raises a `ValueError`.
 
 ```python
 from dummypy import call_payoff, put_payoff

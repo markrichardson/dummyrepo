@@ -90,14 +90,28 @@ def test_put_negative_strike_raises():
 
 def test_call_nan_strike_raises():
     """A NaN strike is rejected with a clear ValueError."""
-    with pytest.raises(ValueError, match="NaN"):
+    with pytest.raises(ValueError, match="finite"):
         call_payoff(100.0, math.nan)
 
 
 def test_put_nan_strike_raises():
     """A NaN strike is rejected with a clear ValueError."""
-    with pytest.raises(ValueError, match="NaN"):
+    with pytest.raises(ValueError, match="finite"):
         put_payoff(100.0, math.nan)
+
+
+@pytest.mark.parametrize("strike", [math.inf, -math.inf])
+def test_call_infinite_strike_raises(strike):
+    """An infinite strike is rejected rather than yielding a degenerate payoff."""
+    with pytest.raises(ValueError, match="finite"):
+        call_payoff(100.0, strike)
+
+
+@pytest.mark.parametrize("strike", [math.inf, -math.inf])
+def test_put_infinite_strike_raises(strike):
+    """An infinite strike is rejected; it used to return an infinite payoff."""
+    with pytest.raises(ValueError, match="finite"):
+        put_payoff(100.0, strike)
 
 
 # --- Property-based invariants -----------------------------------------------
