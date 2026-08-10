@@ -77,6 +77,12 @@ tag = false
 # The README footer restates the version for readers who never open pyproject.toml.
 # It drifted silently before (0.1.4 -> 0.1.5 was a hand-written fix), so declare it
 # here instead. The `**Version**: ` prefix anchors the match to that one line.
+#
+# The footer also carried a hand-maintained `**Last Updated**` date, which drifted the
+# same way (it still read June 2026 after the August 0.2.0 release). It was removed
+# rather than anchored here: the release date already lives in CHANGELOG.md and in the
+# GitHub release, so a third copy is drift surface without new information. Don't
+# re-add it — point readers at the changelog instead.
 [[tool.bumpversion.files]]
 filename = "README.md"
 search = "**Version**: {current_version}"
