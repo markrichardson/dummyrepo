@@ -46,11 +46,11 @@ dev = [
 
 test = [
     "pytest>=9.1.1",
-    "hypothesis>=6.165.2",
+    "hypothesis>=6.165.9",
 ]
 
 lint = [
-    "ruff>=0.16.2",
+    "ruff>=0.16.3",
 ]
 
 [tool.hatch.build.targets.wheel]
