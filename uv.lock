@@ -281,7 +281,7 @@ notebook = [{ name = "loman", specifier = ">=0.6.0" }]
 test = [
     { name = "hypothesis", specifier = ">=6.165.9" },
     { name = "pytest", specifier = ">=9.1.1" },
-    { name = "pytest-rhiza", git = "https://github.com/jebel-quant/pytest-rhiza?tag=v0.2.0" },
+    { name = "pytest-rhiza", specifier = ">=0.2.1" },
 ]
 
 [[package]]
@@ -1189,13 +1189,17 @@ wheels = [
 
 [[package]]
 name = "pytest-rhiza"
-version = "0.2.0"
-source = { git = "https://github.com/jebel-quant/pytest-rhiza?tag=v0.2.0#063ee73e7a2feca8c3dda4caa903cc195e8ea8a0" }
+version = "0.2.1"
+source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "packaging" },
     { name = "pytest" },
     { name = "pytest-timeout" },
     { name = "python-dotenv" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/d7/bd/f2c9fda6f17b4cfc27e5eb9062aef43263fb5188d39e71e3dea51f4935d0/pytest_rhiza-0.2.1.tar.gz", hash = "sha256:0779461645455c63eab0bd6e81126deb3cd11fa1894b21a8b01ff5104c520e2e", size = 57419, upload-time = "2026-08-18T09:42:07.132Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/26/a8/1c63faee63f1270901f55b34509bc63a0c1633f6b54a166df96bc1f2deb5/pytest_rhiza-0.2.1-py3-none-any.whl", hash = "sha256:020e22dd85888c1c26ee0aec86ade056af4fe4d72b1a4c70176bce7399100e72", size = 33319, upload-time = "2026-08-18T09:42:06.084Z" },
 ]
 
 [[package]]
