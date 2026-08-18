@@ -1,4 +1,4 @@
-## Makefile (repo-owned) -- from `uvx rhiza-task shim > Makefile`, plus the two bridges below
+## Makefile (repo-owned) -- from `uvx rhiza-task shim > Makefile`, plus the one bridge below
 #
 # This replaces `.rhiza/rhiza.mk` and the ten fragments in `.rhiza/make.d/`: 1030 synced
 # lines, at a template tag, for one pinned package version.
@@ -14,11 +14,11 @@
 # MKDOCS_EXTRA_PACKAGES -- now lives in `[tool.rhiza-task]` in pyproject.toml. See CLAUDE.md.
 RHIZA_TASK ?= rhiza-task@0.1.2
 
-# --- Bridge 1: uv bootstrap ---------------------------------------------------------------
+# --- The one remaining bridge: uv bootstrap ------------------------------------------------
 #
 # `uvx rhiza-task` presupposes uv, which is the point: the retired make layer had to curl
 # `astral.sh/uv/install.sh` into `./bin` because make cannot assume it. One caller still
-# needs that bootstrap. rhiza_ci.yml@v1.3.3's `pre-commit` job runs `make fmt` with no
+# needs that bootstrap. rhiza_ci.yml@v1.3.4's `pre-commit` job runs `make fmt` with no
 # `astral-sh/setup-uv` step, relying on exactly this; every other job installs uv first.
 # Delete this block when the reusable workflows install uv for that job.
 #
@@ -42,18 +42,19 @@ $(CURDIR)/bin/uvx:
 	@mkdir -p bin
 	@curl -LsSf https://astral.sh/uv/install.sh | UV_INSTALL_DIR="$(CURDIR)/bin" UV_NO_MODIFY_PATH=1 sh
 
-# --- Bridge 2: .rhiza/.env, for the one workflow that reads it through make ----------------
+# Bridge 2 is gone with `.rhiza/.env`, and there is no bridge 3.
 #
-# rhiza_marimo.yml@v1.3.3 discovers the notebook folder with
+# It was `-include .rhiza/.env`, so that rhiza_marimo.yml could read MARIMO_FOLDER out of
+# make's variable namespace with
 #
 #   make -s -f Makefile -f - <<< 'print: ; @echo $(or $(MARIMO_FOLDER),marimo)' print
 #
-# -- it loads *this* file and reads the variable out of make's namespace. The retired
-# rhiza.mk is what used to put `MARIMO_FOLDER` there, by including `.rhiza/.env`. Without
-# this line that probe silently falls back to `marimo`, and `.rhiza/.env` quietly stops
-# being the source of truth for that workflow. rhiza-task reads the same file directly, so
-# there is still only one place to set it. Delete when the workflow asks the CLI instead.
--include .rhiza/.env
+# @v1.3.4 still runs that probe -- Jebel-Quant/rhiza#1553 is the fix and is still open --
+# so it now takes the `marimo` fallback. Nothing observable changes: `docs/notebooks` did
+# not exist either, this repository's notebooks are in `book/marimo/notebooks/`, and the
+# workflow has therefore always found nothing. Pointing it at the real folder would newly
+# run those notebooks in CI, which is a change of behaviour rather than of configuration --
+# see CLAUDE.md. Every other setting comes from `[tool.rhiza-task]` in pyproject.toml.
 
 .DEFAULT_GOAL := help
 
@@ -94,5 +95,4 @@ book: $(UVX_BOOTSTRAP)
 # bootstrap above gives it one. Without this line `make help` tries to remake the Makefile
 # by asking the CLI to build a task called "Makefile".
 local.mk: ;
-.rhiza/.env: ;
 Makefile: ;

@@ -113,6 +113,16 @@ plotly = "plotly"
 # table is where what used to be a make variable, or a target shadowed in the root
 # Makefile, is said instead.
 [tool.rhiza-task]
+# The OS matrix CI runs on, moved here from `.rhiza/.env` now that nothing reads that file.
+#
+# Not optional, and not a default restated: `rhiza-task`'s own default is `["ubuntu-latest"]`.
+# rhiza_ci.yml@v1.3.4's `generate-matrix` exports RHIZA_CI_OS_MATRIX as the empty string for
+# every repository that is not the mother -- deliberately, so the consumer answers -- and the
+# CLI treats an empty setting as unset. With the dotenv deleted and nothing said here, the
+# answer would be the default: CI would keep passing while quietly testing one OS instead of
+# three. That is the failure mode worth spelling out, because it is green.
+ci-os-matrix = ["ubuntu-latest", "macos-latest", "windows-latest"]
+
 # python.mk's default was `both`; rhiza-task's is `ty`. Said here so the migration does not
 # quietly stop running mypy --strict -- which this project is written for, down to the
 # [[tool.mypy.overrides]] entry for pandas above.

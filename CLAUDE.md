@@ -23,9 +23,12 @@ synced file locally will be reverted by the next `rhiza` sync and will fail the
   `cliff.toml`, `.editorconfig`, …)
 
 The authoritative, machine-generated list of synced files lives in
-[`.rhiza/template.lock`](.rhiza/template.lock) under its `files:` block. When
-in doubt, check there. (The lock records the *last sync*, so it still lists the
-make layer this repo has since excluded; `/rhiza:update` regenerates it.)
+[`.rhiza/template.lock`](.rhiza/template.lock) under its `files:` block, with
+what this repo has taken back under `exclude:`. When in doubt, check there —
+and note that the lock, not `CLAUDE.md`, is what the sync obeys. The v1.3.4
+sync is the cautionary tale: `Makefile` was called locally owned here while the
+lock still listed it under `files:`, and the sync duly wrote conflict markers
+across the shim.
 
 ### Locally owned — edit freely
 
@@ -33,9 +36,10 @@ make layer this repo has since excluded; `/rhiza:update` regenerates it.)
 - `tests/` — the local test suite (mirrors `src/` 1:1), plus `tests/rhiza/`
   (see below)
 - `pyproject.toml` — project metadata, dependencies, and `[tool.rhiza-task]`
-- `Makefile` — a shim forwarding to `rhiza-task` (see below)
-- `.rhiza/rhiza.mk` — twenty repo-owned lines, *not* the template's file of that
-  name (see below)
+- `Makefile` — a shim forwarding to `rhiza-task` (see below). Repo-owned in
+  `.rhiza/template.yml`'s `exclude:` as well as here: the lock listed it under
+  `files:` until the v1.3.4 sync tried to overwrite the shim with the template's
+  make layer, and the lock is what the sync obeys.
 - `README.md` — project documentation
 - `CHANGELOG.md` — public API surface across releases
 - `CLAUDE.md` — this file
@@ -60,8 +64,13 @@ Consequences worth knowing:
   `typechecker = "both"` is set explicitly because `rhiza-task`'s default is
   `ty` alone while the retired `python.mk` ran both, and this project is written
   for `mypy --strict`.
-- **`.rhiza/.env` is still read**, by the CLI directly, and stays the place to
-  set `SOURCE_FOLDER`, `MARIMO_FOLDER` and `RHIZA_CI_OS_MATRIX`.
+- **`.rhiza/.env` is gone**, and `[tool.rhiza-task]` is the only place this repo
+  configures the task layer. `ci-os-matrix` is the one setting that had to move
+  rather than simply disappear: `rhiza-task`'s default is `["ubuntu-latest"]`,
+  and `rhiza_ci.yml` exports `RHIZA_CI_OS_MATRIX` empty for every consumer so
+  that the consumer answers — so with nothing declared, CI would stay green
+  while testing one OS instead of three. `SOURCE_FOLDER` and `MARIMO_FOLDER`
+  were both restating a default and were dropped.
 - **`make rhiza-test` is a real gate again.** It used to hit quality.mk's "no
   `.rhiza/tests` directory" branch, print a warning and exit 0 — a green gate
   measuring nothing. The CLI runs the `pytest-rhiza` checks with `--pyargs`, so
@@ -77,21 +86,22 @@ Consequences worth knowing:
   while this repo's Dockerfile is at the root — they were already no-ops, as is
   the `(RHIZA) DOCKER` workflow, which probes the same path.
 
-### The two make bridges, and when they go
+### The one remaining make bridge
 
-Both exist only because this repo pins the reusable workflows at `@v1.3.3`,
-which still speaks make in two places. Both are commented in situ.
+`Makefile` installs uv into `./bin` when it cannot find it, because
+`rhiza_ci.yml@v1.3.4`'s `pre-commit` job runs `make fmt` with no
+`astral-sh/setup-uv` step — every other job installs uv first. Delete the block
+when the reusable workflow installs uv for that job too. It is commented in situ.
 
-1. `Makefile` installs uv into `./bin` when it cannot find it, because
-   `rhiza_ci.yml`'s `pre-commit` job runs `make fmt` with no `setup-uv` step.
-2. `.rhiza/rhiza.mk` keeps a single `ci-os-matrix` target, because
-   `rhiza_ci.yml`'s `generate-matrix` job runs
-   `make -f .rhiza/rhiza.mk -s ci-os-matrix` — also with no uv — and because
-   `rhiza_marimo.yml` reads `MARIMO_FOLDER` out of make's variable namespace,
-   which is why `Makefile` includes `.rhiza/.env`.
-
-`@v1.3.4` drops the `rhiza.mk` caller ([jebel-quant/rhiza#1546](https://github.com/jebel-quant/rhiza/issues/1546));
-delete the file when this repo's workflows pin it.
+Two other bridges are gone. `.rhiza/rhiza.mk` held a single `ci-os-matrix`
+target for `rhiza_ci.yml`'s `generate-matrix` job; `@v1.3.4` asks the CLI
+instead ([jebel-quant/rhiza#1546](https://github.com/jebel-quant/rhiza/issues/1546)),
+so the file and its `exclude:` entry both went. `Makefile` carried
+`-include .rhiza/.env` so that `rhiza_marimo.yml` could read `MARIMO_FOLDER` out
+of make's variable namespace; that probe still exists at `@v1.3.4`
+([Jebel-Quant/rhiza#1553](https://github.com/Jebel-Quant/rhiza/pull/1553) is the
+fix and is still open), so it now takes its `marimo` fallback — which changes
+nothing observable, for the reason given under *Known broken* below.
 
 ## Conventions
 
@@ -116,12 +126,18 @@ delete the file when this repo's workflows pin it.
   `test.mk` and `rhiza-task` call `mutmut run --paths-to-mutate=... ` and
   `mutmut html`, neither of which mutmut 3.x still has. The `(RHIZA) MUTATION`
   workflow does not run on pull requests, so nothing is gated on it.
-- **The marimo notebooks are not exercised by CI.** `.rhiza/.env` points
-  `MARIMO_FOLDER` at `docs/notebooks`, which does not exist — the notebooks are
-  in `book/marimo/notebooks/`. So `rhiza_marimo.yml` finds nothing to run,
-  `make marimo-validate` skips, and the book exports no notebooks. Fixing the
-  path would newly run those notebooks in CI, which is a change of behaviour
-  rather than a change of configuration; do it deliberately.
+- **The marimo notebooks are not exercised by CI.** Both readers look in a
+  folder that does not exist — the notebooks are in `book/marimo/notebooks/`.
+  `rhiza-task` resolves `marimo_folder` to its `docs/notebooks` default, and
+  `rhiza_marimo.yml`'s make probe now takes its `marimo` fallback, since
+  `.rhiza/.env` is gone and nothing puts the variable in make's namespace any
+  more. So `rhiza_marimo.yml` finds nothing to run, `make marimo-validate`
+  skips, and the book exports no notebooks — as was already the case when the
+  answer was `docs/notebooks`. Setting `marimo-folder` in `[tool.rhiza-task]`
+  fixes the CLI half; the workflow half needs
+  [Jebel-Quant/rhiza#1553](https://github.com/Jebel-Quant/rhiza/pull/1553).
+  Either way it would newly run those notebooks in CI, which is a change of
+  behaviour rather than of configuration; do it deliberately.
 - **The devcontainer bootstrap is broken under `rhiza-task` 0.1.2.**
   `.devcontainer/bootstrap.sh` exports `UV_SYNC_ARGS="--group test"` and runs
   `make install`; `rhiza-task` reads that setting as a *string* and splats it
