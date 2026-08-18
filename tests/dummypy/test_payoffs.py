@@ -44,6 +44,32 @@ def test_call_returns_float_array():
     assert result.dtype == np.float64
 
 
+# --- Return-type contract ----------------------------------------------------
+#
+# The payoffs follow numpy.maximum: scalar in, scalar out; array-like in, array
+# out. Asserted explicitly because it is a documented promise, and because the
+# array path alone (test_call_returns_float_array above) let the docstrings and
+# README claim "a float array" for scalar input for several releases without a
+# single test disagreeing — pytest.approx is satisfied by either type.
+
+
+@pytest.mark.parametrize("payoff", [call_payoff, put_payoff])
+def test_scalar_spot_returns_a_numpy_scalar(payoff):
+    """A scalar spot yields a numpy.float64, not a 0-d or 1-d array."""
+    result = payoff(120.0, 100.0)
+    assert isinstance(result, np.float64)
+    assert not isinstance(result, np.ndarray)
+
+
+@pytest.mark.parametrize("payoff", [call_payoff, put_payoff])
+def test_array_like_spot_returns_a_float64_array(payoff):
+    """An array-like spot yields a float64 ndarray of matching shape."""
+    result = payoff([80.0, 100.0, 130.0], 100.0)
+    assert isinstance(result, np.ndarray)
+    assert result.dtype == np.float64
+    assert result.shape == (3,)
+
+
 def test_put_in_the_money():
     """Put pays strike minus spot when in the money."""
     assert put_payoff(80.0, 100.0) == pytest.approx(20.0)
