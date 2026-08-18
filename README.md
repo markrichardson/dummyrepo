@@ -85,23 +85,24 @@ from dummypy import Grid
 
 grid = Grid(n=3)           # (n + 1) x (n + 1) coordinate frames
 grid.x.shape               # -> (4, 4)
-grid.diff().loc["2", "1"]  # -> 1   (x - y at those coordinates)
+grid.diff().loc["2", "1"]  # -> np.int64(1)   (x - y at those coordinates)
 
 # Grid(n=-1) raises ValueError: Grid size n must be non-negative
-# grid.n = 5 raises FrozenInstanceError: Grid is immutable, build a new one
+# grid.n = 5 raises attr.exceptions.FrozenInstanceError - build a new Grid instead
 ```
 
 ### `call_payoff` / `put_payoff`
 
 Vanilla European option payoffs at expiry. Both accept a scalar or an
-array-like of spots and return a `float64` NumPy array; an invalid `strike`
-(negative, NaN or infinite) raises a `ValueError`.
+array-like of spots, and follow NumPy's own convention for what comes back: a
+scalar spot yields a `np.float64`, an array-like yields a `float64` array. An
+invalid `strike` (negative, NaN or infinite) raises a `ValueError`.
 
 ```python
 from dummypy import call_payoff, put_payoff
 
-call_payoff(120.0, strike=100.0)                  # -> array([20.])
-put_payoff(80.0, strike=100.0)                    # -> array([20.])
+call_payoff(120.0, strike=100.0)                  # -> np.float64(20.0)
+put_payoff(80.0, strike=100.0)                    # -> np.float64(20.0)
 
 call_payoff([80.0, 100.0, 130.0], strike=100.0)   # -> array([ 0.,  0., 30.])
 put_payoff([70.0, 100.0, 130.0], strike=100.0)    # -> array([30.,  0.,  0.])

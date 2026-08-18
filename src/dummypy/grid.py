@@ -77,6 +77,40 @@ class Grid:
     Raises:
         TypeError: If ``n`` is not an integer (e.g. a float or a bool).
         ValueError: If ``n`` is negative.
+
+    Examples:
+        Both frames are square with side ``n + 1``, and ``x`` is the transpose
+        of ``y``:
+
+        >>> grid = Grid(n=3)
+        >>> grid.x.shape
+        (4, 4)
+        >>> bool((grid.x == grid.y.T).all().all())
+        True
+
+        Only ``n`` is part of the repr, since ``x`` and ``y`` are derived:
+
+        >>> grid
+        Grid(n=3)
+
+        A negative size is rejected, and so is a float or a bool:
+
+        >>> Grid(n=-1)
+        Traceback (most recent call last):
+            ...
+        ValueError: Grid size n must be non-negative, got -1
+
+        >>> Grid(n=2.0)
+        Traceback (most recent call last):
+            ...
+        TypeError: Grid size n must be an integer, got float
+
+        Instances are immutable — build a new grid rather than reassigning:
+
+        >>> grid.n = 5
+        Traceback (most recent call last):
+            ...
+        attr.exceptions.FrozenInstanceError
     """
 
     n: int = attrs.field(init=True, repr=True, default=10, validator=_check_n)
@@ -101,5 +135,21 @@ class Grid:
         Returns:
             A fresh DataFrame of element-wise differences (x - y), computed
             anew on each call.
+
+        Examples:
+            The value at ``(i, j)`` is ``i - j``, so the frame is antisymmetric
+            and its diagonal is zero:
+
+            >>> grid = Grid(n=3)
+            >>> grid.diff().loc["2", "1"]
+            np.int64(1)
+            >>> grid.diff().loc["1", "2"]
+            np.int64(-1)
+
+            Each call returns a fresh frame, so mutating one cannot corrupt the
+            grid it came from:
+
+            >>> grid.diff() is grid.diff()
+            False
         """
         return self.x - self.y
