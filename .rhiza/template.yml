@@ -1,5 +1,5 @@
 repository: "jebel-quant/rhiza"
-ref: "v1.3.3"
+ref: "v1.3.4"
 
 profiles:
   - github-project
@@ -28,3 +28,28 @@ exclude:
   # instead (jebel-quant/rhiza#1546); the file goes when this repo's workflows pin it.
   - .rhiza/make.d
   - .rhiza/rhiza.mk
+
+  # `Makefile` is repo-owned -- CLAUDE.md has said so since the `rhiza-task` migration,
+  # but `.rhiza/template.lock` lists it under `files:` and the lock is what the sync
+  # obeys. The v1.3.4 sync is where that mismatch surfaced: it wrote conflict markers
+  # across the shim, and `/rhiza:update`'s resolver takes the upstream side of every
+  # conflict unconditionally -- which would have replaced Bridge 1, the `book` target and
+  # the `%:` catch-all with the template's `MKDOCS_EXTRA_PACKAGES` make layer.
+  #
+  # Excluding it makes the de facto state explicit: this repo owns the file and stops
+  # receiving template Makefile changes. That is the intent of the migration, which
+  # moved the settings the template's Makefile carried into `[tool.rhiza-task]`.
+  - Makefile
+
+  # Four deliberate deletions the v1.3.4 sync restored, for the reason the make layer is
+  # excluded rather than deleted: a deletion alone is undone by the next sync. Each was
+  # removed on purpose and each came back as an untracked file.
+  #
+  #   .github/CONFIG.md                     97ae7f6 -- PAT_TOKEN docs nothing referenced
+  #   .github/workflows/rhiza_mutation.yml  b7d8cf3 -- `make mutation` is broken upstream
+  #   .github/ISSUE_TEMPLATE                a606a02
+  #   .github/DISCUSSION_TEMPLATE           9917ab3
+  - .github/CONFIG.md
+  - .github/workflows/rhiza_mutation.yml
+  - .github/ISSUE_TEMPLATE
+  - .github/DISCUSSION_TEMPLATE
