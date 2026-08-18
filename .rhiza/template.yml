@@ -15,3 +15,16 @@ templates:
 # consumer side; drop this entry once the template ships the plugin recipe itself.
 exclude:
   - .rhiza/tests
+
+  # The make layer, replaced by the `rhiza-task` CLI on PyPI: `.rhiza/rhiza.mk` plus ten
+  # fragments under `.rhiza/make.d/`, 1030 lines synced at a template tag, for one pinned
+  # package version in `Makefile`. Recorded as exclusions rather than simply deleted,
+  # because a deletion alone is undone by the next sync.
+  #
+  # `.rhiza/rhiza.mk` outlives the rest by one caller: rhiza_ci.yml@v1.3.3's
+  # `generate-matrix` job runs `make -f .rhiza/rhiza.mk -s ci-os-matrix` in a job that
+  # installs no uv, so twenty repo-owned lines stay at that path. Excluding it is what
+  # stops the sync overwriting them with the 157-line original. @v1.3.4 asks the CLI
+  # instead (jebel-quant/rhiza#1546); the file goes when this repo's workflows pin it.
+  - .rhiza/make.d
+  - .rhiza/rhiza.mk
