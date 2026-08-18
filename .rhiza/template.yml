@@ -10,7 +10,7 @@ templates:
   - legal
 
 # `.rhiza/tests` is no longer taken from the template. Its seven modules are installed
-# instead, as the `pytest-rhiza` plugin pinned in pyproject.toml, and re-exported from
+# instead, as the `pytest-rhiza` plugin declared in pyproject.toml, and re-exported from
 # `tests/rhiza/` so they run under `make test`. Piloting jebel-quant/rhiza#1540 from the
 # consumer side; drop this entry once the template ships the plugin recipe itself.
 exclude:

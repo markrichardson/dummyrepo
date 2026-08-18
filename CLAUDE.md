@@ -46,7 +46,7 @@ in doubt, check there.
 - Coverage gate is 100% on `src/`.
 - The rhiza conformance checks are **not** synced into `.rhiza/tests/`. That
   folder is listed under `exclude:` in `.rhiza/template.yml`; the checks come
-  from the `pytest-rhiza` distribution pinned in `pyproject.toml` and are
+  from the `pytest-rhiza` distribution declared in `pyproject.toml` and are
   re-exported by `tests/rhiza/` so `make test` collects them. Consequences:
   `make rhiza-test` is now a warning no-op, and `make test-pyproject` is broken
   (it names `.rhiza/tests/test_pyproject.py`); run
