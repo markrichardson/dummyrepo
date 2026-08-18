@@ -47,6 +47,7 @@ dev = [
 test = [
     "pytest>=9.1.1",
     "hypothesis>=6.165.9",
+    "pytest-rhiza>=0.2.0",
 ]
 
 lint = [
@@ -103,3 +104,24 @@ attrs = "attrs"
 numpy = "numpy"
 plotly = "plotly"
 
+
+# The rhiza conformance checks now arrive as a pytest plugin instead of the seven files
+# the template copied into `.rhiza/tests/`. This repo is the consumer-side pilot of
+# jebel-quant/rhiza#1540: `.rhiza/tests` is listed under `exclude:` in
+# `.rhiza/template.yml`, and `tests/rhiza/` re-exports the plugin's check modules so
+# they run under `make test`. That is strictly more than the synced folder had — the
+# reusable CI workflow runs `make test` but never `make rhiza-test`, so the copied
+# suite only ever ran on a developer's `make all`.
+#
+# Pinned to a git tag rather than a version constraint because the distribution is not
+# published: pypi.org/project/pytest-rhiza 404s and the project's CI has no publish
+# job. Replace this table with a plain constraint once it lands on PyPI.
+[tool.uv.sources]
+pytest-rhiza = { git = "https://github.com/jebel-quant/pytest-rhiza", tag = "v0.2.0" }
+
+# tests/rhiza/ mirrors no module under src/ and never will — the checks assert about
+# the repository, not about dummypy — so the 1:1 layout checker would read the files as
+# orphan tests. Exempting the one directory keeps parity enforced everywhere else,
+# unlike `enforce = false`.
+[tool.check_test_layout]
+exempt_dirs = ["rhiza"]
