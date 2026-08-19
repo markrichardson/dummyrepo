@@ -111,40 +111,71 @@ plotly = "plotly"
 
 # The developer tasks come from `rhiza-task` on PyPI (see Makefile and CLAUDE.md); this
 # table is where what used to be a make variable, or a target shadowed in the root
-# Makefile, is said instead.
+# Makefile, is said instead. It is read as layer 3 of the CLI's resolution order
+# (defaults -> .rhiza/.env -> pyproject.toml -> RHIZA_* environment); layer 2 is gone,
+# so this is the only place the repo configures the task layer.
+#
+# Only entries that differ from the CLI's own default belong here -- `uvx rhiza-task print
+# <setting>` shows what one resolves to. Every value below was re-checked against
+# rhiza-task@0.3.1, which is the version `rhiza_ci.yml@v1.4.2` pins for every gate step;
+# the `RHIZA_TASK` pin in the Makefile governs local `make` only.
 [tool.rhiza-task]
 # The OS matrix CI runs on, moved here from `.rhiza/.env` now that nothing reads that file.
 #
 # Not optional, and not a default restated: `rhiza-task`'s own default is `["ubuntu-latest"]`.
-# rhiza_ci.yml@v1.3.4's `generate-matrix` exports RHIZA_CI_OS_MATRIX as the empty string for
-# every repository that is not the mother -- deliberately, so the consumer answers -- and the
-# CLI treats an empty setting as unset. With the dotenv deleted and nothing said here, the
-# answer would be the default: CI would keep passing while quietly testing one OS instead of
-# three. That is the failure mode worth spelling out, because it is green.
+# rhiza_ci.yml's `generate-matrix` asks the CLI (`uvx rhiza-task@0.3.1 ci-os-matrix`) and
+# exports RHIZA_CI_OS_MATRIX as the empty string for every repository that is not the mother
+# -- deliberately, so the consumer answers -- and the CLI treats an empty setting as unset.
+# With the dotenv deleted and nothing said here, the answer would be the default: CI would
+# keep passing while quietly testing one OS instead of three. That is the failure mode worth
+# spelling out, because it is green.
 ci-os-matrix = ["ubuntu-latest", "macos-latest", "windows-latest"]
 
 # python.mk's default was `both`; rhiza-task's is `ty`. Said here so the migration does not
 # quietly stop running mypy --strict -- which this project is written for, down to the
-# [[tool.mypy.overrides]] entry for pandas above.
+# [[tool.mypy.overrides]] entry for pandas above. It is also stricter than the make layer
+# was: the retired shell `case` let mypy's exit status win, so a `ty` failure could pass,
+# where the CLI raises on each run.
 typechecker = "both"
 
 # src/ is fully covered and stays that way. This was `COVERAGE_FAIL_UNDER = 100` in the
 # root Makefile, deliberately there rather than in the uncommitted local.mk so that a
-# regression below 100% fails `make test` for everyone. It still does.
+# regression below 100% fails `make test` for everyone. It still does. The CLI default is
+# 90, and `test` passes --cov-fail-under on the command line, which outranks
+# [tool.coverage.report] -- so this line, not that table, is the gate.
 coverage_fail_under = 100
 
-# docs/api is generated from the docstrings, and zensical does not ship mkdocstrings. Was
-# `MKDOCS_EXTRA_PACKAGES = --with 'mkdocstrings[python]'`; the flag is the CLI's business
-# now, so only the package name is given.
-mkdocs-extra-packages = ["mkdocstrings[python]"]
-
 # pytest-rhiza from PyPI, pinned exactly rather than floored: a gate that moves under you
-# is not a gate. rhiza-task 0.1.2's own default still names the git tag, one patch behind.
-# The `test` dependency group pins the same distribution for a different reason -- there it
-# is what `tests/rhiza/` imports under `make test`; here it is what `make rhiza-test`
-# provisions on the fly. Keep the two in step.
+# is not a gate. The CLI's default still names a git tag at v0.2.0, one patch behind, so
+# dropping this line would *downgrade* the conformance checks. The `test` dependency group
+# pins the same distribution for a different reason -- there it is what `tests/rhiza/`
+# imports under `make test`; here it is what `make rhiza-test` provisions on the fly.
+# Keep the two in step.
 pytest-rhiza = "pytest-rhiza==0.2.1"
 
+# Not set, on purpose. Each of these was checked against rhiza-task@0.3.1 rather than
+# recalled, and this note is here to stop them being re-added:
+#
+#   mkdocs-extra-packages -- was `["mkdocstrings[python]"]` here until the v1.4.2 bump, and
+#                          that is now the CLI's default verbatim, so the entry restated it.
+#                          Naming the setting *replaces* the default list rather than adding
+#                          to it, which makes a redundant entry a liability: it is the line
+#                          someone edits to add a package and accidentally drops
+#                          mkdocstrings from the book build with. docs/api/*.md still needs
+#                          mkdocstrings for its `:::` directives -- it just gets it by
+#                          default now. Verified behaviour-neutral: `print
+#                          mkdocs_extra_packages` returns `mkdocstrings[python]` either way.
+#   marimo-folder        -- the notebooks are in `book/marimo/notebooks/` and the CLI
+#                          defaults to `docs/notebooks`, so this one is a *known* mismatch
+#                          left alone rather than a default agreed with. Setting it would
+#                          newly run those notebooks in CI -- a change of behaviour, not of
+#                          configuration. See the "Known broken" section of CLAUDE.md.
+#   source-folder, layers -- already the defaults (`src`, `python`).
+#   license-ignore-packages -- default empty, and correct: nothing here wraps or vendors a
+#                          GPL distribution, so the `license` gate's
+#                          `--fail-on=GPL;LGPL;AGPL` has nothing to forgive. Do not add
+#                          `docutils`; rhiza-task appends that itself when marimo is in the
+#                          task registry.
 # tests/rhiza/ mirrors no module under src/ and never will — the checks assert about
 # the repository, not about dummypy — so the 1:1 layout checker would read the files as
 # orphan tests. Exempting the one directory keeps parity enforced everywhere else,
