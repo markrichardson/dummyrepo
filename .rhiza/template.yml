@@ -38,8 +38,13 @@ exclude:
 #   Makefile, .rhiza/rhiza.mk, .rhiza/make.d  -- the make layer, which v1.4.0 stopped
 #       shipping. The `rhiza-task` CLI replaced it; the settings those files carried live in
 #       `[tool.rhiza-task]` in pyproject.toml. The root `Makefile` survives as a repo-owned
-#       shim over the CLI, and no longer needs excluding to stay that way: a sync that
-#       delivers no Makefile cannot overwrite one.
+#       shim over the CLI, restored byte-identical after this very sync deleted it -- which
+#       is the detail worth recording: dropping the exclusion did not merely stop the file
+#       being *delivered*, it let the v1.3.4 -> v1.4.2 delete pass remove a repo-owned file,
+#       because that pass acts on what the old ref shipped and does not consult `exclude:`.
+#       No exclusion is needed to keep it from here: the deletion was a one-off transition
+#       artefact, and a later sync between two refs that both ship no Makefile has nothing
+#       to delete.
 #   .rhiza/.env, .rhiza/.gitignore           -- the dotenv layer, gone for the same reason.
 #       The v1.3.4 lock still listed both under `files:`, which is what made the exclusion
 #       load-bearing then; v1.4.2 does not list them at all.
