@@ -1,5 +1,5 @@
 repository: "jebel-quant/rhiza"
-ref: "v1.3.4"
+ref: "v1.4.2"
 
 profiles:
   - github-project
@@ -9,60 +9,9 @@ templates:
   - github-docker
   - legal
 
-# `.rhiza/tests` is no longer taken from the template. Its seven modules are installed
-# instead, as the `pytest-rhiza` plugin declared in pyproject.toml, and re-exported from
-# `tests/rhiza/` so they run under `make test`. Piloting jebel-quant/rhiza#1540 from the
-# consumer side; drop this entry once the template ships the plugin recipe itself.
 exclude:
-  - .rhiza/tests
-
-  # The make layer, replaced by the `rhiza-task` CLI on PyPI: `.rhiza/rhiza.mk` plus ten
-  # fragments under `.rhiza/make.d/`, 1030 lines synced at a template tag, for one pinned
-  # package version in `Makefile`. Recorded as exclusions rather than simply deleted,
-  # because a deletion alone is undone by the next sync.
-  #
-  # `.rhiza/rhiza.mk` outlives the rest by one caller: rhiza_ci.yml@v1.3.3's
-  # `generate-matrix` job runs `make -f .rhiza/rhiza.mk -s ci-os-matrix` in a job that
-  # installs no uv, so twenty repo-owned lines stay at that path. Excluding it is what
-  # stops the sync overwriting them with the 157-line original. @v1.3.4 asks the CLI
-  # instead (jebel-quant/rhiza#1546); the file goes when this repo's workflows pin it.
-  - .rhiza/make.d
-  - .rhiza/rhiza.mk
-
-  # `Makefile` is repo-owned -- CLAUDE.md has said so since the `rhiza-task` migration,
-  # but `.rhiza/template.lock` lists it under `files:` and the lock is what the sync
-  # obeys. The v1.3.4 sync is where that mismatch surfaced: it wrote conflict markers
-  # across the shim, and `/rhiza:update`'s resolver takes the upstream side of every
-  # conflict unconditionally -- which would have replaced Bridge 1, the `book` target and
-  # the `%:` catch-all with the template's `MKDOCS_EXTRA_PACKAGES` make layer.
-  #
-  # Excluding it makes the de facto state explicit: this repo owns the file and stops
-  # receiving template Makefile changes. That is the intent of the migration, which
-  # moved the settings the template's Makefile carried into `[tool.rhiza-task]`.
-  - Makefile
-
-  # Four deliberate deletions the v1.3.4 sync restored, for the reason the make layer is
-  # excluded rather than deleted: a deletion alone is undone by the next sync. Each was
-  # removed on purpose and each came back as an untracked file.
-  #
-  #   .github/CONFIG.md                     97ae7f6 -- PAT_TOKEN docs nothing referenced
-  #   .github/workflows/rhiza_mutation.yml  b7d8cf3 -- `make mutation` is broken upstream
-  #   .github/ISSUE_TEMPLATE                a606a02
-  #   .github/DISCUSSION_TEMPLATE           9917ab3
   - .github/CONFIG.md
   - .github/workflows/rhiza_mutation.yml
+  - .github/workflows/rhiza_fuzzing.yml
   - .github/ISSUE_TEMPLATE
   - .github/DISCUSSION_TEMPLATE
-
-  # The dotenv layer, deleted now that `[tool.rhiza-task]` in pyproject.toml is the only
-  # place this repo configures the task layer. Same rule again, and it very nearly caught
-  # this change out: both paths were still under `files:` in the lock the v1.3.4 sync
-  # regenerated, so without these two lines the next `/rhiza:update` would have written
-  # `.rhiza/.env` back -- and `rhiza-task` reads it at layer 2, *below* pyproject.toml, so
-  # a restored file would not even have overridden the matrix. It would just have sat
-  # there as a second, silent home for settings that now live in one place.
-  #
-  # `.rhiza/.gitignore` held exactly one rule, `!.env`, which un-ignored `.rhiza/.env`
-  # against `.gitignore`'s `.env`. It has nothing left to un-ignore.
-  - .rhiza/.env
-  - .rhiza/.gitignore
