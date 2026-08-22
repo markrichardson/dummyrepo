@@ -44,10 +44,12 @@ across the shim.
 - `tests/` — the local test suite (mirrors `src/` 1:1), plus `tests/rhiza/`
   (see below)
 - `pyproject.toml` — project metadata, dependencies, and `[tool.rhiza-task]`
-- `Makefile` — a shim forwarding to `rhiza-task` (see below). Repo-owned in
-  `.rhiza/template.yml`'s `exclude:` as well as here: the lock listed it under
-  `files:` until the v1.3.4 sync tried to overwrite the shim with the template's
-  make layer, and the lock is what the sync obeys.
+- `Makefile` — a shim forwarding to `rhiza-task` (see below). Repo-owned in the
+  strong sense at v1.4.2: core ships no `Makefile`, and it does not appear in
+  `.rhiza/template.lock`'s `files:` block, so nothing upstream regenerates it.
+  It has no `exclude:` entry, and one would not protect it: the v1.3.4 → v1.4.2
+  sync deleted it regardless, because the delete pass acts on what the *old* ref
+  shipped and does not consult `exclude:`. It was restored byte-identical.
 - `README.md` — project documentation
 - `CHANGELOG.md` — public API surface across releases
 - `CLAUDE.md` — this file
@@ -61,8 +63,10 @@ CI invokes. But `Makefile` no longer *contains* them: it is a catch-all that
 forwards every target to
 [`rhiza-task`](https://github.com/jebel-quant/rhiza-task) on PyPI, pinned by the
 one `RHIZA_TASK` variable at the top. That replaced `.rhiza/rhiza.mk` plus ten
-fragments under `.rhiza/make.d/` — 1030 synced lines, at a template tag, all of
-them excluded in `.rhiza/template.yml` now.
+fragments under `.rhiza/make.d/` — 1030 synced lines, at a template tag. None of
+them needs an `exclude:` entry now, and none has one: v1.4.0 retired that layer
+upstream, so core delivers no make layer at all, and nothing under
+`.rhiza/make.d/` appears in the lock's `files:` block.
 
 Consequences worth knowing:
 
@@ -117,11 +121,11 @@ nothing observable, for the reason given under *Known broken* below.
   and each source `class A` has a matching `TestA` (enforced by the
   test-layout checker).
 - Coverage gate is 100% on `src/`.
-- The rhiza conformance checks are **not** synced into `.rhiza/tests/`. That
-  folder is listed under `exclude:` in `.rhiza/template.yml`; the checks come
-  from the `pytest-rhiza` distribution declared in `pyproject.toml` and are
-  re-exported by `tests/rhiza/` so `make test` collects them. That re-export is
-  what puts them in CI: the reusable workflow runs `make test`, never
+- The rhiza conformance checks are **not** synced into `.rhiza/tests/`. v1.4.2
+  core ships no such folder, so it needs no `exclude:` entry and has none; the
+  checks come from the `pytest-rhiza` distribution declared in `pyproject.toml`
+  and are re-exported by `tests/rhiza/` so `make test` collects them. That
+  re-export is what puts them in CI: the reusable workflow runs `make test`, never
   `make rhiza-test`. Consumer-side pilot of
   [jebel-quant/rhiza#1540](https://github.com/jebel-quant/rhiza/issues/1540).
 - Bump the template with the `/rhiza:update` flow; don't hand-edit synced files.
