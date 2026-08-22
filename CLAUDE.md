@@ -8,8 +8,16 @@ This repo syncs its development infrastructure from the
 [`jebel-quant/rhiza`](https://github.com/jebel-quant/rhiza) template. Some files
 are **owned upstream** (regenerated on every sync — edit them in Rhiza, not
 here) and some are **locally owned** (this repo controls them). Editing a
-synced file locally will be reverted by the next `rhiza` sync and will fail the
-`make validate` / template-fidelity checks.
+synced file locally will be reverted by the next `rhiza` sync, which rewrites the
+file from the template.
+
+No local gate catches such an edit before then. There is no `validate` target —
+`make` forwards to `rhiza-task`, whose task list has none, so `make validate`
+dies with an unknown-task error — and `.rhiza/template.lock` records a template
+`sha` for the payload as a whole, not per-file hashes anything could check
+against. `/rhiza:status --check` is what reports the drift; pre-commit's
+`check-rhiza-config` hook (run by `make fmt`) validates `.rhiza/template.yml`
+itself, not the synced files it selects.
 
 ### Rhiza-synced — fix upstream, don't edit here
 
