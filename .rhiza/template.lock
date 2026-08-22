@@ -1,7 +1,7 @@
-sha: 31e1a11237419f746770c5339f8aa468fd1c0deb
+sha: de568b1e79e5871c58b4349762ce9dfd31d73e99
 repo: jebel-quant/rhiza
 host: github
-ref: v1.4.2
+ref: v1.5.1
 include: []
 exclude:
 - .github/CONFIG.md
@@ -45,6 +45,7 @@ files:
 - Dockerfile
 - Dockerfile.dockerignore
 - LICENSE
+- Makefile
 - SECURITY.md
 - cliff.toml
 - docs/assets/rhiza-logo.svg
@@ -58,5 +59,5 @@ files:
 - pytest.ini
 - ruff.toml
 - tests/test_rhiza_packaging.py
-synced_at: '2026-08-19T19:57:52Z'
+synced_at: '2026-08-22T17:14:06Z'
 strategy: merge
