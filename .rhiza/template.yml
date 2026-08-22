@@ -11,5 +11,3 @@ templates:
 
 exclude:
   - .github/CONFIG.md
-  - .github/workflows/rhiza_mutation.yml
-  - .github/workflows/rhiza_fuzzing.yml
