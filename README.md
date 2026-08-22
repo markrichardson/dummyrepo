@@ -135,6 +135,6 @@ This software is provided for educational and demonstration purposes. Feel free 
 ---
 
 **Version**: 0.2.0
-**Classification**: Public (MIT License)
+**Classification**: Public source, MIT licensed — not distributed on PyPI (`Private :: Do Not Upload` in `pyproject.toml`)
 
 The release date for each version is in [CHANGELOG.md](CHANGELOG.md).
