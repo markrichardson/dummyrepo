@@ -11,6 +11,8 @@ license = "MIT"
 readme = "README.md"
 requires-python = ">=3.11"
 keywords = ["dummypy", "analytics", "demo", "example"]
+# The release workflow greps this list for "Private :: Do Not Upload" to decide
+# whether to publish; removing that classifier starts uploading to PyPI.
 classifiers = [
     "Private :: Do Not Upload",
     "Programming Language :: Python :: 3.11",
