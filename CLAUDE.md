@@ -58,8 +58,16 @@ across the shim.
 
 ## The developer tasks come from a package, not from make
 
-`make test`, `make fmt`, `make book` and the rest still work, and are still what
-CI invokes. But `Makefile` no longer *contains* them: it is a catch-all that
+`make test`, `make fmt`, `make book` and the rest still work, and are the *human*
+front door. They are **not** what CI invokes: no workflow in this repository runs
+`make` at all. Each one delegates to a `jebel-quant/rhiza` reusable workflow at
+`@v1.4.2`, which pins its own CLI (`rhiza_ci.yml` sets
+`RHIZA_TASK: rhiza-task@0.3.1`) and calls it directly, `uvx "$RHIZA_TASK" test`.
+That pin is deliberately *not* read from this repo — "the gates a build runs must
+not move under it" — so the local `RHIZA_TASK` governs local `make` alone. The
+`Makefile` header carries the full story.
+
+But `Makefile` no longer *contains* the targets either: it is a catch-all that
 forwards every target to
 [`rhiza-task`](https://github.com/jebel-quant/rhiza-task) on PyPI, pinned by the
 one `RHIZA_TASK` variable at the top. That replaced `.rhiza/rhiza.mk` plus ten
@@ -92,11 +100,16 @@ Consequences worth knowing:
   flags; call `uvx rhiza-task <task> --flag` (e.g. `--strict`) directly.
 - **Repo-specific targets** go in the `Makefile` itself or in an uncommitted
   `local.mk`; an explicit rule beats the catch-all.
-- Two things the make layer had are gone without replacement: `github.mk`'s
-  seven `gh` wrappers (`gh pr list` is shorter than `make view-prs`) and
-  `docker-build`/`docker-run`/`docker-clean`, which looked for `docker/Dockerfile`
-  while this repo's Dockerfile is at the root — they were already no-ops, as is
-  the `(RHIZA) DOCKER` workflow, which probes the same path.
+- Two things the make layer had were missing at `rhiza-task` 0.1.2 and are back at
+  0.3.1 (#252): `github.mk`'s `gh` wrappers — `view-prs`, `view-issues`, `whoami`,
+  `failed-workflows`, `latest-release`, `workflow-status` — and
+  `docker-build`/`docker-run`/`docker-clean`. 0.3.1 ships 35 tasks that 0.1.2 does
+  not, these among them; `uvx rhiza-task list` is the current answer, not this
+  list. Two caveats survive the bump. The `gh` wrappers remain thin — `gh pr list`
+  is shorter than `make view-prs`. And the docker tasks were no-ops here because
+  they looked for `docker/Dockerfile` while this repo's Dockerfile is at the root;
+  whether 0.3.1 still does is **untested**, and the `(RHIZA) DOCKER` workflow
+  probes the same path regardless.
 
 ### The one remaining make bridge
 
@@ -168,10 +181,20 @@ nothing observable, for the reason given under *Known broken* below.
   [Jebel-Quant/rhiza#1553](https://github.com/Jebel-Quant/rhiza/pull/1553).
   Either way it would newly run those notebooks in CI, which is a change of
   behaviour rather than of configuration; do it deliberately.
-- **The devcontainer bootstrap is broken under `rhiza-task` 0.1.2.**
-  `.devcontainer/bootstrap.sh` exports `UV_SYNC_ARGS="--group test"` and runs
-  `make install`; `rhiza-task` reads that setting as a *string* and splats it
-  character by character into `uv sync - - g r o u p ...`. Only whitespace-free
-  or `;`-separated values survive. CI is unaffected — the devcontainer workflow
-  builds the image without running lifecycle commands — but a human opening the
-  container hits it. The fix belongs in `rhiza-task`'s `_coerce`.
+- ~~**The devcontainer bootstrap is broken under `rhiza-task` 0.1.2.**~~ Fixed by
+  the 0.3.1 bump in #252. `.devcontainer/bootstrap.sh` exports
+  `UV_SYNC_ARGS="--group test"` and runs `make install`; 0.1.2 read that setting
+  as a *string* and splatted it character by character, so only whitespace-free
+  or `;`-separated values survived. 0.3.1's `_coerce` handles it. Verified both
+  ways rather than assumed:
+
+  ```
+  UV_SYNC_ARGS="--group test" uvx rhiza-task@0.1.2 install
+    -> uv sync - - g r o u p   t e s t --inexact --frozen   (uv usage error)
+  UV_SYNC_ARGS="--group test" uvx rhiza-task@0.3.1 install
+    -> uv sync --group test --inexact --frozen
+  ```
+
+  CI was never affected — the devcontainer workflow builds the image without
+  running lifecycle commands — so this only ever bit a human opening the
+  container.

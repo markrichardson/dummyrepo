@@ -18,18 +18,27 @@
 # muscle memory reaches for. Nothing in CI depends on this file any more, with the one
 # unwanted exception noted at the catch-all rule below.
 #
-# RHIZA_TASK is still the entire version contract, but it governs local `make` alone: every
-# workflow pins its own rhiza-task and none of them reads this variable. The two have
-# drifted -- CI is on 0.3.1, this is on 0.1.2 -- so a local `make test` and CI's `test` are
-# no longer the same code. 0.1.2 is also the version whose string-splatting `_coerce` breaks
-# `.devcontainer/bootstrap.sh` (see CLAUDE.md). Bumping it is a deliberate change with its
-# own blast radius, not a tidy-up.
+# RHIZA_TASK is still the entire version contract, and it governs local `make` alone: every
+# workflow pins its own rhiza-task and none of them reads this variable. Upstream is
+# explicit that it must not -- "the gates a build runs must not move under it" -- so the
+# only way for local and CI to agree is for this value to *match* theirs by hand.
+#
+# It now does. `rhiza_ci.yml@v1.4.2` sets `RHIZA_TASK: rhiza-task@0.3.1` and runs every gate
+# as `uvx "$RHIZA_TASK" <task>`, so this pin is that pin, and `make test` is the code CI
+# runs. It was 0.1.2 until #252, and the drift was not cosmetic: the two resolve settings
+# differently, which is what broke `make book` in #244 -- 0.1.2 returns nothing for
+# `mkdocs_extra_packages` where 0.3.1 returns `mkdocstrings[python]`, so the book build lost
+# its docstring handler while CI stayed green. Leaving 0.1.2 also left the string-splatting
+# `_coerce` bug that breaks `.devcontainer/bootstrap.sh` (see CLAUDE.md).
+#
+# Keep this in step with the ref in `.rhiza/template.yml`. A template bump can move the
+# workflow's pin, and nothing local fails when it does -- the symptom is a gate that behaves
+# differently here than in CI, which is exactly the class of bug #244 was.
 #
 # Everything this repo used to say in make variables now lives in `[tool.rhiza-task]` in
-# pyproject.toml -- COVERAGE_FAIL_UNDER as `coverage_fail_under`, while
-# MKDOCS_EXTRA_PACKAGES turned out to restate the CLI's own default and was dropped at the
-# v1.4.2 bump. See CLAUDE.md.
-RHIZA_TASK ?= rhiza-task@0.1.2
+# pyproject.toml -- COVERAGE_FAIL_UNDER as `coverage_fail_under`, and
+# `mkdocs-extra-packages` restored there by #244.
+RHIZA_TASK ?= rhiza-task@0.3.1
 
 # --- The uv bootstrap: no longer a CI bridge, kept as a local convenience ------------------
 #
