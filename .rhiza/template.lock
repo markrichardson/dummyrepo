@@ -6,6 +6,7 @@ include: []
 exclude:
 - .github/CONFIG.md
 - .github/workflows/rhiza_mutation.yml
+- .github/workflows/rhiza_fuzzing.yml
 - .github/ISSUE_TEMPLATE
 - .github/DISCUSSION_TEMPLATE
 templates:
@@ -31,7 +32,6 @@ files:
 - .github/workflows/rhiza_codeql.yml
 - .github/workflows/rhiza_devcontainer.yml
 - .github/workflows/rhiza_docker.yml
-- .github/workflows/rhiza_fuzzing.yml
 - .github/workflows/rhiza_marimo.yml
 - .github/workflows/rhiza_release.yml
 - .github/workflows/rhiza_scorecard.yml
