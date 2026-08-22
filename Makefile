@@ -90,22 +90,37 @@ help: $(UVX_BOOTSTRAP)
 	@$(UVX) $(RHIZA_TASK) list
 
 # The generated shim warns that "a *file* sharing a task's name would shadow it -- none
-# do". In this repository one does: `book/` holds the marimo notebooks and the minibook
-# templates. make finds the directory, calls the target up to date and prints
-# "make: `book' is up to date" instead of building anything.
+# do". In this repository two do, for different reasons, and both need the same treatment.
 #
-# That used to break CI silently: rhiza_book.yml and rhiza_mutation.yml both ran
+# `book/` holds the marimo notebooks and the minibook templates. make finds the directory,
+# calls the target up to date and prints "make: `book' is up to date" instead of building
+# anything. That used to break CI silently: rhiza_book.yml and rhiza_mutation.yml both ran
 # `make book`. Neither does now -- @v1.4.2's book workflow calls `uvx rhiza-task book`, and
 # rhiza_mutation.yml is excluded *and* deleted in this repo (see .rhiza/template.yml). What
 # the rule still buys is the human case: `make book` producing silence instead of a book.
 #
-# Both lines are needed, and neither alone is enough. `.PHONY` stops make consulting the
-# filesystem -- but it also makes make *skip the implicit-rule search*, so the catch-all
-# below stops matching and `book` becomes "nothing to be done". The explicit rule supplies
-# what the catch-all no longer can. This is what the retired book.mk did, minus the recipe.
-.PHONY: book
+# `LICENSE` is the subtler one, because the names do not actually match: the task is
+# `license` and the file is `LICENSE`. On a case-insensitive filesystem -- macOS APFS/HFS+
+# and Windows, two of the three in `ci-os-matrix` -- make's stat for `license` finds
+# `LICENSE` anyway and reports "make: `license' is up to date", so the copyleft scan never
+# runs. Ubuntu is case-sensitive and unaffected, which is exactly what made this invisible:
+# a gate reporting success while measuring nothing, in the one place CI cannot see it.
+# Found by /rhiza:quality; see #245.
+#
+# Both lines are needed in each case, and neither alone is enough. `.PHONY` stops make
+# consulting the filesystem -- but it also makes make *skip the implicit-rule search*, so
+# the catch-all below stops matching and the target becomes "nothing to be done". The
+# explicit rule supplies what the catch-all no longer can. This is what the retired book.mk
+# did, minus the recipe.
+#
+# Any future task whose name collides with a root path -- case-insensitively -- needs an
+# entry here too. `ls | tr A-Z a-z` against `uvx rhiza-task list` is how to check.
+.PHONY: book license
 book: $(UVX_BOOTSTRAP)
 	@$(UVX) $(RHIZA_TASK) book
+
+license: $(UVX_BOOTSTRAP)
+	@$(UVX) $(RHIZA_TASK) license
 
 # `%:` matches any target make cannot otherwise resolve. Two caveats, both survivable: a
 # typo is routed here too (the CLI's "unknown task" error is the backstop), and a task

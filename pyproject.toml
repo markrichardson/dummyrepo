@@ -155,18 +155,30 @@ coverage_fail_under = 100
 # Keep the two in step.
 pytest-rhiza = "pytest-rhiza==0.2.1"
 
+# Restored after the v1.4.2 bump dropped it. The note that removed it reasoned that the
+# value "is now the CLI's default verbatim, so the entry restated it", and checked that
+# against rhiza-task@0.3.1 -- where it is true. But `RHIZA_TASK` in the Makefile pins
+# 0.1.2 for local `make`, and the default is not the same on both sides:
+#
+#   uvx rhiza-task@0.1.2 print mkdocs_extra_packages  ->  (empty)
+#   uvx rhiza-task@0.3.1 print mkdocs_extra_packages  ->  mkdocstrings[python]
+#
+# So `make book` lost mkdocstrings and died with "mkdocstrings plugin is enabled, but
+# mkdocstrings is not installed" -- mkdocs.yml declares the plugin and docs/api/*.md needs
+# it for the `:::` directives. CI never saw it, because rhiza_book.yml delegates to
+# jebel-quant/rhiza@v1.4.2, which pins its own newer CLI. Green in CI, broken on a laptop.
+#
+# Declaring it explicitly is correct at both pins and immune to the drift: the value equals
+# 0.3.1's default, so naming it changes nothing there, and it supplies what 0.1.2 lacks.
+# The old note's warning still stands and is the reason to keep this list at exactly one
+# entry -- naming the setting *replaces* the default rather than appending to it, so this is
+# the line someone edits to add a package and accidentally drops mkdocstrings from the book
+# build with. Add to it, never overwrite it. See #244.
+mkdocs-extra-packages = ["mkdocstrings[python]"]
+
 # Not set, on purpose. Each of these was checked against rhiza-task@0.3.1 rather than
 # recalled, and this note is here to stop them being re-added:
 #
-#   mkdocs-extra-packages -- was `["mkdocstrings[python]"]` here until the v1.4.2 bump, and
-#                          that is now the CLI's default verbatim, so the entry restated it.
-#                          Naming the setting *replaces* the default list rather than adding
-#                          to it, which makes a redundant entry a liability: it is the line
-#                          someone edits to add a package and accidentally drops
-#                          mkdocstrings from the book build with. docs/api/*.md still needs
-#                          mkdocstrings for its `:::` directives -- it just gets it by
-#                          default now. Verified behaviour-neutral: `print
-#                          mkdocs_extra_packages` returns `mkdocstrings[python]` either way.
 #   marimo-folder        -- the notebooks are in `book/marimo/notebooks/` and the CLI
 #                          defaults to `docs/notebooks`, so this one is a *known* mismatch
 #                          left alone rather than a default agreed with. Setting it would
