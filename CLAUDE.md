@@ -128,6 +128,24 @@ nothing observable, for the reason given under *Known broken* below.
 - Bump the task layer by editing `RHIZA_TASK` in the `Makefile` — that is the
   whole version contract.
 
+## Measurement caveats
+
+- **radon's maintainability index drops when you document the code.** Nothing
+  here runs radon — it is not a gate, a hook or a workflow — but a quality
+  review that reaches for it will find `grid.py` at MI 34.44 and `payoffs.py`
+  at 31.78, down about 24 points from 58.56 and 61.25 before the #231 merge
+  (`f61d135` → `c5f1d8f`). Not one executable line changed across that merge:
+  `LLOC` stayed 36 and 20, `SLOC` 27 and 16, average cyclomatic complexity
+  1.875 (A) over the same 8 blocks with none ranking worse than A. Only
+  `Multi` — docstring lines — grew, 53 → 90 and 36 → 75, when #231 added 19
+  doctests. radon's MI takes docstrings as length but credits only `#` lines
+  in its comment term, so documentation is pure penalty; with 59% of their
+  lines docstring or comment, both modules sit near the worst case for that
+  formula. Both are still rank A (threshold 20), ~12 points of headroom. Track
+  `LLOC` or CC for a trend line, and do not delete docstrings to move this
+  number.
+  ([#234](https://github.com/markrichardson/dummyrepo/issues/234))
+
 ## Known broken, and not this repo's doing
 
 - **`make mutation`** fails, and did before the task migration: both the retired
