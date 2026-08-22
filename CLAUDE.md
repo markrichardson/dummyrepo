@@ -58,8 +58,16 @@ across the shim.
 
 ## The developer tasks come from a package, not from make
 
-`make test`, `make fmt`, `make book` and the rest still work, and are still what
-CI invokes. But `Makefile` no longer *contains* them: it is a catch-all that
+`make test`, `make fmt`, `make book` and the rest still work, and are the *human*
+front door. They are **not** what CI invokes: no workflow in this repository runs
+`make` at all. Each one delegates to a `jebel-quant/rhiza` reusable workflow at
+`@v1.4.2`, which pins its own CLI (`rhiza_ci.yml` sets
+`RHIZA_TASK: rhiza-task@0.3.1`) and calls it directly, `uvx "$RHIZA_TASK" test`.
+That pin is deliberately *not* read from this repo — "the gates a build runs must
+not move under it" — so the local `RHIZA_TASK` governs local `make` alone. The
+`Makefile` header carries the full story.
+
+But `Makefile` no longer *contains* the targets either: it is a catch-all that
 forwards every target to
 [`rhiza-task`](https://github.com/jebel-quant/rhiza-task) on PyPI, pinned by the
 one `RHIZA_TASK` variable at the top. That replaced `.rhiza/rhiza.mk` plus ten
