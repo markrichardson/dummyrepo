@@ -155,10 +155,11 @@ coverage_fail_under = 100
 # Keep the two in step.
 pytest-rhiza = "pytest-rhiza==0.2.1"
 
-# Restored after the v1.4.2 bump dropped it. The note that removed it reasoned that the
-# value "is now the CLI's default verbatim, so the entry restated it", and checked that
-# against rhiza-task@0.3.1 -- where it is true. But `RHIZA_TASK` in the Makefile pins
-# 0.1.2 for local `make`, and the default is not the same on both sides:
+# Restored in #244 after the v1.4.2 bump dropped it, and kept deliberately even though the
+# pins now agree. The note that removed it reasoned that the value "is now the CLI's default
+# verbatim, so the entry restated it" -- true at rhiza-task@0.3.1, which is what it was
+# checked against, but the Makefile pinned 0.1.2 for local `make` at the time and the
+# default was not the same on both sides:
 #
 #   uvx rhiza-task@0.1.2 print mkdocs_extra_packages  ->  (empty)
 #   uvx rhiza-task@0.3.1 print mkdocs_extra_packages  ->  mkdocstrings[python]
@@ -166,14 +167,18 @@ pytest-rhiza = "pytest-rhiza==0.2.1"
 # So `make book` lost mkdocstrings and died with "mkdocstrings plugin is enabled, but
 # mkdocstrings is not installed" -- mkdocs.yml declares the plugin and docs/api/*.md needs
 # it for the `:::` directives. CI never saw it, because rhiza_book.yml delegates to
-# jebel-quant/rhiza@v1.4.2, which pins its own newer CLI. Green in CI, broken on a laptop.
+# jebel-quant/rhiza@v1.4.2, which pins its own CLI. Green in CI, broken on a laptop.
 #
-# Declaring it explicitly is correct at both pins and immune to the drift: the value equals
-# 0.3.1's default, so naming it changes nothing there, and it supplies what 0.1.2 lacks.
+# #252 has since bumped RHIZA_TASK to 0.3.1, so this line is once again equal to the
+# resolved default -- which is precisely the state the v1.4.2 note read as licence to delete
+# it. Do not. The equality holds only while both pins say 0.3.1, and neither of them is
+# pinned here: the workflow's lives upstream and moves with the template ref. Stating the
+# value costs nothing at the current pin and is what makes the book build independent of it.
+#
 # The old note's warning still stands and is the reason to keep this list at exactly one
 # entry -- naming the setting *replaces* the default rather than appending to it, so this is
 # the line someone edits to add a package and accidentally drops mkdocstrings from the book
-# build with. Add to it, never overwrite it. See #244.
+# build with. Add to it, never overwrite it. See #244 and #252.
 mkdocs-extra-packages = ["mkdocstrings[python]"]
 
 # Not set, on purpose. Each of these was checked against rhiza-task@0.3.1 rather than
