@@ -181,14 +181,24 @@ pytest-rhiza = "pytest-rhiza==0.2.1"
 # build with. Add to it, never overwrite it. See #244 and #252.
 mkdocs-extra-packages = ["mkdocstrings[python]"]
 
+# Where the marimo notebooks actually are. Checked, not recalled: `uvx rhiza-task@0.3.1
+# print marimo_folder` answers `docs/notebooks`, a folder this repo does not have -- so
+# while this line was absent every marimo task pointed at nothing. `make marimo-validate`
+# skipped, and the book exported no notebooks; a green gate measuring nothing, of the same
+# family as the old `make rhiza-test`.
+#
+# Setting it is a change of *behaviour*, not of configuration -- `book/marimo/notebooks/`
+# is now genuinely executed -- which is why it stayed unset for so long. That was the
+# deliberate part; this is the deliberate undoing of it.
+#
+# It fixes the CLI half only. `rhiza_marimo.yml` discovers its folder its own way and never
+# reads this table, so the workflow still finds nothing until
+# Jebel-Quant/rhiza#1553 lands. See the "Known broken" section of CLAUDE.md.
+marimo-folder = "book/marimo/notebooks"
+
 # Not set, on purpose. Each of these was checked against rhiza-task@0.3.1 rather than
 # recalled, and this note is here to stop them being re-added:
 #
-#   marimo-folder        -- the notebooks are in `book/marimo/notebooks/` and the CLI
-#                          defaults to `docs/notebooks`, so this one is a *known* mismatch
-#                          left alone rather than a default agreed with. Setting it would
-#                          newly run those notebooks in CI -- a change of behaviour, not of
-#                          configuration. See the "Known broken" section of CLAUDE.md.
 #   source-folder, layers -- already the defaults (`src`, `python`).
 #   license-ignore-packages -- default empty, and correct: nothing here wraps or vendors a
 #                          GPL distribution, so the `license` gate's

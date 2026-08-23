@@ -169,18 +169,19 @@ nothing observable, for the reason given under *Known broken* below.
   `test.mk` and `rhiza-task` call `mutmut run --paths-to-mutate=... ` and
   `mutmut html`, neither of which mutmut 3.x still has. The `(RHIZA) MUTATION`
   workflow does not run on pull requests, so nothing is gated on it.
-- **The marimo notebooks are not exercised by CI.** Both readers look in a
-  folder that does not exist — the notebooks are in `book/marimo/notebooks/`.
-  `rhiza-task` resolves `marimo_folder` to its `docs/notebooks` default, and
-  `rhiza_marimo.yml`'s make probe now takes its `marimo` fallback, since
-  `.rhiza/.env` is gone and nothing puts the variable in make's namespace any
-  more. So `rhiza_marimo.yml` finds nothing to run, `make marimo-validate`
-  skips, and the book exports no notebooks — as was already the case when the
-  answer was `docs/notebooks`. Setting `marimo-folder` in `[tool.rhiza-task]`
-  fixes the CLI half; the workflow half needs
+- **The marimo notebooks are still not exercised by CI — but the local tasks now
+  see them.** Both readers used to look in a folder that does not exist; the
+  notebooks are in `book/marimo/notebooks/`. Half of that is fixed:
+  `marimo-folder` is now set in `[tool.rhiza-task]`, so the CLI resolves it to
+  the real folder instead of its `docs/notebooks` default, and `make marimo` /
+  `make marimo-validate` genuinely run those notebooks rather than skipping.
+  That was a change of behaviour, not of configuration — it is why the setting
+  was left off for so long.
+  The workflow half is unchanged. `rhiza_marimo.yml`'s make probe takes its
+  `marimo` fallback (since `.rhiza/.env` is gone, nothing puts the variable in
+  make's namespace) and it never reads `[tool.rhiza-task]`, so the workflow
+  still finds nothing to run and the book still exports no notebooks. That needs
   [Jebel-Quant/rhiza#1553](https://github.com/Jebel-Quant/rhiza/pull/1553).
-  Either way it would newly run those notebooks in CI, which is a change of
-  behaviour rather than of configuration; do it deliberately.
 - ~~**The devcontainer bootstrap is broken under `rhiza-task` 0.1.2.**~~ Fixed by
   the 0.3.1 bump in #252. `.devcontainer/bootstrap.sh` exports
   `UV_SYNC_ARGS="--group test"` and runs `make install`; 0.1.2 read that setting
