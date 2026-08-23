@@ -83,12 +83,18 @@ new `Grid` instead of mutating one.
 ```python
 from dummypy import Grid
 
-grid = Grid(n=3)           # (n + 1) x (n + 1) coordinate frames
-grid.x.shape               # -> (4, 4)
-grid.diff().loc["2", "1"]  # -> np.int64(1)   (x - y at those coordinates)
+grid = Grid(n=3)  # (n + 1) x (n + 1) coordinate frames
+
+print(grid.x.shape)
+print(repr(grid.diff().loc["2", "1"]))  # x - y at those coordinates
 
 # Grid(n=-1) raises ValueError: Grid size n must be non-negative
 # grid.n = 5 raises attr.exceptions.FrozenInstanceError - build a new Grid instead
+```
+
+```result
+(4, 4)
+np.int64(1)
 ```
 
 ### `call_payoff` / `put_payoff`
@@ -101,13 +107,22 @@ invalid `strike` (negative, NaN or infinite) raises a `ValueError`.
 ```python
 from dummypy import call_payoff, put_payoff
 
-call_payoff(120.0, strike=100.0)                  # -> np.float64(20.0)
-put_payoff(80.0, strike=100.0)                    # -> np.float64(20.0)
+# A scalar spot yields a np.float64 ...
+print(repr(call_payoff(120.0, strike=100.0)))
+print(repr(put_payoff(80.0, strike=100.0)))
 
-call_payoff([80.0, 100.0, 130.0], strike=100.0)   # -> array([ 0.,  0., 30.])
-put_payoff([70.0, 100.0, 130.0], strike=100.0)    # -> array([30.,  0.,  0.])
+# ... and an array-like yields a float64 array.
+print(repr(call_payoff([80.0, 100.0, 130.0], strike=100.0)))
+print(repr(put_payoff([70.0, 100.0, 130.0], strike=100.0)))
 
 # call_payoff(100.0, strike=-1.0) raises ValueError: strike must be non-negative
+```
+
+```result
+np.float64(20.0)
+np.float64(20.0)
+array([ 0.,  0., 30.])
+array([30.,  0.,  0.])
 ```
 
 ## Development
@@ -135,6 +150,6 @@ This software is provided for educational and demonstration purposes. Feel free 
 ---
 
 **Version**: 0.2.0
-**Classification**: Public (MIT License)
+**Classification**: Public source, MIT licensed — not distributed on PyPI (`Private :: Do Not Upload` in `pyproject.toml`)
 
 The release date for each version is in [CHANGELOG.md](CHANGELOG.md).

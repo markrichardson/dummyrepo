@@ -1,5 +1,5 @@
 repository: "jebel-quant/rhiza"
-ref: "v1.4.2"
+ref: "v1.5.1"
 
 profiles:
   - github-project
@@ -11,7 +11,3 @@ templates:
 
 exclude:
   - .github/CONFIG.md
-  - .github/workflows/rhiza_mutation.yml
-  - .github/workflows/rhiza_fuzzing.yml
-  - .github/ISSUE_TEMPLATE
-  - .github/DISCUSSION_TEMPLATE
