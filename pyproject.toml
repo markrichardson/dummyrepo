@@ -38,26 +38,26 @@ Repository = "https://github.com/markrichardson/dummyrepo"
 # dependencies only needed by the notebooks
 [dependency-groups]
 notebook = [
-    "loman>=0.6.0",
+    "loman>=0.7.0",
 ]
 
 dev = [
-    "marimo>=0.23.16",
+    "marimo>=0.24.0",
     "plotly>=6.9.0",
 ]
 
 test = [
     "pytest>=9.1.1",
-    "hypothesis>=6.165.9",
+    "hypothesis>=6.165.10",
     # The rhiza conformance checks, as a plugin instead of the seven files the template
     # copied into `.rhiza/tests/` — that folder is listed under `exclude:` in
     # `.rhiza/template.yml`, and `tests/rhiza/` re-exports the check modules so they run
     # under `make test`. Consumer-side pilot of jebel-quant/rhiza#1540.
-    "pytest-rhiza>=0.2.1",
+    "pytest-rhiza>=0.4.0",
 ]
 
 lint = [
-    "ruff>=0.16.3",
+    "ruff>=0.16.4",
 ]
 
 [tool.hatch.build.targets.wheel]
