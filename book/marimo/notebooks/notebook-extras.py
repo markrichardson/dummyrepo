@@ -11,7 +11,7 @@
 #
 # ///
 
-"""Demo build-extras.sh with loman and graphviz."""
+"""Demo the local-setup.sh provisioning hook with loman and graphviz."""
 
 import marimo
 
@@ -24,7 +24,8 @@ def _(mo):
     mo.md(r"""
     ## Verify loman renders graphviz plots
 
-    graphiz is installed in `.rhiza/scripts/customisations/build-extras.sh`
+    graphviz is installed by `local-setup.sh`, the repository's `rhiza-task`
+    setup hook
     """)
     return
 

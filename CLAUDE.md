@@ -66,15 +66,18 @@ repo-owned. At v1.7.0 core ships one again, so the answer flipped back — with
   branch/tag pair; the rules that actually apply here (required checks, tag
   patterns) are a per-repo decision.
 - `.hadolint.yaml` — one setting, with the whole story in its header
+- `local-setup.sh` — the native-dependency provisioning hook (below). Repo-owned
+  content at a CLI-fixed name and location.
 - `README.md` — project documentation
 - `CHANGELOG.md` — public API surface across releases
 - `CLAUDE.md` — this file
 - `.rhiza/template.yml` — selects the template version, profile, and bundles,
   and lists what the sync must not deliver
 
-Two files are orphans rather than owned: `tests/fuzz/fuzz_grid.py` and
-`.rhiza/scripts/customisations/build-extras.sh`. Nothing runs either — the
-fuzzing workflow and the make layer that called the script are both retired.
+`tests/fuzz/fuzz_grid.py` is an orphan rather than owned: nothing runs it, the
+fuzzing workflow having been retired.
+`.rhiza/scripts/customisations/build-extras.sh` was the other one and is gone —
+`local-setup.sh` replaces it (below).
 
 ## The developer tasks come from a package, not from make
 
@@ -125,6 +128,17 @@ Consequences worth knowing:
   been printing a skip notice for as long as the path was wrong, so v1.7.0 is
   the first time it has actually linted and built. See `.hadolint.yaml` for
   what that surfaced.
+- **Native dependencies go in `local-setup.sh`**, the repository root hook that
+  `rhiza-task`'s `setup` task runs. `setup` is a prerequisite of `install`, and
+  `install` of essentially every gate, so one file covers local `make test`, CI
+  and the devcontainer with no workflow edit. It provisions graphviz, which
+  `loman` shells out to for the plot in
+  `book/marimo/notebooks/notebook-extras.py`. This is the sanctioned successor
+  to `.rhiza/scripts/customisations/build-extras.sh`, and to the advice to
+  shadow `install` in `local.mk` — which never worked, because `install` is a
+  prerequisite inside the CLI and never reaches a make rule of that name.
+  Requires `rhiza-task` >= the version that ships `setup`; 1.1.0 has no such
+  task, 1.4.0 does.
 - The `gh` wrappers (`view-prs`, `view-issues`, `whoami`, `failed-workflows`,
   `latest-release`, `workflow-status`) remain thin — `gh pr list` is shorter
   than `make view-prs`.
