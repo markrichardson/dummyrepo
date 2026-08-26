@@ -11,3 +11,10 @@ templates:
 
 exclude:
   - .github/CONFIG.md
+
+  # Branch and tag rulesets. The template ships a generic pair; the protection
+  # rules that actually apply here (required checks, tag patterns) are decided
+  # per repo, so they are maintained in this tree. Excluding them does not
+  # delete the files — an excluded path is never treated as an orphan.
+  - .github/rulesets/main-branch-protection.json
+  - .github/rulesets/tag-protection.json
