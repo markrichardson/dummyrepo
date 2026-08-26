@@ -5,196 +5,202 @@ Guidance for working in this repository.
 ## Rhiza-vs-local ownership split
 
 This repo syncs its development infrastructure from the
-[`jebel-quant/rhiza`](https://github.com/jebel-quant/rhiza) template. Some files
-are **owned upstream** (regenerated on every sync — edit them in Rhiza, not
-here) and some are **locally owned** (this repo controls them). Editing a
-synced file locally will be reverted by the next `rhiza` sync, which rewrites the
-file from the template.
+[`jebel-quant/rhiza`](https://github.com/jebel-quant/rhiza) template, currently
+at **v1.7.0**. Some files are **owned upstream** (regenerated on every sync —
+edit them in Rhiza, not here) and some are **locally owned** (this repo controls
+them). Editing a synced file locally will be reverted by the next `rhiza` sync,
+which rewrites the file from the template.
 
-No local gate catches such an edit before then. There is no `validate` target —
-`make` forwards to `rhiza-task`, whose task list has none, so `make validate`
-dies with an unknown-task error — and `.rhiza/template.lock` records a template
-`sha` for the payload as a whole, not per-file hashes anything could check
-against. `/rhiza:status --check` is what reports the drift; pre-commit's
-`check-rhiza-config` hook (run by `make fmt`) validates `.rhiza/template.yml`
-itself, not the synced files it selects.
+A local gate does catch such an edit first: pre-commit's `check-managed-files`
+(rhiza-hooks, run by `make fmt` and on every commit) refuses a commit touching
+any path in `.rhiza/template.lock`'s `files:` block. It is why `/rhiza:update`
+commits the sync with `SKIP=check-managed-files` — that one commit legitimately
+rewrites the whole managed set. What the gate does *not* do is compare content:
+the lock records a template `sha` for the payload as a whole, not per-file
+hashes, so a synced file edited before the hook was adopted is invisible to it.
+`/rhiza:status --check` is what reports that drift; `check-rhiza-config`
+validates `.rhiza/template.yml` itself, not the synced files it selects. There
+is still no `validate` target — `make` forwards to `rhiza-task`, whose task list
+has none, so `make validate` dies with an unknown-task error.
 
 ### Rhiza-synced — fix upstream, don't edit here
 
+- `Makefile` — the shim forwarding to `rhiza-task` (see below). **Template-owned
+  again at v1.7.0**, and in the lock's `files:` block.
 - `.github/workflows/*` — reusable CI/CD workflows
 - `.pre-commit-config.yaml` — pre-commit hooks
 - `ruff.toml` — lint/format config
 - `pytest.ini` — test/coverage config
-- `.rhiza/` — the template payload (semgrep rules, scripts, config)
+- `.python-version`
+- `.rhiza/` — the template payload (semgrep rules, community docs, config)
 - `.devcontainer/` — the devcontainer image and its bootstrap script
-- other template-managed root files (`Dockerfile`, `SECURITY.md`, `LICENSE`,
-  `cliff.toml`, `.editorconfig`, …)
+- `docker/Dockerfile` and `docker/Dockerfile.dockerignore` — moved out of the
+  repo root by the v1.7.0 sync
+- `docs/index.md`, `docs/mkdocs-base.yml`, `docs/development/DOCKER.md`,
+  `docs/development/rhiza.md`
+- `tests/test_rhiza_packaging.py` — the one test the template puts *inside*
+  `tests/`
+- other template-managed root files (`SECURITY.md`, `LICENSE`, `cliff.toml`,
+  `.editorconfig`, `.gitignore`, `.bandit`, …)
 
 The authoritative, machine-generated list of synced files lives in
 [`.rhiza/template.lock`](.rhiza/template.lock) under its `files:` block, with
-what this repo has taken back under `exclude:`. When in doubt, check there —
-and note that the lock, not `CLAUDE.md`, is what the sync obeys. The v1.3.4
-sync is the cautionary tale: `Makefile` was called locally owned here while the
-lock still listed it under `files:`, and the sync duly wrote conflict markers
-across the shim.
+what this repo has taken back under `exclude:`. When in doubt, check there — and
+note that the lock, not `CLAUDE.md`, is what the sync obeys. `Makefile` is the
+cautionary tale twice over. At v1.3.4 this file called it locally owned while
+the lock still listed it under `files:`, and the sync duly wrote conflict
+markers across the shim. At v1.4.2 core shipped none and it was genuinely
+repo-owned. At v1.7.0 core ships one again, so the answer flipped back — with
+`RHIZA_TASK` inside it, which is the whole point (below).
 
 ### Locally owned — edit freely
 
 - `src/` — the `dummypy` package (`grid.py`, `payoffs.py`, `__init__.py`)
-- `tests/` — the local test suite (mirrors `src/` 1:1), plus `tests/rhiza/`
-  (see below)
+- `tests/` — the local suite (mirrors `src/` 1:1), plus `tests/rhiza/` (see
+  below). Everything except `tests/test_rhiza_packaging.py`.
 - `pyproject.toml` — project metadata, dependencies, and `[tool.rhiza-task]`
-- `Makefile` — a shim forwarding to `rhiza-task` (see below). Repo-owned in the
-  strong sense at v1.4.2: core ships no `Makefile`, and it does not appear in
-  `.rhiza/template.lock`'s `files:` block, so nothing upstream regenerates it.
-  It has no `exclude:` entry, and one would not protect it: the v1.3.4 → v1.4.2
-  sync deleted it regardless, because the delete pass acts on what the *old* ref
-  shipped and does not consult `exclude:`. It was restored byte-identical.
+- `mkdocs.yml` — `site_name`, `nav` and the mkdocstrings plugin config. It
+  `INHERIT:`s the synced `docs/mkdocs-base.yml`, so theme and markdown
+  extensions come from upstream and only the project-specific half lives here.
+- `.github/rulesets/*.json` — taken back at v1.7.0. The template ships a generic
+  branch/tag pair; the rules that actually apply here (required checks, tag
+  patterns) are a per-repo decision.
+- `.hadolint.yaml` — one setting, with the whole story in its header
 - `README.md` — project documentation
 - `CHANGELOG.md` — public API surface across releases
 - `CLAUDE.md` — this file
 - `.rhiza/template.yml` — selects the template version, profile, and bundles,
   and lists what the sync must not deliver
 
+Two files are orphans rather than owned: `tests/fuzz/fuzz_grid.py` and
+`.rhiza/scripts/customisations/build-extras.sh`. Nothing runs either — the
+fuzzing workflow and the make layer that called the script are both retired.
+
 ## The developer tasks come from a package, not from make
 
-`make test`, `make fmt`, `make book` and the rest still work, and are the *human*
-front door. They are **not** what CI invokes: no workflow in this repository runs
-`make` at all. Each one delegates to a `jebel-quant/rhiza` reusable workflow at
-`@v1.4.2`, which pins its own CLI (`rhiza_ci.yml` sets
-`RHIZA_TASK: rhiza-task@0.3.1`) and calls it directly, `uvx "$RHIZA_TASK" test`.
-That pin is deliberately *not* read from this repo — "the gates a build runs must
-not move under it" — so the local `RHIZA_TASK` governs local `make` alone. The
-`Makefile` header carries the full story.
+`make test`, `make fmt`, `make book` and the rest still work, and are the
+*human* front door. They are **not** what CI invokes: no workflow in this
+repository runs `make` at all. All but one delegate to a `jebel-quant/rhiza`
+reusable workflow at `@v1.7.0`, which pins its own CLI (`rhiza_ci.yml` and
+`rhiza_book.yml` both set `RHIZA_TASK: rhiza-task@1.4.0`) and calls it directly,
+`uvx "$RHIZA_TASK" test`. The exception is `rhiza_release.yml`, which is a
+self-contained workflow and invokes neither.
 
-But `Makefile` no longer *contains* the targets either: it is a catch-all that
-forwards every target to
-[`rhiza-task`](https://github.com/jebel-quant/rhiza-task) on PyPI, pinned by the
-one `RHIZA_TASK` variable at the top. That replaced `.rhiza/rhiza.mk` plus ten
-fragments under `.rhiza/make.d/` — 1030 synced lines, at a template tag. None of
-them needs an `exclude:` entry now, and none has one: v1.4.0 retired that layer
-upstream, so core delivers no make layer at all, and nothing under
-`.rhiza/make.d/` appears in the lock's `files:` block.
+`Makefile` does not *contain* the targets either: it is a catch-all forwarding
+every target to [`rhiza-task`](https://github.com/jebel-quant/rhiza-task) on
+PyPI, pinned by the one `RHIZA_TASK` variable at the top. That replaced
+`.rhiza/rhiza.mk` plus ten fragments under `.rhiza/make.d/` — 1030 synced lines
+— at v1.4.0.
 
 Consequences worth knowing:
 
+- **The version contract moved.** Local `make` and CI used to be pinned
+  separately, on the reasoning that "the gates a build runs must not move under
+  it"; the local `RHIZA_TASK` was a hand edit `/rhiza:update` could not make, so
+  every consumer silently lagged. Since the shim is synced again, `RHIZA_TASK`
+  travels with the template ref and both sides read `rhiza-task@1.4.0` from
+  v1.7.0 by construction. **Bump the task layer with `/rhiza:update`, not by
+  editing the `Makefile`** — an edit there is drift the next sync reverts.
 - **Configuration lives in `[tool.rhiza-task]` in `pyproject.toml`**, not in
-  make variables and not in a shadowed target. `coverage_fail_under = 100` and
-  the mkdocstrings plugin used to be assignments in the root `Makefile`;
-  `typechecker = "both"` is set explicitly because `rhiza-task`'s default is
-  `ty` alone while the retired `python.mk` ran both, and this project is written
-  for `mypy --strict`.
+  make variables. `coverage_fail_under = 100`, `mkdocs-extra-packages` and
+  `ci-os-matrix` are each commented in situ with why they are not a restated
+  default; `typechecker = "both"` is set because `rhiza-task`'s default is `ty`
+  alone and this project is written for `mypy --strict`.
 - **`.rhiza/.env` is gone**, and `[tool.rhiza-task]` is the only place this repo
-  configures the task layer. `ci-os-matrix` is the one setting that had to move
-  rather than simply disappear: `rhiza-task`'s default is `["ubuntu-latest"]`,
-  and `rhiza_ci.yml` exports `RHIZA_CI_OS_MATRIX` empty for every consumer so
-  that the consumer answers — so with nothing declared, CI would stay green
-  while testing one OS instead of three. `SOURCE_FOLDER` and `MARIMO_FOLDER`
-  were both restating a default and were dropped.
-- **`make rhiza-test` is a real gate again.** It used to hit quality.mk's "no
-  `.rhiza/tests` directory" branch, print a warning and exit 0 — a green gate
-  measuring nothing. The CLI runs the `pytest-rhiza` checks with `--pyargs`, so
-  there is no silent-pass branch. `make test-pyproject` works again for the same
-  reason.
+  configures the task layer.
 - **`make <task> --flag` does not work.** The shim forwards a target name, not
   flags; call `uvx rhiza-task <task> --flag` (e.g. `--strict`) directly.
-- **Repo-specific targets** go in the `Makefile` itself or in an uncommitted
-  `local.mk`; an explicit rule beats the catch-all.
-- Two things the make layer had were missing at `rhiza-task` 0.1.2 and are back at
-  0.3.1 (#252): `github.mk`'s `gh` wrappers — `view-prs`, `view-issues`, `whoami`,
-  `failed-workflows`, `latest-release`, `workflow-status` — and
-  `docker-build`/`docker-run`/`docker-clean`. 0.3.1 ships 35 tasks that 0.1.2 does
-  not, these among them; `uvx rhiza-task list` is the current answer, not this
-  list. Two caveats survive the bump. The `gh` wrappers remain thin — `gh pr list`
-  is shorter than `make view-prs`. And the docker tasks were no-ops here because
-  they looked for `docker/Dockerfile` while this repo's Dockerfile is at the root;
-  whether 0.3.1 still does is **untested**, and the `(RHIZA) DOCKER` workflow
-  probes the same path regardless.
-
-### The one remaining make bridge
-
-`Makefile` installs uv into `./bin` when it cannot find it, because
-`rhiza_ci.yml@v1.3.4`'s `pre-commit` job runs `make fmt` with no
-`astral-sh/setup-uv` step — every other job installs uv first. Delete the block
-when the reusable workflow installs uv for that job too. It is commented in situ.
-
-Two other bridges are gone. `.rhiza/rhiza.mk` held a single `ci-os-matrix`
-target for `rhiza_ci.yml`'s `generate-matrix` job; `@v1.3.4` asks the CLI
-instead ([jebel-quant/rhiza#1546](https://github.com/jebel-quant/rhiza/issues/1546)),
-so the file and its `exclude:` entry both went. `Makefile` carried
-`-include .rhiza/.env` so that `rhiza_marimo.yml` could read `MARIMO_FOLDER` out
-of make's variable namespace; that probe still exists at `@v1.3.4`
-([Jebel-Quant/rhiza#1553](https://github.com/Jebel-Quant/rhiza/pull/1553) is the
-fix and is still open), so it now takes its `marimo` fallback — which changes
-nothing observable, for the reason given under *Known broken* below.
+- **`uvx rhiza-task list` is the current answer**, not a list in this file.
+  1.4.0 adds, among others, `book-nav`, `complexity`, `docs-examples`, `todos`,
+  `doctor` and the `paper`/`presentation`/`lfs-*` families, and has dropped
+  `mutation` and `fuzz` entirely.
+- **`book-nav` is a CI gate.** `rhiza_book.yml@v1.7.0` runs it after `book`, so
+  a `nav:` entry in `mkdocs.yml` pointing at a file the sync deleted fails the
+  build — which is exactly what the v1.5.1 → v1.7.0 bump would have done to the
+  three `docs/development/` pages it replaced with `rhiza.md`.
+- **The docker tasks and the docker workflow are no longer no-ops.** Both
+  resolve `docker/Dockerfile` — the CLI via `docker_folder`, which defaults to
+  `docker`; `rhiza_docker.yml` by a literal `[ -f docker/Dockerfile ]` probe —
+  and v1.7.0 moved the Dockerfile there from the repo root. The workflow had
+  been printing a skip notice for as long as the path was wrong, so v1.7.0 is
+  the first time it has actually linted and built. See `.hadolint.yaml` for
+  what that surfaced.
+- The `gh` wrappers (`view-prs`, `view-issues`, `whoami`, `failed-workflows`,
+  `latest-release`, `workflow-status`) remain thin — `gh pr list` is shorter
+  than `make view-prs`.
 
 ## Conventions
 
-- Tests mirror sources 1:1: `src/dummypy/<mod>.py` ↔ `tests/dummypy/test_<mod>.py`,
-  and each source `class A` has a matching `TestA` (enforced by the
-  test-layout checker).
+- Tests mirror sources 1:1: `src/dummypy/<mod>.py` ↔
+  `tests/dummypy/test_<mod>.py`, and each source `class A` has a matching
+  `TestA` (enforced by the test-layout checker; `tests/rhiza/` is exempted in
+  `[tool.check_test_layout]`).
 - Coverage gate is 100% on `src/`.
-- The rhiza conformance checks are **not** synced into `.rhiza/tests/`. v1.4.2
-  core ships no such folder, so it needs no `exclude:` entry and has none; the
-  checks come from the `pytest-rhiza` distribution declared in `pyproject.toml`
-  and are re-exported by `tests/rhiza/` so `make test` collects them. That
-  re-export is what puts them in CI: the reusable workflow runs `make test`, never
-  `make rhiza-test`. Consumer-side pilot of
+- The rhiza conformance checks are **not** synced into `.rhiza/tests/`. Core
+  ships no such folder, so it needs no `exclude:` entry and has none; the checks
+  come from the `pytest-rhiza` distribution declared in `pyproject.toml` and are
+  re-exported by `tests/rhiza/` so `make test` collects them. Consumer-side
+  pilot of
   [jebel-quant/rhiza#1540](https://github.com/jebel-quant/rhiza/issues/1540).
+  The re-export's own docstring says it exists because CI ran `make test` and
+  never `make rhiza-test`; **that is no longer true** — `rhiza_ci.yml@v1.7.0`
+  has a dedicated `rhiza-test` job. The re-export is now belt-and-braces rather
+  than the only path.
+- **The two `pytest-rhiza` pins have drifted.** The `test` dependency group
+  floors it at `>=0.4.0` (a dependabot bump), while `[tool.rhiza-task]
+  pytest-rhiza` still pins `==0.2.1` for what `make rhiza-test` provisions on
+  the fly. The comment beside the latter says to keep the two in step, and they
+  are not. Resolve deliberately — the CLI's own default still names a git tag at
+  v0.2.0, so simply deleting the setting would not follow the group.
 - Bump the template with the `/rhiza:update` flow; don't hand-edit synced files.
-- Bump the task layer by editing `RHIZA_TASK` in the `Makefile` — that is the
-  whole version contract.
 
 ## Measurement caveats
 
 - **radon's maintainability index drops when you document the code.** Nothing
   here runs radon — it is not a gate, a hook or a workflow — but a quality
-  review that reaches for it will find `grid.py` at MI 34.44 and `payoffs.py`
-  at 31.78, down about 24 points from 58.56 and 61.25 before the #231 merge
+  review that reaches for it will find `grid.py` at MI 34.44 and `payoffs.py` at
+  31.78, down about 24 points from 58.56 and 61.25 before the #231 merge
   (`f61d135` → `c5f1d8f`). Not one executable line changed across that merge:
-  `LLOC` stayed 36 and 20, `SLOC` 27 and 16, average cyclomatic complexity
-  1.875 (A) over the same 8 blocks with none ranking worse than A. Only
-  `Multi` — docstring lines — grew, 53 → 90 and 36 → 75, when #231 added 19
-  doctests. radon's MI takes docstrings as length but credits only `#` lines
-  in its comment term, so documentation is pure penalty; with 59% of their
-  lines docstring or comment, both modules sit near the worst case for that
-  formula. Both are still rank A (threshold 20), ~12 points of headroom. Track
-  `LLOC` or CC for a trend line, and do not delete docstrings to move this
-  number.
+  `LLOC` stayed 36 and 20, `SLOC` 27 and 16, average cyclomatic complexity 1.875
+  (A) over the same 8 blocks with none ranking worse than A. Only `Multi` —
+  docstring lines — grew, 53 → 90 and 36 → 75, when #231 added 19 doctests.
+  radon's MI takes docstrings as length but credits only `#` lines in its
+  comment term, so documentation is pure penalty; with 59% of their lines
+  docstring or comment, both modules sit near the worst case for that formula.
+  Both are still rank A (threshold 20), ~12 points of headroom. Track `LLOC` or
+  CC for a trend line, and do not delete docstrings to move this number.
   ([#234](https://github.com/markrichardson/dummyrepo/issues/234))
 
 ## Known broken, and not this repo's doing
 
-- **`make mutation`** fails, and did before the task migration: both the retired
-  `test.mk` and `rhiza-task` call `mutmut run --paths-to-mutate=... ` and
-  `mutmut html`, neither of which mutmut 3.x still has. The `(RHIZA) MUTATION`
-  workflow does not run on pull requests, so nothing is gated on it.
-- **The marimo notebooks are not exercised by CI.** Both readers look in a
-  folder that does not exist — the notebooks are in `book/marimo/notebooks/`.
-  `rhiza-task` resolves `marimo_folder` to its `docs/notebooks` default, and
-  `rhiza_marimo.yml`'s make probe now takes its `marimo` fallback, since
-  `.rhiza/.env` is gone and nothing puts the variable in make's namespace any
-  more. So `rhiza_marimo.yml` finds nothing to run, `make marimo-validate`
-  skips, and the book exports no notebooks — as was already the case when the
-  answer was `docs/notebooks`. Setting `marimo-folder` in `[tool.rhiza-task]`
-  fixes the CLI half; the workflow half needs
-  [Jebel-Quant/rhiza#1553](https://github.com/Jebel-Quant/rhiza/pull/1553).
-  Either way it would newly run those notebooks in CI, which is a change of
-  behaviour rather than of configuration; do it deliberately.
-- ~~**The devcontainer bootstrap is broken under `rhiza-task` 0.1.2.**~~ Fixed by
-  the 0.3.1 bump in #252. `.devcontainer/bootstrap.sh` exports
-  `UV_SYNC_ARGS="--group test"` and runs `make install`; 0.1.2 read that setting
-  as a *string* and splatted it character by character, so only whitespace-free
-  or `;`-separated values survived. 0.3.1's `_coerce` handles it. Verified both
-  ways rather than assumed:
-
-  ```
-  UV_SYNC_ARGS="--group test" uvx rhiza-task@0.1.2 install
-    -> uv sync - - g r o u p   t e s t --inexact --frozen   (uv usage error)
-  UV_SYNC_ARGS="--group test" uvx rhiza-task@0.3.1 install
-    -> uv sync --group test --inexact --frozen
-  ```
-
-  CI was never affected — the devcontainer workflow builds the image without
-  running lifecycle commands — so this only ever bit a human opening the
-  container.
+- **`make mutation` no longer exists.** It used to fail because both the retired
+  `test.mk` and early `rhiza-task` called `mutmut run --paths-to-mutate=…` and
+  `mutmut html`, neither of which mutmut 3.x still has. `rhiza-task@1.4.0` has
+  dropped the task — `make mutation` is now an unknown-task error — and no
+  mutation or fuzzing workflow is synced any more. `tests/fuzz/fuzz_grid.py` is
+  what is left of it.
+- **The marimo notebooks are still not exercised by CI, but it is now one
+  knob.** The notebooks are in `book/marimo/notebooks/`; `rhiza-task` resolves
+  `marimo_folder` to its `docs/notebooks` default. Both readers finally agree —
+  the `.rhiza/.env` probe in `rhiza_marimo.yml` is gone
+  ([Jebel-Quant/rhiza#1553](https://github.com/Jebel-Quant/rhiza/pull/1553)
+  landed), and the workflow now asks the CLI for the same setting. So
+  `marimo-folder = "book/marimo/notebooks"` in `[tool.rhiza-task]` would fix the
+  CLI half and the workflow half at once. It is left unset on purpose: doing it
+  would newly run those notebooks in CI, which is a change of behaviour rather
+  than of configuration. Do it deliberately.
+- **`rhiza_docker.yml`'s hadolint step is stricter than it says.** Its comment
+  reads "fail on any error-level findings (default behavior)", but
+  hadolint-action leaves `failure-threshold` unset and hadolint's own default is
+  `info` — so the two info-level `DL3066` findings in the template's own
+  Dockerfile fail the job. Worked around locally by `.hadolint.yaml`; the fix is
+  upstream, either pinning `failure-threshold: error` on the step or giving the
+  Dockerfile a numeric UID. The same job then reports a second, cascading
+  failure — `upload-sarif` runs under `if: always()` and errors with "Path does
+  not exist: trivy-results.sarif", because the trivy step never ran. That noise
+  disappears with the first fix.
+- ~~**The devcontainer bootstrap is broken under `rhiza-task` 0.1.2.**~~ Fixed
+  in #252 by the 0.3.1 bump. 0.1.2 read `UV_SYNC_ARGS="--group test"` as a
+  string and splatted it character by character; `_coerce` handles it from 0.3.1
+  on. CI was never affected — the devcontainer workflow builds the image without
+  running lifecycle commands.

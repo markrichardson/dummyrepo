@@ -13,10 +13,8 @@ nav:
       - Payoffs: api/payoffs.md
       - Grid: api/grid.md
   - Development:
-      - Tests: development/TESTS.md
       - Docker: development/DOCKER.md
-      - Devcontainer: development/DEVCONTAINER.md
-      - Marimo: development/MARIMO.md
+      - Rhiza: development/rhiza.md
   - Reports:
       - Test Report: reports/html-report/report.html
       - Coverage Report: reports/html-coverage/index.html

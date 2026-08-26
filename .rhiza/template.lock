@@ -1,14 +1,12 @@
-sha: de568b1e79e5871c58b4349762ce9dfd31d73e99
+sha: 77f8315ef3ce0a921862b6ea84ef3e316610c619
 repo: jebel-quant/rhiza
 host: github
-ref: v1.5.1
+ref: v1.7.0
 include: []
 exclude:
 - .github/CONFIG.md
-- .github/workflows/rhiza_mutation.yml
-- .github/workflows/rhiza_fuzzing.yml
-- .github/ISSUE_TEMPLATE
-- .github/DISCUSSION_TEMPLATE
+- .github/rulesets/main-branch-protection.json
+- .github/rulesets/tag-protection.json
 templates:
 - github-devcontainer
 - github-docker
@@ -23,8 +21,6 @@ files:
 - .editorconfig
 - .github/dependabot.yml
 - .github/release.yml
-- .github/rulesets/main-branch-protection.json
-- .github/rulesets/tag-protection.json
 - .github/secret_scanning.yml
 - .github/workflows/rhiza_benchmark.yml
 - .github/workflows/rhiza_book.yml
@@ -42,22 +38,18 @@ files:
 - .rhiza/CODE_OF_CONDUCT.md
 - .rhiza/CONTRIBUTING.md
 - .rhiza/semgrep.yml
-- Dockerfile
-- Dockerfile.dockerignore
 - LICENSE
 - Makefile
 - SECURITY.md
 - cliff.toml
-- docs/assets/rhiza-logo.svg
-- docs/development/DEVCONTAINER.md
+- docker/Dockerfile
+- docker/Dockerfile.dockerignore
 - docs/development/DOCKER.md
-- docs/development/MARIMO.md
-- docs/development/TESTS.md
-- docs/development/VSCODE_EXTENSIONS.md
+- docs/development/rhiza.md
 - docs/index.md
 - docs/mkdocs-base.yml
 - pytest.ini
 - ruff.toml
 - tests/test_rhiza_packaging.py
-synced_at: '2026-08-22T17:14:06Z'
+synced_at: '2026-08-26T18:55:03Z'
 strategy: merge
