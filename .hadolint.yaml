@@ -1,0 +1,28 @@
+# hadolint configuration.
+#
+# Repo-owned: not in `.rhiza/template.lock`'s `files:` block, so the sync neither
+# delivers nor overwrites it.
+#
+# Why it exists. The v1.7.0 sync moved the Dockerfile from the repository root to
+# `docker/Dockerfile`, which is where `rhiza_docker.yml` has always probed. Before the
+# move the probe found nothing and the whole job printed a skip notice; now it lints and
+# builds for the first time, and the template's own Dockerfile fails immediately:
+#
+#   docker/Dockerfile:21 DL3066 info: Non-numeric user-id may not be resolvable by host system
+#   docker/Dockerfile:81 DL3066 info: Non-numeric user-id may not be resolvable by host system
+#
+# Both are the `USER app_user` lines the template writes. They are *info* level, and the
+# upstream workflow's comment beside the hadolint step says it is set to "fail on any
+# error-level findings (default behavior)" -- but hadolint-action leaves
+# `failure-threshold` unset, and hadolint's own default is `info`. So the workflow is
+# stricter than it says it is, and it fails on the Dockerfile it ships.
+#
+# This line restores the stated intent. Findings are still reported in full and still
+# annotate the diff; they just stop failing the build below `error`. It is not
+# `ignored: [DL3066]` on purpose -- suppressing the rule would hide it for a Dockerfile
+# this repo may later own, where a numeric UID is worth having.
+#
+# The proper fix is upstream, in jebel-quant/rhiza: either pin
+# `failure-threshold: error` on the step so the comment is true, or give the template
+# Dockerfile a numeric UID. Drop this file when that lands.
+failure-threshold: error
