@@ -65,6 +65,7 @@ repo-owned. At v1.7.0 core ships one again, so the answer flipped back — with
 - `.github/rulesets/*.json` — taken back at v1.7.0. The template ships a generic
   branch/tag pair; the rules that actually apply here (required checks, tag
   patterns) are a per-repo decision.
+- `.hadolint.yaml` — one setting, with the whole story in its header
 - `README.md` — project documentation
 - `CHANGELOG.md` — public API surface across releases
 - `CLAUDE.md` — this file
@@ -117,10 +118,13 @@ Consequences worth knowing:
   a `nav:` entry in `mkdocs.yml` pointing at a file the sync deleted fails the
   build — which is exactly what the v1.5.1 → v1.7.0 bump would have done to the
   three `docs/development/` pages it replaced with `rhiza.md`.
-- **The docker tasks are no longer no-ops.** They resolve
-  `<docker_folder>/Dockerfile` with `docker_folder` defaulting to `docker`, and
-  v1.7.0 moved the Dockerfile there. The path now matches; the build itself is
-  untested here.
+- **The docker tasks and the docker workflow are no longer no-ops.** Both
+  resolve `docker/Dockerfile` — the CLI via `docker_folder`, which defaults to
+  `docker`; `rhiza_docker.yml` by a literal `[ -f docker/Dockerfile ]` probe —
+  and v1.7.0 moved the Dockerfile there from the repo root. The workflow had
+  been printing a skip notice for as long as the path was wrong, so v1.7.0 is
+  the first time it has actually linted and built. See `.hadolint.yaml` for
+  what that surfaced.
 - The `gh` wrappers (`view-prs`, `view-issues`, `whoami`, `failed-workflows`,
   `latest-release`, `workflow-status`) remain thin — `gh pr list` is shorter
   than `make view-prs`.
@@ -185,6 +189,16 @@ Consequences worth knowing:
   CLI half and the workflow half at once. It is left unset on purpose: doing it
   would newly run those notebooks in CI, which is a change of behaviour rather
   than of configuration. Do it deliberately.
+- **`rhiza_docker.yml`'s hadolint step is stricter than it says.** Its comment
+  reads "fail on any error-level findings (default behavior)", but
+  hadolint-action leaves `failure-threshold` unset and hadolint's own default is
+  `info` — so the two info-level `DL3066` findings in the template's own
+  Dockerfile fail the job. Worked around locally by `.hadolint.yaml`; the fix is
+  upstream, either pinning `failure-threshold: error` on the step or giving the
+  Dockerfile a numeric UID. The same job then reports a second, cascading
+  failure — `upload-sarif` runs under `if: always()` and errors with "Path does
+  not exist: trivy-results.sarif", because the trivy step never ran. That noise
+  disappears with the first fix.
 - ~~**The devcontainer bootstrap is broken under `rhiza-task` 0.1.2.**~~ Fixed
   in #252 by the 0.3.1 bump. 0.1.2 read `UV_SYNC_ARGS="--group test"` as a
   string and splatted it character by character; `_coerce` handles it from 0.3.1
