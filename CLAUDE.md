@@ -66,15 +66,18 @@ repo-owned. At v1.7.0 core ships one again, so the answer flipped back — with
   branch/tag pair; the rules that actually apply here (required checks, tag
   patterns) are a per-repo decision.
 - `.hadolint.yaml` — one setting, with the whole story in its header
+- `local-setup.sh` — the native-dependency provisioning hook (below). Repo-owned
+  content at a CLI-fixed name and location.
 - `README.md` — project documentation
 - `CHANGELOG.md` — public API surface across releases
 - `CLAUDE.md` — this file
 - `.rhiza/template.yml` — selects the template version, profile, and bundles,
   and lists what the sync must not deliver
 
-Two files are orphans rather than owned: `tests/fuzz/fuzz_grid.py` and
-`.rhiza/scripts/customisations/build-extras.sh`. Nothing runs either — the
-fuzzing workflow and the make layer that called the script are both retired.
+`tests/fuzz/fuzz_grid.py` is an orphan rather than owned: nothing runs it, the
+fuzzing workflow having been retired.
+`.rhiza/scripts/customisations/build-extras.sh` was the other one and is gone —
+`local-setup.sh` replaces it (below).
 
 ## The developer tasks come from a package, not from make
 
@@ -125,6 +128,18 @@ Consequences worth knowing:
   been printing a skip notice for as long as the path was wrong, so v1.7.0 is
   the first time it has actually linted and built. See `.hadolint.yaml` for
   what that surfaced.
+- **Native dependencies go in `local-setup.sh`**, the repository root hook that
+  `rhiza-task`'s `setup` task runs. `setup` is a prerequisite of `install`, and
+  `install` of essentially every gate, so one file covers local `make test`, CI
+  and the devcontainer with no workflow edit. It provisions graphviz, which
+  `loman` shells out to for the plot in
+  `book/marimo/notebooks/notebook-extras.py`. This is the sanctioned successor
+  to `.rhiza/scripts/customisations/build-extras.sh`, and to the advice to
+  shadow `install` in `local.mk` — which never worked, because `install` is a
+  prerequisite inside the CLI and never reaches a make rule of that name.
+  Requires `rhiza-task` >= the version that ships `setup`; 1.1.0 has no such
+  task, 1.4.0 does — and **1.4.1 on Windows**, which is the first to run the
+  hook through `sh` rather than exec it.
 - The `gh` wrappers (`view-prs`, `view-issues`, `whoami`, `failed-workflows`,
   `latest-release`, `workflow-status`) remain thin — `gh pr list` is shorter
   than `make view-prs`.
@@ -195,10 +210,23 @@ Consequences worth knowing:
   `info` — so the two info-level `DL3066` findings in the template's own
   Dockerfile fail the job. Worked around locally by `.hadolint.yaml`; the fix is
   upstream, either pinning `failure-threshold: error` on the step or giving the
-  Dockerfile a numeric UID. The same job then reports a second, cascading
+  Dockerfile a numeric UID
+  ([Jebel-Quant/rhiza#1651](https://github.com/Jebel-Quant/rhiza/issues/1651)). The same job then reports a second, cascading
   failure — `upload-sarif` runs under `if: always()` and errors with "Path does
   not exist: trivy-results.sarif", because the trivy step never ran. That noise
   disappears with the first fix.
+- ~~**`local-setup.sh` cannot run on Windows, and fails the whole matrix.**~~
+  Fixed upstream in `rhiza-task` 1.4.1, which runs the hook through `sh` where
+  the platform cannot exec it
+  ([Jebel-Quant/rhiza-task#148](https://github.com/Jebel-Quant/rhiza-task/issues/148)).
+  `setup` used to exec the hook directly, and Windows will not start a `.sh`:
+  `could not run local-setup.sh: [WinError 193] %1 is not a valid Win32
+  application`. Because `setup` is a prerequisite of `install` and `install` of
+  every gate, all four `windows-latest` test legs failed whether or not they
+  needed graphviz. The release path was the two-step one this file warns about
+  elsewhere — a `rhiza-task` release does not reach CI on its own, because
+  `rhiza_ci.yml` pins the CLI *inside the template*; rhiza v1.7.1 carries 1.4.1,
+  and #261 synced it here.
 - ~~**The devcontainer bootstrap is broken under `rhiza-task` 0.1.2.**~~ Fixed
   in #252 by the 0.3.1 bump. 0.1.2 read `UV_SYNC_ARGS="--group test"` as a
   string and splatted it character by character; `_coerce` handles it from 0.3.1
