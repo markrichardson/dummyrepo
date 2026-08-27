@@ -138,7 +138,8 @@ Consequences worth knowing:
   shadow `install` in `local.mk` — which never worked, because `install` is a
   prerequisite inside the CLI and never reaches a make rule of that name.
   Requires `rhiza-task` >= the version that ships `setup`; 1.1.0 has no such
-  task, 1.4.0 does.
+  task, 1.4.0 does — and **1.4.1 on Windows**, which is the first to run the
+  hook through `sh` rather than exec it.
 - The `gh` wrappers (`view-prs`, `view-issues`, `whoami`, `failed-workflows`,
   `latest-release`, `workflow-status`) remain thin — `gh pr list` is shorter
   than `make view-prs`.
@@ -214,17 +215,18 @@ Consequences worth knowing:
   failure — `upload-sarif` runs under `if: always()` and errors with "Path does
   not exist: trivy-results.sarif", because the trivy step never ran. That noise
   disappears with the first fix.
-- **`local-setup.sh` cannot run on Windows, and fails the whole matrix.**
-  `rhiza-task`'s `setup` execs the hook directly, and Windows will not start a
-  `.sh`: `could not run local-setup.sh: [WinError 193] %1 is not a valid Win32
+- ~~**`local-setup.sh` cannot run on Windows, and fails the whole matrix.**~~
+  Fixed upstream in `rhiza-task` 1.4.1, which runs the hook through `sh` where
+  the platform cannot exec it
+  ([Jebel-Quant/rhiza-task#148](https://github.com/Jebel-Quant/rhiza-task/issues/148)).
+  `setup` used to exec the hook directly, and Windows will not start a `.sh`:
+  `could not run local-setup.sh: [WinError 193] %1 is not a valid Win32
   application`. Because `setup` is a prerequisite of `install` and `install` of
-  every gate, all four `windows-latest` test legs fail whether or not they need
-  graphviz — there is no way to scope the hook to a platform.
-  [Jebel-Quant/rhiza-task#148](https://github.com/Jebel-Quant/rhiza-task/issues/148)
-  proposes running it through `sh` (git-bash is on the runners) or skipping
-  where the platform cannot exec. Note the release path is two steps:
-  `rhiza_ci.yml` pins `rhiza-task@1.4.0` *inside the template*, so a
-  `rhiza-task` release needs a rhiza tag bump to reach CI.
+  every gate, all four `windows-latest` test legs failed whether or not they
+  needed graphviz. The release path was the two-step one this file warns about
+  elsewhere — a `rhiza-task` release does not reach CI on its own, because
+  `rhiza_ci.yml` pins the CLI *inside the template*; rhiza v1.7.1 carries 1.4.1,
+  and #261 synced it here.
 - ~~**The devcontainer bootstrap is broken under `rhiza-task` 0.1.2.**~~ Fixed
   in #252 by the 0.3.1 bump. 0.1.2 read `UV_SYNC_ARGS="--group test"` as a
   string and splatted it character by character; `_coerce` handles it from 0.3.1
