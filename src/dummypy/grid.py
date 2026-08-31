@@ -107,7 +107,7 @@ class Grid:
 
         Instances are immutable — build a new grid rather than reassigning:
 
-        >>> grid.n = 5
+        >>> grid.n = 5  # doctest: +IGNORE_EXCEPTION_DETAIL
         Traceback (most recent call last):
             ...
         attr.exceptions.FrozenInstanceError
