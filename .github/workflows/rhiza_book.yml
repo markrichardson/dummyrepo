@@ -29,6 +29,11 @@ jobs:
     secrets: inherit
     permissions:
       contents: read
+      # Unused here (deploy-pages: false skips the nested `deploy` job at
+      # runtime), but GitHub validates every nested job's declared permissions
+      # statically regardless of `if:`, so these must still be granted.
+      pages: write
+      id-token: write
 
   deploy-cloudflare:
     name: Deploy preview to Cloudflare Pages
