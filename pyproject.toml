@@ -53,11 +53,11 @@ test = [
     # copied into `.rhiza/tests/` — that folder is listed under `exclude:` in
     # `.rhiza/template.yml`, and `tests/rhiza/` re-exports the check modules so they run
     # under `make test`. Consumer-side pilot of jebel-quant/rhiza#1540.
-    "pytest-rhiza>=0.4.0",
+    "pytest-rhiza>=0.5.0",
 ]
 
 lint = [
-    "ruff>=0.16.4",
+    "ruff>=0.16.5",
 ]
 
 [tool.hatch.build.targets.wheel]
