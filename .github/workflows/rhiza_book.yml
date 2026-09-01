@@ -1,37 +1,55 @@
-# This file is part of the jebel-quant/rhiza repository
-# (https://github.com/jebel-quant/rhiza).
+# This file is a TEMPORARY, repo-owned variant of Rhiza's book workflow, used
+# to trial Cloudflare Pages deployment before Rhiza PR #1660 (artifact-only
+# deployment support) is merged and released. See CLAUDE.md's Rhiza-synced
+# section: this path is excluded in .rhiza/template.yml so /rhiza:update does
+# not overwrite it.
 #
-# Workflow: Book
-# Purpose: This workflow builds and deploys comprehensive documentation for the project.
-#          It combines API documentation, test coverage reports, test results, and
-#          interactive notebooks into a single GitHub Pages site.
-#
-# Trigger: This workflow runs on every push (any branch), so every commit
-#          validates that the book still builds. The reusable workflow deploys
-#          to GitHub Pages only from the repository's default branch and never
-#          from a fork; other branches build and upload an artifact only.
-#
-# Components:
-#   - 📓 Process Marimo notebooks
-#   - 📖 Build documentation site via zensical
-#   - 🧪 Run tests and generate coverage reports
-#   - 🚀 Deploy combined documentation to GitHub Pages
+# TODO once jebel-quant/rhiza#1660 ships a release:
+#   - point `uses:` at the released tag instead of the WIP branch below
+#   - change the trigger back to the default branch
+#   - drop --branch=cloudflare-test (or use the default-branch expression)
 
-name: "(RHIZA) BOOK"
+name: "(RHIZA) BOOK — CLOUDFLARE TEST"
 
 on:
+  workflow_dispatch:
   push:
     branches:
-      - '**'
+      - "cloudflare-book-test"
 
 permissions:
   contents: read
 
 jobs:
   book:
-    uses: jebel-quant/rhiza/.github/workflows/rhiza_book.yml@v1.7.1
+    # Temporary: points at the unmerged PR jebel-quant/rhiza#1660 branch.
+    uses: jebel-quant/rhiza/.github/workflows/rhiza_book.yml@claude/support-artifact-only-deployment
+    with:
+      deploy-pages: false
     secrets: inherit
     permissions:
       contents: read
-      pages: write
-      id-token: write
+
+  deploy-cloudflare:
+    name: Deploy preview to Cloudflare Pages
+    needs: book
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Download Rhiza book artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: book
+          path: _book
+
+      - name: Deploy Cloudflare preview
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: >-
+            pages deploy _book
+            --project-name=${{ vars.CLOUDFLARE_PAGES_PROJECT }}
+            --branch=cloudflare-test

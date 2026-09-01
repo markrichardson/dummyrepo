@@ -12,6 +12,12 @@ templates:
 exclude:
   - .github/CONFIG.md
 
+  # Consumer-specific Cloudflare Pages deployment job. Rhiza's generic book
+  # workflow only builds/uploads the `book` artifact and deploys to GitHub
+  # Pages; the Cloudflare deploy step is repo-owned, so this must stay excluded
+  # or /rhiza:update will overwrite it with the upstream stub.
+  - .github/workflows/rhiza_book.yml
+
   # Branch and tag rulesets. The template ships a generic pair; the protection
   # rules that actually apply here (required checks, tag patterns) are decided
   # per repo, so they are maintained in this tree. Excluding them does not
