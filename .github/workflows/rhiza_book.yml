@@ -70,3 +70,13 @@ jobs:
           command: >-
             pages deploy _book
             --project-name=${{ vars.CLOUDFLARE_PAGES_PROJECT }}
+            --branch=${{ github.event.repository.default_branch }}
+
+      - name: Summarize Cloudflare Pages URLs
+        run: |
+          {
+            echo "### Cloudflare Pages"
+            echo
+            echo "Production: https://${{ vars.CLOUDFLARE_PAGES_PROJECT }}.pages.dev/"
+            echo "Default-branch alias: https://${{ github.event.repository.default_branch }}.${{ vars.CLOUDFLARE_PAGES_PROJECT }}.pages.dev/"
+          } >> "$GITHUB_STEP_SUMMARY"
