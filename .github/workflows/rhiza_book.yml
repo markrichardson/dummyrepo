@@ -26,6 +26,8 @@ on:
 
 permissions:
   contents: read
+  pages: write
+  id-token: write
 
 jobs:
   book:
@@ -42,3 +44,29 @@ jobs:
     # full Cloudflare Pages example.
     # with:
     #   deploy-pages: false
+
+  deploy-cloudflare:
+    name: Deploy book to Cloudflare Pages
+    needs: book
+    if: >-
+      github.ref_name == github.event.repository.default_branch &&
+      !github.event.repository.fork
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Download Rhiza book artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: book
+          path: _book
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: >-
+            pages deploy _book
+            --project-name=${{ vars.CLOUDFLARE_PAGES_PROJECT }}

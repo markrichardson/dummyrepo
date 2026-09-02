@@ -11,6 +11,7 @@ templates:
 
 exclude:
   - .github/CONFIG.md
+  - .github/workflows/rhiza_book.yml
 
   # Branch and tag rulesets. The template ships a generic pair; the protection
   # rules that actually apply here (required checks, tag patterns) are decided

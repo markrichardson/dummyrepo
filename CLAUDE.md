@@ -27,7 +27,9 @@ has none, so `make validate` dies with an unknown-task error.
 
 - `Makefile` — the shim forwarding to `rhiza-task` (see below). **Template-owned
   again at v1.7.0**, and in the lock's `files:` block.
-- `.github/workflows/*` — reusable CI/CD workflows
+- `.github/workflows/*` — reusable CI/CD workflows, except
+  `.github/workflows/rhiza_book.yml` which is locally owned to add a consumer
+  Cloudflare Pages deploy job alongside Rhiza's native GitHub Pages deploy
 - `.pre-commit-config.yaml` — pre-commit hooks
 - `ruff.toml` — lint/format config
 - `pytest.ini` — test/coverage config
@@ -65,6 +67,9 @@ repo-owned. At v1.7.0 core ships one again, so the answer flipped back — with
 - `.github/rulesets/*.json` — taken back at v1.7.0. The template ships a generic
   branch/tag pair; the rules that actually apply here (required checks, tag
   patterns) are a per-repo decision.
+- `.github/workflows/rhiza_book.yml` — taken back at v1.7.2 to dual-publish the
+  Rhiza book artifact to Cloudflare Pages while keeping Rhiza's native GitHub
+  Pages deployment enabled.
 - `.hadolint.yaml` — one setting, with the whole story in its header
 - `local-setup.sh` — the native-dependency provisioning hook (below). Repo-owned
   content at a CLI-fixed name and location.
