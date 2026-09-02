@@ -7,6 +7,13 @@ DummyPy is a small Python analytics library created for educational and testing 
 **📚 EDUCATIONAL & DEMONSTRATION PURPOSE**
 This software is created for learning and demonstration purposes. Feel free to use, modify, and distribute.
 
+## Documentation Book
+
+The same Rhiza-built documentation book is published to both hosts:
+
+- [GitHub Pages](https://markrichardson.github.io/dummyrepo/)
+- [Cloudflare Pages](https://dummyrepo-book.pages.dev/)
+
 ## Quick Start
 
 ### ☁️ Instant Development with GitHub Codespaces
