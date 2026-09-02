@@ -27,7 +27,9 @@ has none, so `make validate` dies with an unknown-task error.
 
 - `Makefile` — the shim forwarding to `rhiza-task` (see below). **Template-owned
   again at v1.7.0**, and in the lock's `files:` block.
-- `.github/workflows/*` — reusable CI/CD workflows
+- `.github/workflows/*` — reusable CI/CD workflows, except
+  `.github/workflows/rhiza_book.yml` which is locally owned to add a consumer
+  Cloudflare Pages deploy job alongside Rhiza's native GitHub Pages deploy
 - `.pre-commit-config.yaml` — pre-commit hooks
 - `ruff.toml` — lint/format config
 - `pytest.ini` — test/coverage config
@@ -65,6 +67,9 @@ repo-owned. At v1.7.0 core ships one again, so the answer flipped back — with
 - `.github/rulesets/*.json` — taken back at v1.7.0. The template ships a generic
   branch/tag pair; the rules that actually apply here (required checks, tag
   patterns) are a per-repo decision.
+- `.github/workflows/rhiza_book.yml` — taken back at v1.7.2 to dual-publish the
+  Rhiza book artifact to Cloudflare Pages while keeping Rhiza's native GitHub
+  Pages deployment enabled.
 - `.hadolint.yaml` — one setting, with the whole story in its header
 - `local-setup.sh` — the native-dependency provisioning hook (below). Repo-owned
   content at a CLI-fixed name and location.
@@ -133,7 +138,7 @@ Consequences worth knowing:
   `install` of essentially every gate, so one file covers local `make test`, CI
   and the devcontainer with no workflow edit. It provisions graphviz, which
   `loman` shells out to for the plot in
-  `book/marimo/notebooks/notebook-extras.py`. This is the sanctioned successor
+  `docs/notebooks/notebook-extras.py`. This is the sanctioned successor
   to `.rhiza/scripts/customisations/build-extras.sh`, and to the advice to
   shadow `install` in `local.mk` — which never worked, because `install` is a
   prerequisite inside the CLI and never reaches a make rule of that name.
@@ -194,16 +199,14 @@ Consequences worth knowing:
   dropped the task — `make mutation` is now an unknown-task error — and no
   mutation or fuzzing workflow is synced any more. `tests/fuzz/fuzz_grid.py` is
   what is left of it.
-- **The marimo notebooks are still not exercised by CI, but it is now one
-  knob.** The notebooks are in `book/marimo/notebooks/`; `rhiza-task` resolves
-  `marimo_folder` to its `docs/notebooks` default. Both readers finally agree —
-  the `.rhiza/.env` probe in `rhiza_marimo.yml` is gone
+- **The marimo notebooks now use Rhiza's default location.** The notebooks live
+  in `docs/notebooks/`, matching `rhiza-task`'s default `marimo_folder` and the
+  shape used by ChebPy. Both readers agree — the `.rhiza/.env` probe in
+  `rhiza_marimo.yml` is gone
   ([Jebel-Quant/rhiza#1553](https://github.com/Jebel-Quant/rhiza/pull/1553)
-  landed), and the workflow now asks the CLI for the same setting. So
-  `marimo-folder = "book/marimo/notebooks"` in `[tool.rhiza-task]` would fix the
-  CLI half and the workflow half at once. It is left unset on purpose: doing it
-  would newly run those notebooks in CI, which is a change of behaviour rather
-  than of configuration. Do it deliberately.
+  landed), and the workflow now asks the CLI for the same setting. The notebooks
+  are therefore part of the book and marimo gates without a local
+  `marimo-folder` override.
 - **`rhiza_docker.yml`'s hadolint step is stricter than it says.** Its comment
   reads "fail on any error-level findings (default behavior)", but
   hadolint-action leaves `failure-threshold` unset and hadolint's own default is

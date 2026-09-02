@@ -13,7 +13,7 @@
 # milliseconds.
 #
 # **What it provisions.** graphviz, for `loman`'s plot rendering —
-# `book/marimo/notebooks/notebook-extras.py` builds a `loman.Computation` and draws it,
+# `docs/notebooks/notebook-extras.py` builds a `loman.Computation` and draws it,
 # which shells out to `dot`. Nothing in `src/` or `tests/` needs it.
 #
 # **Why a script and not a `system-packages = [...]` setting.** The CLI decides *when*
