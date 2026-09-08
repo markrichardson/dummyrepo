@@ -149,6 +149,38 @@ Consequences worth knowing:
   `latest-release`, `workflow-status`) remain thin — `gh pr list` is shorter
   than `make view-prs`.
 
+## The version comes from the git tag
+
+`[project]` declares `dynamic = ["version"]` and `[tool.hatch.version]` sets
+`source = "vcs"`, so `hatch-vcs` derives the version from the newest reachable
+tag at build time. The tag is the single source of truth and **no version number
+is written down anywhere** — not in `pyproject.toml`, not in `README.md`, not in
+`src/`. `dummypy.__version__` already read `importlib.metadata.version()` and is
+unchanged by the switch.
+
+- **Releasing is a tag and nothing else.** There is no bump commit to make, so
+  `[tool.bumpversion]` and its `[[files]]` entry for the README footer were
+  deleted rather than left unused, and the footer line they maintained is gone
+  from `README.md`. Don't re-add a written `[project].version` beside the
+  dynamic one; two sources drift, which is the whole failure mode the
+  bumpversion config existed to prevent.
+- **The build must be able to see the tag.** `hatch-vcs` falls back rather than
+  fails, so a shallow checkout quietly builds `0.1.dev1+g<sha>` under a green
+  tick. `rhiza_release.yml` is already written for this: it checks out with
+  `fetch-depth: 0`, probes `[project].dynamic` to skip the file-versus-tag
+  comparison (`uv version --short` exits 2 on a dynamic version), and then
+  verifies the *built* distribution filename against the tag — which is the only
+  place a derived version can be caught being wrong.
+- **A dirty or untagged tree builds a dev version**, e.g.
+  `0.2.1.dev127+g760c0d5d2.d20260908` locally. That is expected, not a fault.
+  `[tool.hatch.version.raw-options] fallback_version` covers the no-tags case (a
+  shallow clone, an archive export). Note the underscore: raw-options are
+  forwarded verbatim as keyword arguments to setuptools-scm's `get_version()`,
+  and `fallback-version` raises `TypeError` there rather than being ignored.
+- **`pytest-rhiza` must be >= 0.6.0** for the conformance checks to skip the
+  version assertions instead of failing them. See the pin note under
+  Conventions; that floor is now load-bearing.
+
 ## Conventions
 
 - Tests mirror sources 1:1: `src/dummypy/<mod>.py` ↔
@@ -166,12 +198,19 @@ Consequences worth knowing:
   never `make rhiza-test`; **that is no longer true** — `rhiza_ci.yml@v1.7.0`
   has a dedicated `rhiza-test` job. The re-export is now belt-and-braces rather
   than the only path.
-- **The two `pytest-rhiza` pins have drifted.** The `test` dependency group
-  floors it at `>=0.4.0` (a dependabot bump), while `[tool.rhiza-task]
-  pytest-rhiza` still pins `==0.2.1` for what `make rhiza-test` provisions on
-  the fly. The comment beside the latter says to keep the two in step, and they
-  are not. Resolve deliberately — the CLI's own default still names a git tag at
-  v0.2.0, so simply deleting the setting would not follow the group.
+- **The two `pytest-rhiza` pins now agree, and the floor is load-bearing.** The
+  `test` dependency group floors it at `>=0.6.0` and `[tool.rhiza-task]
+  pytest-rhiza` pins `==0.6.0` for what `make rhiza-test` provisions on the fly.
+  They had drifted (`>=0.4.0` against `==0.2.1`); the switch to a VCS-derived
+  version forced the resolution, because 0.6.0 is the first release whose python
+  layer knows about `dynamic = ["version"]`. Below it, checks read
+  `[project].version` as the empty string and fail rather than skip — 0.2.1 on
+  three of them, 0.5.0 on three (it had grown the skip for the bumpversion
+  checks but not for `TestProjectFields` or `TestGitTagVersion`). So do not
+  lower either pin: the version checks would go red on a repo that deliberately
+  writes no version down. Keep the two in step, and note that deleting the
+  `[tool.rhiza-task]` setting is not the way to do it — the CLI's own default
+  still names a git tag at v0.2.0.
 - Bump the template with the `/rhiza:update` flow; don't hand-edit synced files.
 
 ## Measurement caveats

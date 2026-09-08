@@ -239,7 +239,6 @@ wheels = [
 
 [[package]]
 name = "dummypy"
-version = "0.2.0"
 source = { editable = "." }
 dependencies = [
     { name = "attrs" },
@@ -277,7 +276,7 @@ notebook = [{ name = "loman", specifier = ">=0.7.0" }]
 test = [
     { name = "hypothesis", specifier = ">=6.167.1" },
     { name = "pytest", specifier = ">=9.1.1" },
-    { name = "pytest-rhiza", specifier = ">=0.5.0" },
+    { name = "pytest-rhiza", specifier = ">=0.6.0" },
 ]
 
 [[package]]
@@ -1186,16 +1185,16 @@ wheels = [
 
 [[package]]
 name = "pytest-rhiza"
-version = "0.5.0"
+version = "0.6.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "packaging" },
     { name = "pytest" },
     { name = "pytest-timeout" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/11/7b/b92066adb1233fe378021602975284a9d93a0ef09a2a8f50058cf928acf5/pytest_rhiza-0.5.0.tar.gz", hash = "sha256:110c512760eb7445e1ba0ee6027ebddfb1c05f032fa8000828d4e328d0fc6614", size = 160046, upload-time = "2026-08-25T08:31:18.958Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/de/f6/3f87d5f667cf86147f8b38f9c77cf6e6da095af16b65d23dc80eca70a577/pytest_rhiza-0.6.0.tar.gz", hash = "sha256:93089d235f33e7f487c8b405495072ef6fa6e58cbed899e08ead72c5fc3df80b", size = 164664, upload-time = "2026-09-07T05:57:57.603Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/7f/74/53f2541b1f1f708b4c2d0e78a2c45220b409c486bce0bf23d0df8cb834dc/pytest_rhiza-0.5.0-py3-none-any.whl", hash = "sha256:7213be7339471000ba670986b6456420b7f7e1483c339066d97fee1ec9427217", size = 62119, upload-time = "2026-08-25T08:31:17.312Z" },
+    { url = "https://files.pythonhosted.org/packages/2d/57/a05b3a5e0e1092a4209096cf02649aef8306487c02774e2498d6daba255e/pytest_rhiza-0.6.0-py3-none-any.whl", hash = "sha256:690821452d1cfc5148e5f4ca23ee4b7775cde04f937cec3bb11791e9b6e87987", size = 64291, upload-time = "2026-09-07T05:57:56.151Z" },
 ]
 
 [[package]]
