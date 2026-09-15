@@ -42,18 +42,18 @@ notebook = [
 ]
 
 dev = [
-    "marimo>=0.24.0",
+    "marimo>=0.24.2",
     "plotly>=6.9.0",
 ]
 
 test = [
     "pytest>=9.1.1",
-    "hypothesis>=6.167.1",
+    "hypothesis>=6.168.0",
     # The rhiza conformance checks, as a plugin instead of the seven files the template
     # copied into `.rhiza/tests/` — that folder is listed under `exclude:` in
     # `.rhiza/template.yml`, and `tests/rhiza/` re-exports the check modules so they run
     # under `make test`. Consumer-side pilot of jebel-quant/rhiza#1540.
-    "pytest-rhiza>=0.5.0",
+    "pytest-rhiza>=0.6.0",
 ]
 
 [tool.hatch.build.targets.wheel]
