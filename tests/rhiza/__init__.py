@@ -1,9 +1,12 @@
 """The rhiza conformance checks, re-exported from the ``pytest-rhiza`` plugin.
 
 These checks assert about *the repository* — that the README's fenced examples run,
-that ``pyproject.toml`` carries the fields and the bump-my-version config the release
-flow needs, that the newest tag matches the declared version, that every module carries
-docstrings. They used to arrive as seven files copied into ``.rhiza/tests/`` by the
+that ``pyproject.toml`` carries the fields the release flow needs, that the declared
+version is not behind the newest tag, that every module carries docstrings. The
+version-related ones skip here rather than run: this repo derives its version from the
+git tag, so there is no written number for them to compare (see CLAUDE.md, "The version
+comes from the git tag"), and ``pytest-rhiza`` must be >= 0.6.0 for them to skip instead
+of fail. They used to arrive as seven files copied into ``.rhiza/tests/`` by the
 template sync, which meant every managed repo carried a frozen copy that aged
 independently of the template it validates (jebel-quant/rhiza#1540).
 

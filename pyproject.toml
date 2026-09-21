@@ -1,10 +1,11 @@
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling", "hatch-vcs"]
 build-backend = "hatchling.build"
 
 [project]
 name = "dummypy"
-version = "0.2.0"
+# Derived from the git tag by hatch-vcs, not written here -- see [tool.hatch.version].
+dynamic = ["version"]
 description = "A dummy Python analytics library for demonstration purposes."
 authors = [{ name = "Mark Richardson", email = "mrichardson82@gmail.com" }]
 license = "MIT"
@@ -59,37 +60,30 @@ test = [
 [tool.hatch.build.targets.wheel]
 packages = ["src/dummypy"]
 
-# bump-my-version auto-discovers only .bumpversion.toml, .bumpversion.cfg,
-# setup.cfg and pyproject.toml. Without a table in one of them it does not fail —
-# it falls back to `git describe` and reports the last reachable tag as the current
-# version, so a release can be cut at a version already published.
+# The version is derived from the newest reachable git tag by hatch-vcs, so `v0.2.0` in
+# git is the single source of truth and no number is written down anywhere. A release is
+# then a tag and nothing else -- there is no bump commit to make, which is why
+# [tool.bumpversion] and its README-footer [[files]] entry are gone rather than merely
+# unused. Don't re-add a written [project].version alongside this; two sources drift.
 #
-# No `current_version` and no [[tool.bumpversion.files]] entry for the version:
-# bump-my-version reads and rewrites PEP 621 [project].version natively, and a
-# second copy of the number only drifts. Add a [[files]] entry per *additional*
-# location, never for [project].version itself.
+# Consequences worth knowing:
 #
-# commit/tag stay false because /rhiza:release makes the commit and the tag itself,
-# so the changelog lands in the bump commit; a bare `bump-my-version bump` would
-# otherwise add a second commit and a duplicate tag.
-[tool.bumpversion]
-allow_dirty = false
-commit = false
-tag = false
+#   - **The build needs to see the tag.** hatch-vcs falls back rather than fails, so a
+#     shallow checkout builds `0.1.dev1+g<sha>` under a green tick. `rhiza_release.yml`
+#     checks out with `fetch-depth: 0` and re-verifies the built filename against the
+#     tag, which is the one place a derived version can be caught being wrong.
+#   - **A working tree with no tags reachable** (a fresh shallow clone, an archive
+#     export) builds a `0.0.x.dev` version. `raw-options.fallback_version` below keeps
+#     that from being an error. The key is spelled with an underscore because
+#     raw-options are forwarded verbatim as keyword arguments to setuptools-scm's
+#     `get_version()`; `fallback-version` raises a TypeError there.
+#   - `uv version --short` exits 2 on a dynamic version; the release workflow probes
+#     [project].dynamic and skips the file-versus-tag comparison for that reason.
+[tool.hatch.version]
+source = "vcs"
 
-# The README footer restates the version for readers who never open pyproject.toml.
-# It drifted silently before (0.1.4 -> 0.1.5 was a hand-written fix), so declare it
-# here instead. The `**Version**: ` prefix anchors the match to that one line.
-#
-# The footer also carried a hand-maintained `**Last Updated**` date, which drifted the
-# same way (it still read June 2026 after the August 0.2.0 release). It was removed
-# rather than anchored here: the release date already lives in CHANGELOG.md and in the
-# GitHub release, so a third copy is drift surface without new information. Don't
-# re-add it — point readers at the changelog instead.
-[[tool.bumpversion.files]]
-filename = "README.md"
-search = "**Version**: {current_version}"
-replace = "**Version**: {new_version}"
+[tool.hatch.version.raw-options]
+fallback_version = "0.0.0"
 
 # pandas ships no type stubs (PEP 561); the optional pandas-stubs package is
 # third-party and lags the runtime. Silence mypy --strict's missing-import error
@@ -144,12 +138,22 @@ typechecker = "both"
 coverage_fail_under = 100
 
 # pytest-rhiza from PyPI, pinned exactly rather than floored: a gate that moves under you
-# is not a gate. The CLI's default still names a git tag at v0.2.0, one patch behind, so
-# dropping this line would *downgrade* the conformance checks. The `test` dependency group
-# pins the same distribution for a different reason -- there it is what `tests/rhiza/`
-# imports under `make test`; here it is what `make rhiza-test` provisions on the fly.
-# Keep the two in step.
-pytest-rhiza = "pytest-rhiza==0.2.1"
+# is not a gate. Dropping this line would *downgrade* the conformance checks -- the CLI's
+# own default still names a git tag at v0.2.0. The `test` dependency group pins the same
+# distribution for a different reason -- there it is what `tests/rhiza/` imports under
+# `make test`; here it is what `make rhiza-test` provisions on the fly. Keep the two in
+# step.
+#
+# Moved from ==0.2.1 to ==0.6.0 by the switch to a VCS-derived version, which also closed
+# the long-standing drift between the two pins. 0.6.0 is the first release whose python
+# layer knows about `dynamic = ["version"]`: all seven version checks then skip with an
+# explicit reason. Earlier ones read `[project].version` as the empty string and fail --
+# 0.2.1 on `test_required_field_present[version]`, `test_version_follows_semver` and
+# `test_latest_tag_matches_pyproject_version`, 0.5.0 on the first two plus
+# `test_pyproject_version_is_not_behind_the_latest_tag`. So this floor is load-bearing
+# now, not hygiene: below 0.6.0 both `make test` and the `rhiza-test` CI job go red on a
+# repo that writes no version down.
+pytest-rhiza = "pytest-rhiza==0.6.0"
 
 # Restored in #244 after the v1.4.2 bump dropped it, and kept deliberately even though the
 # pins now agree. The note that removed it reasoned that the value "is now the CLI's default
