@@ -8,7 +8,7 @@ it the tests are grouped by concern:
 
 - core initialization, structure, and methods
 - input validation on ``n``
-- immutability of the frozen value type
+- immutability of the frozen value type, and its value semantics
 - property-based invariants (hypothesis) across a range of ``n``
 - integration with numpy/pandas and method behaviour
 
@@ -23,6 +23,8 @@ The test suite uses several module-level fixtures to provide reusable test data:
 - edge_case_grid: Grid(n=0) for boundary condition testing
 - parametrized_grid: Parametrized fixture testing multiple sizes [1, 5, 10, 20]
 """
+
+import contextlib
 
 import attrs
 import numpy as np
@@ -256,6 +258,43 @@ class TestGrid:
 
         assert small_grid.n == 2
         pd.testing.assert_frame_equal(small_grid.x, small_grid.y.T)
+
+    @pytest.mark.parametrize("attribute", ["x", "y"])
+    @pytest.mark.parametrize(
+        "write",
+        [
+            lambda frame: frame.iloc.__setitem__((0, 1), 99),
+            lambda frame: frame.loc.__setitem__(("0", "1"), 99),
+            lambda frame: frame.__setitem__("0", 99),
+        ],
+        ids=["iloc", "loc", "column"],
+    )
+    def test_in_place_frame_writes_cannot_corrupt_the_grid(self, small_grid, attribute, write):
+        """An in-place write to x or y never reaches the grid's own data.
+
+        Which way it fails depends on pandas, and either is acceptable: pandas 2
+        rejects an element write to the read-only data with ValueError, pandas 3's
+        copy-on-write confines it to the frame that was handed out. What must hold
+        on every version is that the grid still matches the n it was built from.
+        """
+        frame = getattr(small_grid, attribute)
+        with contextlib.suppress(ValueError):
+            write(frame)
+
+        pd.testing.assert_frame_equal(small_grid.x, small_grid.y.T)
+        pd.testing.assert_frame_equal(small_grid.diff(), Grid(n=2).diff())
+
+    # --- Value semantics -----------------------------------------------------
+
+    def test_grids_of_equal_size_are_equal(self):
+        """Equality is decided by n alone, since x and y are derived from it."""
+        assert Grid(n=3) == Grid(n=3)
+        assert Grid(n=3) != Grid(n=4)
+
+    def test_grid_is_hashable(self):
+        """Equal grids hash alike, so a Grid can be a set member or a dict key."""
+        assert hash(Grid(n=3)) == hash(Grid(n=3))
+        assert len({Grid(n=3), Grid(n=3)}) == 1
 
     # --- Property-based invariants -------------------------------------------
 

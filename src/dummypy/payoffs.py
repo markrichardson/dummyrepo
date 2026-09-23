@@ -1,6 +1,7 @@
 """Payoff functions for vanilla European option contracts."""
 
 import math
+import numbers
 
 import numpy as np
 import numpy.typing as npt
@@ -19,9 +20,15 @@ def _check_strike(strike: float) -> None:
         strike: The proposed strike price.
 
     Raises:
+        TypeError: If ``strike`` is not a real number (bool is rejected too).
         ValueError: If ``strike`` is not finite (NaN or infinite), or is
             negative.
     """
+    # bool is a subclass of int; reject it as _check_n does, rather than
+    # silently pricing a strike of 1.0.
+    if not isinstance(strike, numbers.Real) or isinstance(strike, bool):
+        msg = f"strike must be a real number, got {type(strike).__name__}"
+        raise TypeError(msg)
     if not math.isfinite(strike):
         msg = f"strike must be a finite real number, got {strike}"
         raise ValueError(msg)
@@ -50,6 +57,7 @@ def call_payoff(spot: npt.ArrayLike, strike: float) -> np.float64 | npt.NDArray[
         for scalar ``spot``, or a ``float64`` array for array-like ``spot``.
 
     Raises:
+        TypeError: If ``strike`` is not a real number (e.g. a bool or a str).
         ValueError: If ``strike`` is not finite (NaN or infinite), or is
             negative.
 
@@ -97,6 +105,7 @@ def put_payoff(spot: npt.ArrayLike, strike: float) -> np.float64 | npt.NDArray[n
         for scalar ``spot``, or a ``float64`` array for array-like ``spot``.
 
     Raises:
+        TypeError: If ``strike`` is not a real number (e.g. a bool or a str).
         ValueError: If ``strike`` is not finite (NaN or infinite), or is
             negative.
 

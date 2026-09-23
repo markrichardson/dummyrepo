@@ -44,6 +44,10 @@ def _build_grids(n: int) -> tuple[pd.DataFrame, pd.DataFrame]:
     model. ``y`` has each row equal to ``0..n``; ``x`` is its transpose. Both
     are square with side ``n + 1`` and share string coordinate labels.
 
+    The frames share one backing array, which is marked read-only so that no
+    in-place write can reach it — the data :class:`Grid` holds cannot drift
+    from the ``n`` it was built from.
+
     Args:
         n: Non-negative grid size (already validated by the caller).
 
@@ -53,6 +57,7 @@ def _build_grids(n: int) -> tuple[pd.DataFrame, pd.DataFrame]:
     nn = np.arange(n + 1)
     cols = [str(i) for i in nn]
     data = np.tile(nn, (n + 1, 1))
+    data.setflags(write=False)
     y = pd.DataFrame(data, index=pd.Index(cols), columns=pd.Index(cols))
     return y.T, y
 
@@ -69,6 +74,13 @@ class Grid:
     validator and :func:`_build_grids` establish at construction: a new ``x``
     need not be ``y.T``, and a new ``n`` would not rebuild the frames it is
     supposed to describe. Build a new :class:`Grid` instead.
+
+    The frames are protected from in-place edits too. ``x`` and ``y`` hand out
+    a fresh, lazily-copied view of read-only data on every access, so a write
+    such as ``grid.x.iloc[0, 1] = 99`` can never corrupt the grid: pandas 2
+    rejects it with ``ValueError``, and pandas 3's copy-on-write confines it to
+    the copy that was handed out. Equality and hashing use ``n`` alone, which
+    is sound because both frames are derived from it.
 
     Args:
         n: Maximum size for the grid (default: 10). Must be a non-negative
@@ -88,10 +100,15 @@ class Grid:
         >>> bool((grid.x == grid.y.T).all().all())
         True
 
-        Only ``n`` is part of the repr, since ``x`` and ``y`` are derived:
+        Only ``n`` is part of the repr, equality and hash, since ``x`` and
+        ``y`` are derived:
 
         >>> grid
         Grid(n=3)
+        >>> Grid(n=3) == grid, Grid(n=4) == grid
+        (True, False)
+        >>> len({Grid(n=3), Grid(n=3)})
+        1
 
         A negative size is rejected, and so is a float or a bool:
 
@@ -114,8 +131,8 @@ class Grid:
     """
 
     n: int = attrs.field(init=True, repr=True, default=10, validator=_check_n)
-    x: pd.DataFrame = attrs.field(repr=False, init=False)
-    y: pd.DataFrame = attrs.field(repr=False, init=False)
+    _x: pd.DataFrame = attrs.field(repr=False, init=False, eq=False)
+    _y: pd.DataFrame = attrs.field(repr=False, init=False, eq=False)
 
     def __attrs_post_init__(self) -> None:
         """Populate the x and y coordinate frames from ``n``.
@@ -126,8 +143,28 @@ class Grid:
         generation-vs-model split described in the module docstring.
         """
         x, y = _build_grids(self.n)
-        object.__setattr__(self, "x", x)
-        object.__setattr__(self, "y", y)
+        object.__setattr__(self, "_x", x)
+        object.__setattr__(self, "_y", y)
+
+    @property
+    def x(self) -> pd.DataFrame:
+        """The x-coordinate frame, ``y`` transposed.
+
+        Returns:
+            A shallow copy of the grid's read-only frame. The copy is cheap
+            (no data is duplicated), and writing to it cannot affect the grid.
+        """
+        return self._x.copy(deep=False)
+
+    @property
+    def y(self) -> pd.DataFrame:
+        """The y-coordinate frame, each row equal to ``0..n``.
+
+        Returns:
+            A shallow copy of the grid's read-only frame. The copy is cheap
+            (no data is duplicated), and writing to it cannot affect the grid.
+        """
+        return self._y.copy(deep=False)
 
     def diff(self) -> pd.DataFrame:
         """Returns a grid of differences.
@@ -152,4 +189,4 @@ class Grid:
             >>> grid.diff() is grid.diff()
             False
         """
-        return self.x - self.y
+        return self._x - self._y
