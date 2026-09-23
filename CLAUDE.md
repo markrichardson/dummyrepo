@@ -6,7 +6,7 @@ Guidance for working in this repository.
 
 This repo syncs its development infrastructure from the
 [`jebel-quant/rhiza`](https://github.com/jebel-quant/rhiza) template, currently
-at **v1.7.0**. Some files are **owned upstream** (regenerated on every sync —
+at **v1.8.0**. Some files are **owned upstream** (regenerated on every sync —
 edit them in Rhiza, not here) and some are **locally owned** (this repo controls
 them). Editing a synced file locally will be reverted by the next `rhiza` sync,
 which rewrites the file from the template.
@@ -26,7 +26,7 @@ has none, so `make validate` dies with an unknown-task error.
 ### Rhiza-synced — fix upstream, don't edit here
 
 - `Makefile` — the shim forwarding to `rhiza-task` (see below). **Template-owned
-  again at v1.7.0**, and in the lock's `files:` block.
+  again since v1.7.0**, and in the lock's `files:` block.
 - `.github/workflows/*` — reusable CI/CD workflows, except
   `.github/workflows/rhiza_book.yml` which is locally owned to add a consumer
   Cloudflare Pages deploy job alongside Rhiza's native GitHub Pages deploy
@@ -52,7 +52,7 @@ note that the lock, not `CLAUDE.md`, is what the sync obeys. `Makefile` is the
 cautionary tale twice over. At v1.3.4 this file called it locally owned while
 the lock still listed it under `files:`, and the sync duly wrote conflict
 markers across the shim. At v1.4.2 core shipped none and it was genuinely
-repo-owned. At v1.7.0 core ships one again, so the answer flipped back — with
+repo-owned. From v1.7.0 core ships one again, so the answer flipped back — with
 `RHIZA_TASK` inside it, which is the whole point (below).
 
 ### Locally owned — edit freely
@@ -89,8 +89,8 @@ fuzzing workflow having been retired.
 `make test`, `make fmt`, `make book` and the rest still work, and are the
 *human* front door. They are **not** what CI invokes: no workflow in this
 repository runs `make` at all. All but one delegate to a `jebel-quant/rhiza`
-reusable workflow at `@v1.7.0`, which pins its own CLI (`rhiza_ci.yml` and
-`rhiza_book.yml` both set `RHIZA_TASK: rhiza-task@1.4.0`) and calls it directly,
+reusable workflow at `@v1.8.0`, which pins its own CLI (`rhiza_ci.yml` and
+`rhiza_book.yml` both set `RHIZA_TASK: rhiza-task@1.7.0`) and calls it directly,
 `uvx "$RHIZA_TASK" test`. The exception is `rhiza_release.yml`, which is a
 self-contained workflow and invokes neither.
 
@@ -106,8 +106,8 @@ Consequences worth knowing:
   separately, on the reasoning that "the gates a build runs must not move under
   it"; the local `RHIZA_TASK` was a hand edit `/rhiza:update` could not make, so
   every consumer silently lagged. Since the shim is synced again, `RHIZA_TASK`
-  travels with the template ref and both sides read `rhiza-task@1.4.0` from
-  v1.7.0 by construction. **Bump the task layer with `/rhiza:update`, not by
+  travels with the template ref and both sides read `rhiza-task@1.7.0` from
+  v1.8.0 by construction. **Bump the task layer with `/rhiza:update`, not by
   editing the `Makefile`** — an edit there is drift the next sync reverts.
 - **Configuration lives in `[tool.rhiza-task]` in `pyproject.toml`**, not in
   make variables. `coverage_fail_under = 100`, `mkdocs-extra-packages` and
@@ -119,10 +119,10 @@ Consequences worth knowing:
 - **`make <task> --flag` does not work.** The shim forwards a target name, not
   flags; call `uvx rhiza-task <task> --flag` (e.g. `--strict`) directly.
 - **`uvx rhiza-task list` is the current answer**, not a list in this file.
-  1.4.0 adds, among others, `book-nav`, `complexity`, `docs-examples`, `todos`,
-  `doctor` and the `paper`/`presentation`/`lfs-*` families, and has dropped
-  `mutation` and `fuzz` entirely.
-- **`book-nav` is a CI gate.** `rhiza_book.yml@v1.7.0` runs it after `book`, so
+  1.4.0 added, among others, `book-nav`, `complexity`, `docs-examples`, `todos`,
+  `doctor` and the `paper`/`presentation`/`lfs-*` families, and dropped
+  `mutation` and `fuzz` entirely; 1.7.0 still has neither.
+- **`book-nav` is a CI gate.** `rhiza_book.yml@v1.8.0` runs it after `book`, so
   a `nav:` entry in `mkdocs.yml` pointing at a file the sync deleted fails the
   build — which is exactly what the v1.5.1 → v1.7.0 bump would have done to the
   three `docs/development/` pages it replaced with `rhiza.md`.
@@ -144,7 +144,7 @@ Consequences worth knowing:
   prerequisite inside the CLI and never reaches a make rule of that name.
   Requires `rhiza-task` >= the version that ships `setup`; 1.1.0 has no such
   task, 1.4.0 does — and **1.4.1 on Windows**, which is the first to run the
-  hook through `sh` rather than exec it.
+  hook through `sh` rather than exec it. The pinned 1.7.0 satisfies both.
 - The `gh` wrappers (`view-prs`, `view-issues`, `whoami`, `failed-workflows`,
   `latest-release`, `workflow-status`) remain thin — `gh pr list` is shorter
   than `make view-prs`.
@@ -195,7 +195,7 @@ unchanged by the switch.
   pilot of
   [jebel-quant/rhiza#1540](https://github.com/jebel-quant/rhiza/issues/1540).
   The re-export's own docstring says it exists because CI ran `make test` and
-  never `make rhiza-test`; **that is no longer true** — `rhiza_ci.yml@v1.7.0`
+  never `make rhiza-test`; **that is no longer true** — `rhiza_ci.yml@v1.8.0`
   has a dedicated `rhiza-test` job. The re-export is now belt-and-braces rather
   than the only path.
 - **The two `pytest-rhiza` pins now agree, and the floor is load-bearing.** The
@@ -234,8 +234,8 @@ unchanged by the switch.
 
 - **`make mutation` no longer exists.** It used to fail because both the retired
   `test.mk` and early `rhiza-task` called `mutmut run --paths-to-mutate=…` and
-  `mutmut html`, neither of which mutmut 3.x still has. `rhiza-task@1.4.0` has
-  dropped the task — `make mutation` is now an unknown-task error — and no
+  `mutmut html`, neither of which mutmut 3.x still has. `rhiza-task` 1.4.0
+  dropped the task (1.7.0 still lacks it) — `make mutation` is now an unknown-task error — and no
   mutation or fuzzing workflow is synced any more. `tests/fuzz/fuzz_grid.py` is
   what is left of it.
 - **The marimo notebooks now use Rhiza's default location.** The notebooks live
