@@ -140,6 +140,20 @@ def test_put_infinite_strike_raises(strike):
         put_payoff(100.0, strike)
 
 
+@pytest.mark.parametrize("strike", [True, "100"])
+def test_call_non_real_strike_raises(strike):
+    """A bool or non-numeric strike is rejected with a TypeError naming it."""
+    with pytest.raises(TypeError, match="strike must be a real number"):
+        call_payoff(100.0, strike)
+
+
+@pytest.mark.parametrize("strike", [True, "100"])
+def test_put_non_real_strike_raises(strike):
+    """A bool or non-numeric strike is rejected with a TypeError naming it."""
+    with pytest.raises(TypeError, match="strike must be a real number"):
+        put_payoff(100.0, strike)
+
+
 # --- Property-based invariants -----------------------------------------------
 
 
