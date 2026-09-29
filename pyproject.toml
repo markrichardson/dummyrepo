@@ -109,13 +109,15 @@ plotly = "plotly"
 #
 # Only entries that differ from the CLI's own default belong here -- `uvx rhiza-task print
 # <setting>` shows what one resolves to. Every value below was re-checked against
-# rhiza-task@0.3.1, which is the version `rhiza_ci.yml@v1.4.2` pins for every gate step;
-# the `RHIZA_TASK` pin in the Makefile governs local `make` only.
+# rhiza-task@1.7.0, which is what both the Makefile's `RHIZA_TASK` and the synced
+# workflows (`rhiza_ci.yml@v1.8.0`, `rhiza_book.yml@v1.8.0`) pin. Since the v1.7.0 sync
+# the shim is template-owned, so the two pins move together with the template ref --
+# re-check this table whenever a sync moves `RHIZA_TASK`.
 [tool.rhiza-task]
 # The OS matrix CI runs on, moved here from `.rhiza/.env` now that nothing reads that file.
 #
 # Not optional, and not a default restated: `rhiza-task`'s own default is `["ubuntu-latest"]`.
-# rhiza_ci.yml's `generate-matrix` asks the CLI (`uvx rhiza-task@0.3.1 ci-os-matrix`) and
+# rhiza_ci.yml's `generate-matrix` asks the CLI (`uvx rhiza-task@1.7.0 ci-os-matrix`) and
 # exports RHIZA_CI_OS_MATRIX as the empty string for every repository that is not the mother
 # -- deliberately, so the consumer answers -- and the CLI treats an empty setting as unset.
 # With the dotenv deleted and nothing said here, the answer would be the default: CI would
@@ -138,8 +140,12 @@ typechecker = "both"
 coverage_fail_under = 100
 
 # pytest-rhiza from PyPI, pinned exactly rather than floored: a gate that moves under you
-# is not a gate. Dropping this line would *downgrade* the conformance checks -- the CLI's
-# own default still names a git tag at v0.2.0. The `test` dependency group pins the same
+# is not a gate. At rhiza-task@1.7.0 the CLI's own default is the same release but a
+# different source -- `pytest-rhiza @ git+https://github.com/Jebel-Quant/pytest-rhiza@v0.6.0`
+# -- so this line keeps `make rhiza-test` on the PyPI distribution the `test` group
+# resolves, and keeps the pin from moving when a later CLI default does. (Older CLIs
+# defaulted to a v0.2.0 tag, where dropping the line was an outright downgrade.) The
+# `test` dependency group pins the same
 # distribution for a different reason -- there it is what `tests/rhiza/` imports under
 # `make test`; here it is what `make rhiza-test` provisions on the fly. Keep the two in
 # step.
@@ -166,14 +172,15 @@ pytest-rhiza = "pytest-rhiza==0.6.0"
 #
 # So `make book` lost mkdocstrings and died with "mkdocstrings plugin is enabled, but
 # mkdocstrings is not installed" -- mkdocs.yml declares the plugin and docs/api/*.md needs
-# it for the `:::` directives. CI never saw it, because rhiza_book.yml delegates to
-# jebel-quant/rhiza@v1.4.2, which pins its own CLI. Green in CI, broken on a laptop.
+# it for the `:::` directives. CI never saw it, because rhiza_book.yml delegated to
+# jebel-quant/rhiza@v1.4.2, which pinned its own CLI. Green in CI, broken on a laptop.
 #
-# #252 has since bumped RHIZA_TASK to 0.3.1, so this line is once again equal to the
-# resolved default -- which is precisely the state the v1.4.2 note read as licence to delete
-# it. Do not. The equality holds only while both pins say 0.3.1, and neither of them is
-# pinned here: the workflow's lives upstream and moves with the template ref. Stating the
-# value costs nothing at the current pin and is what makes the book build independent of it.
+# Both pins have since moved on -- #252 took local `make` to 0.3.1, and both now say
+# rhiza-task@1.7.0 -- so this line is once again equal to the resolved default, which is
+# precisely the state the v1.4.2 note read as licence to delete it. Do not. The equality
+# holds only at the current pin, and neither pin is set here: both move with the template
+# ref. Stating the value costs nothing at the current pin and is what makes the book build
+# independent of it.
 #
 # The old note's warning still stands and is the reason to keep this list at exactly one
 # entry -- naming the setting *replaces* the default rather than appending to it, so this is
@@ -181,7 +188,7 @@ pytest-rhiza = "pytest-rhiza==0.6.0"
 # build with. Add to it, never overwrite it. See #244 and #252.
 mkdocs-extra-packages = ["mkdocstrings[python]"]
 
-# Not set, on purpose. Each of these was checked against rhiza-task@0.3.1 rather than
+# Not set, on purpose. Each of these was checked against rhiza-task@1.7.0 rather than
 # recalled, and this note is here to stop them being re-added:
 #
 #   marimo-folder        -- the notebooks are in `docs/notebooks`, which is the CLI default.
