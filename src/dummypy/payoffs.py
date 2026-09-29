@@ -37,6 +37,44 @@ def _check_strike(strike: float) -> None:
         raise ValueError(msg)
 
 
+def _as_spot(spot: npt.ArrayLike) -> npt.NDArray[np.float64]:
+    """Convert ``spot`` to a float64 array, rejecting unusable prices.
+
+    The counterpart of :func:`_check_strike` for the other argument, with one
+    deliberate difference: NaN is *not* rejected. ``spot`` is routinely an
+    array, and a missing price in one entry should yield a NaN payoff in that
+    entry rather than refuse the whole batch -- which is also what numpy does
+    with it anyway. ``+inf`` is allowed for the same reason, and gives the
+    limiting payoffs (``inf`` for a call, ``0`` for a put).
+
+    Args:
+        spot: The proposed spot price(s), scalar or array-like.
+
+    Returns:
+        ``spot`` as a ``float64`` array (0-d for a scalar).
+
+    Raises:
+        TypeError: If ``spot`` is not real-valued -- a bool, a string (even a
+            numeric one, as for ``strike``), a complex number, ``None``, or a
+            ragged nested sequence.
+        ValueError: If any entry of ``spot`` is negative, ``-inf`` included.
+    """
+    try:
+        raw = np.asarray(spot)
+    except ValueError:  # a ragged nested sequence
+        raw = None
+    # Integer and float kinds only: the same set _check_strike admits.
+    if raw is None or raw.dtype.kind not in "iuf":
+        msg = f"spot must be real-valued, got {type(spot).__name__}"
+        raise TypeError(msg)
+    values = raw.astype(np.float64, copy=False)
+    # NaN compares False here, so it passes through by design (see above).
+    if np.any(values < 0):
+        msg = f"spot must be non-negative, got {spot!r}"
+        raise ValueError(msg)
+    return values
+
+
 def call_payoff(spot: npt.ArrayLike, strike: float) -> np.float64 | npt.NDArray[np.float64]:
     """Return the expiry payoff of a European call option.
 
@@ -48,7 +86,8 @@ def call_payoff(spot: npt.ArrayLike, strike: float) -> np.float64 | npt.NDArray[
 
     Args:
         spot: Underlying spot price(s) at expiry. Scalars and array-likes
-            are both accepted.
+            are both accepted. Must be non-negative; a NaN entry is allowed
+            and yields a NaN payoff in that position.
         strike: Strike price of the option. Must be a finite, non-negative
             real number.
 
@@ -57,9 +96,10 @@ def call_payoff(spot: npt.ArrayLike, strike: float) -> np.float64 | npt.NDArray[
         for scalar ``spot``, or a ``float64`` array for array-like ``spot``.
 
     Raises:
-        TypeError: If ``strike`` is not a real number (e.g. a bool or a str).
+        TypeError: If ``strike`` is not a real number (e.g. a bool or a str),
+            or ``spot`` is not real-valued.
         ValueError: If ``strike`` is not finite (NaN or infinite), or is
-            negative.
+            negative, or if any entry of ``spot`` is negative.
 
     Examples:
         A scalar spot gives a scalar payoff:
@@ -85,7 +125,7 @@ def call_payoff(spot: npt.ArrayLike, strike: float) -> np.float64 | npt.NDArray[
         ValueError: strike must be non-negative, got -1.0
     """
     _check_strike(strike)
-    return np.maximum(np.asarray(spot, dtype=np.float64) - strike, 0.0)
+    return np.maximum(_as_spot(spot) - strike, 0.0)
 
 
 def put_payoff(spot: npt.ArrayLike, strike: float) -> np.float64 | npt.NDArray[np.float64]:
@@ -96,7 +136,8 @@ def put_payoff(spot: npt.ArrayLike, strike: float) -> np.float64 | npt.NDArray[n
 
     Args:
         spot: Underlying spot price(s) at expiry. Scalars and array-likes
-            are both accepted.
+            are both accepted. Must be non-negative; a NaN entry is allowed
+            and yields a NaN payoff in that position.
         strike: Strike price of the option. Must be a finite, non-negative
             real number.
 
@@ -105,9 +146,10 @@ def put_payoff(spot: npt.ArrayLike, strike: float) -> np.float64 | npt.NDArray[n
         for scalar ``spot``, or a ``float64`` array for array-like ``spot``.
 
     Raises:
-        TypeError: If ``strike`` is not a real number (e.g. a bool or a str).
+        TypeError: If ``strike`` is not a real number (e.g. a bool or a str),
+            or ``spot`` is not real-valued.
         ValueError: If ``strike`` is not finite (NaN or infinite), or is
-            negative.
+            negative, or if any entry of ``spot`` is negative.
 
     Examples:
         A scalar spot gives a scalar payoff:
@@ -125,6 +167,11 @@ def put_payoff(spot: npt.ArrayLike, strike: float) -> np.float64 | npt.NDArray[n
         >>> put_payoff([70.0, 100.0, 130.0], strike=100.0)
         array([30.,  0.,  0.])
 
+        A missing spot propagates as NaN rather than rejecting the batch:
+
+        >>> put_payoff([70.0, float("nan")], strike=100.0)
+        array([30., nan])
+
         A non-finite strike is rejected alongside a negative one:
 
         >>> put_payoff(80.0, strike=float("nan"))
@@ -133,4 +180,4 @@ def put_payoff(spot: npt.ArrayLike, strike: float) -> np.float64 | npt.NDArray[n
         ValueError: strike must be a finite real number, got nan
     """
     _check_strike(strike)
-    return np.maximum(strike - np.asarray(spot, dtype=np.float64), 0.0)
+    return np.maximum(strike - _as_spot(spot), 0.0)
