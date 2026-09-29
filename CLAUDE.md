@@ -79,10 +79,11 @@ repo-owned. From v1.7.0 core ships one again, so the answer flipped back — wit
 - `.rhiza/template.yml` — selects the template version, profile, and bundles,
   and lists what the sync must not deliver
 
-`tests/fuzz/fuzz_grid.py` is an orphan rather than owned: nothing runs it, the
-fuzzing workflow having been retired.
-`.rhiza/scripts/customisations/build-extras.sh` was the other one and is gone —
-`local-setup.sh` replaces it (below).
+Nothing here is orphaned any more. `.rhiza/scripts/customisations/build-extras.sh`
+was, and is gone — `local-setup.sh` replaces it (below); so was the Atheris
+fuzz harness under `tests/fuzz/`, deleted in #287 once the fuzzing workflow was
+retired and the Hypothesis properties in `tests/dummypy/test_grid.py` covered
+what it checked.
 
 ## The developer tasks come from a package, not from make
 
@@ -237,8 +238,7 @@ unchanged by the switch.
   `test.mk` and early `rhiza-task` called `mutmut run --paths-to-mutate=…` and
   `mutmut html`, neither of which mutmut 3.x still has. `rhiza-task` 1.4.0
   dropped the task (1.7.0 still lacks it) — `make mutation` is now an unknown-task error — and no
-  mutation or fuzzing workflow is synced any more. `tests/fuzz/fuzz_grid.py` is
-  what is left of it.
+  mutation or fuzzing workflow is synced any more.
 - **The marimo notebooks now use Rhiza's default location.** The notebooks live
   in `docs/notebooks/`, matching `rhiza-task`'s default `marimo_folder` and the
   shape used by ChebPy. Both readers agree — the `.rhiza/.env` probe in
