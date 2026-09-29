@@ -154,6 +154,44 @@ def test_put_non_real_strike_raises(strike):
         put_payoff(100.0, strike)
 
 
+# --- Spot validation ---------------------------------------------------------
+#
+# spot is checked as strictly as strike on type and sign, but NaN (and +inf)
+# pass through by design: spot is routinely an array, and one missing price
+# should yield one NaN payoff rather than reject the batch (#285).
+
+
+@pytest.mark.parametrize("payoff", [call_payoff, put_payoff])
+@pytest.mark.parametrize("spot", [-1.0, -math.inf, [80.0, -1.0, 120.0]])
+def test_negative_spot_raises(payoff, spot):
+    """A negative spot, alone or anywhere in an array, is rejected."""
+    with pytest.raises(ValueError, match="spot must be non-negative"):
+        payoff(spot, 100.0)
+
+
+@pytest.mark.parametrize("payoff", [call_payoff, put_payoff])
+@pytest.mark.parametrize("spot", [True, "100", "abc", 1j, None, [[1.0, 2.0], [3.0]]])
+def test_non_real_spot_raises(payoff, spot):
+    """A bool, string, complex, None or ragged spot is rejected with a TypeError."""
+    with pytest.raises(TypeError, match="spot must be real-valued"):
+        payoff(spot, 100.0)
+
+
+@pytest.mark.parametrize("payoff", [call_payoff, put_payoff])
+def test_nan_spot_propagates(payoff):
+    """A NaN spot yields a NaN payoff in its own position and nowhere else."""
+    assert math.isnan(payoff(math.nan, 100.0))
+    result = payoff([120.0, math.nan, 80.0], 100.0)
+    assert math.isnan(result[1])
+    assert not np.isnan(result[[0, 2]]).any()
+
+
+def test_infinite_spot_gives_limiting_payoffs():
+    """+inf spot is allowed: the call is unbounded and the put is worthless."""
+    assert call_payoff(math.inf, 100.0) == math.inf
+    assert put_payoff(math.inf, 100.0) == 0.0
+
+
 # --- Property-based invariants -----------------------------------------------
 
 
