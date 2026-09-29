@@ -209,8 +209,9 @@ unchanged by the switch.
   checks but not for `TestProjectFields` or `TestGitTagVersion`). So do not
   lower either pin: the version checks would go red on a repo that deliberately
   writes no version down. Keep the two in step, and note that deleting the
-  `[tool.rhiza-task]` setting is not the way to do it — the CLI's own default
-  still names a git tag at v0.2.0.
+  `[tool.rhiza-task]` setting is not the way to do it — at `rhiza-task` 1.7.0 the
+  CLI's own default is the same 0.6.0 release but from a git URL rather than
+  PyPI, and it moves whenever the CLI pin does.
 - Bump the template with the `/rhiza:update` flow; don't hand-edit synced files.
 
 ## Measurement caveats
