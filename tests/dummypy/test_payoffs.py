@@ -170,6 +170,15 @@ def test_negative_spot_raises(payoff, spot):
 
 
 @pytest.mark.parametrize("payoff", [call_payoff, put_payoff])
+def test_negative_spot_message_names_the_first_offender(payoff):
+    """The error names the first negative entry and its index, not the whole input."""
+    spot = [1.0] * 5000 + [-1.0, -2.0]
+    with pytest.raises(ValueError, match=r"^spot must be non-negative, got -1\.0 at index 5000$") as excinfo:
+        payoff(spot, 100.0)
+    assert len(str(excinfo.value)) < 100
+
+
+@pytest.mark.parametrize("payoff", [call_payoff, put_payoff])
 @pytest.mark.parametrize("spot", [True, "100", "abc", 1j, None, [[1.0, 2.0], [3.0]]])
 def test_non_real_spot_raises(payoff, spot):
     """A bool, string, complex, None or ragged spot is rejected with a TypeError."""
