@@ -54,16 +54,20 @@ def _as_spot(spot: npt.ArrayLike) -> npt.NDArray[np.float64]:
         ``spot`` as a ``float64`` array (0-d for a scalar).
 
     Raises:
-        TypeError: If ``spot`` is not real-valued -- a bool, a string (even a
-            numeric one, as for ``strike``), a complex number, ``None``, or a
-            ragged nested sequence.
+        TypeError: If ``spot`` does not convert to an integer or float numpy
+            array -- a bool, a string (even a numeric one, as for ``strike``),
+            a complex number, ``None``, a ragged nested sequence, or a Python
+            number numpy stores as an object, such as a ``Fraction`` or a
+            ``Decimal``.
         ValueError: If any entry of ``spot`` is negative, ``-inf`` included.
     """
     try:
         raw = np.asarray(spot)
     except ValueError:  # a ragged nested sequence
         raw = None
-    # Integer and float kinds only: the same set _check_strike admits.
+    # Integer and float dtype kinds only. Narrower than _check_strike, which
+    # admits any numbers.Real: a Fraction or Decimal spot becomes an object
+    # array, and coercing one element by element is not worth supporting.
     if raw is None or raw.dtype.kind not in "iuf":
         msg = f"spot must be real-valued, got {type(spot).__name__}"
         raise TypeError(msg)

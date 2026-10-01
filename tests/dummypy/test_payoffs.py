@@ -5,6 +5,8 @@
 """
 
 import math
+from decimal import Decimal
+from fractions import Fraction
 
 import numpy as np
 import pytest
@@ -184,6 +186,45 @@ def test_non_real_spot_raises(payoff, spot):
     """A bool, string, complex, None or ragged spot is rejected with a TypeError."""
     with pytest.raises(TypeError, match="spot must be real-valued"):
         payoff(spot, 100.0)
+
+
+# The two arguments deliberately admit different sets (#292): strike takes any
+# numbers.Real, spot only what numpy stores as an integer or float array.
+_TYPES = {
+    "int": 100,
+    "float": 100.0,
+    "np.int64": np.int64(100),
+    "np.float32": np.float32(100.0),
+    "Fraction": Fraction(100),
+    "Decimal": Decimal(100),
+}
+
+
+@pytest.mark.parametrize("payoff", [call_payoff, put_payoff])
+@pytest.mark.parametrize(
+    ("kind", "strike_ok", "spot_ok"),
+    [
+        ("int", True, True),
+        ("float", True, True),
+        ("np.int64", True, True),
+        ("np.float32", True, True),
+        ("Fraction", True, False),
+        ("Decimal", False, False),
+    ],
+)
+def test_accepted_numeric_types(payoff, kind, strike_ok, spot_ok):
+    """Pin which numeric types each argument accepts; the two sets differ on purpose."""
+    value = _TYPES[kind]
+    if strike_ok:
+        assert payoff(100.0, value) == 0.0
+    else:
+        with pytest.raises(TypeError, match="strike must be a real number"):
+            payoff(100.0, value)
+    if spot_ok:
+        assert payoff(value, 100.0) == 0.0
+    else:
+        with pytest.raises(TypeError, match="spot must be real-valued"):
+            payoff(value, 100.0)
 
 
 @pytest.mark.parametrize("payoff", [call_payoff, put_payoff])
