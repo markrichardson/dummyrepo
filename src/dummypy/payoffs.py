@@ -70,7 +70,11 @@ def _as_spot(spot: npt.ArrayLike) -> npt.NDArray[np.float64]:
     values = raw.astype(np.float64, copy=False)
     # NaN compares False here, so it passes through by design (see above).
     if np.any(values < 0):
-        msg = f"spot must be non-negative, got {spot!r}"
+        # Name the first offender rather than echoing the input, which may be
+        # an array of any size.
+        index = np.argwhere(values < 0)[0]
+        where = "" if values.ndim == 0 else f" at index {', '.join(map(str, index))}"
+        msg = f"spot must be non-negative, got {values[tuple(index)]}{where}"
         raise ValueError(msg)
     return values
 
