@@ -139,7 +139,7 @@ For developers working on this project, comprehensive documentation about the CI
 This documentation covers:
 - GitHub Actions workflows for automated testing and deployment
 - Pre-commit hooks for code quality enforcement
-- Dependency management with Renovate
+- Dependency management with Dependabot
 - GitHub Codespaces cloud development environment
 - Development workflow commands and best practices
 
