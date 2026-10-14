@@ -425,7 +425,7 @@ jobs:
 
       - name: Upload SBOM artifacts
         if: hashFiles('pyproject.toml') != ''
-        uses: actions/upload-artifact@v7.0.1
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: sbom
           path: |
@@ -449,7 +449,7 @@ jobs:
 
       - name: Upload dist artifact
         if: steps.buildable.outputs.buildable == 'true'
-        uses: actions/upload-artifact@v7.0.1
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: dist
           path: dist
@@ -650,7 +650,7 @@ jobs:
 
       - name: Upload conda recipe artifact
         if: steps.check_conda.outputs.should_generate == 'true'
-        uses: actions/upload-artifact@v7.0.1
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: conda-recipe
           path: conda-recipe/meta.yaml
