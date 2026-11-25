@@ -1,7 +1,7 @@
-sha: 5ce21d8526f71ffdc8ae287c78653950a78c6c0b
+sha: 2583ac7bd2d6e9f37a750b748483483fff90f5b9
 repo: jebel-quant/rhiza
 host: github
-ref: v1.12.0
+ref: v1.14.0
 include: []
 exclude:
 - .github/CONFIG.md
@@ -27,6 +27,7 @@ files:
 - .github/workflows/rhiza_benchmark.yml
 - .github/workflows/rhiza_ci.yml
 - .github/workflows/rhiza_codeql.yml
+- .github/workflows/rhiza_conda_recipe.yml
 - .github/workflows/rhiza_devcontainer.yml
 - .github/workflows/rhiza_docker.yml
 - .github/workflows/rhiza_marimo.yml
@@ -39,6 +40,7 @@ files:
 - .python-version
 - .rhiza/CODE_OF_CONDUCT.md
 - .rhiza/CONTRIBUTING.md
+- .rhiza/scripts/conda_recipe.py
 - .rhiza/scripts/release_publish.py
 - .rhiza/semgrep.yml
 - LICENSE
@@ -54,5 +56,5 @@ files:
 - pytest.ini
 - ruff.toml
 - tests/test_rhiza_packaging.py
-synced_at: '2026-11-08T15:39:31Z'
+synced_at: '2026-11-25T16:47:40Z'
 strategy: merge
